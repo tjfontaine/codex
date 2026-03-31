@@ -392,7 +392,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn batch_write_reloads_user_config_when_requested() {
         let codex_home = TempDir::new().expect("create temp dir");
         let user_config_path = codex_home.path().join("config.toml");

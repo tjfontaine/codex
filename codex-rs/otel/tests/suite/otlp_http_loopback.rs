@@ -43,7 +43,7 @@ fn read_http_request(
                             "timed out waiting for request data",
                         ));
                     }
-                    thread::sleep(Duration::from_millis(5));
+                    tokio::thread_spawn::sleep(Duration::from_millis(5));
                 }
                 Err(err) => return Err(err),
             }
@@ -139,7 +139,7 @@ fn otlp_http_exporter_sends_metrics_to_collector() -> Result<()> {
     listener.set_nonblocking(true).expect("set_nonblocking");
 
     let (tx, rx) = mpsc::channel::<Vec<CapturedRequest>>();
-    let server = thread::spawn(move || {
+    let server = tokio::thread_spawn::spawn(move || {
         let mut captured = Vec::new();
         let deadline = Instant::now() + Duration::from_secs(3);
 
@@ -157,7 +157,7 @@ fn otlp_http_exporter_sends_metrics_to_collector() -> Result<()> {
                     }
                 }
                 Err(err) if err.kind() == std::io::ErrorKind::WouldBlock => {
-                    thread::sleep(Duration::from_millis(10));
+                    tokio::thread_spawn::sleep(Duration::from_millis(10));
                 }
                 Err(_) => break,
             }
@@ -225,7 +225,7 @@ fn otlp_http_exporter_sends_traces_to_collector()
     listener.set_nonblocking(true).expect("set_nonblocking");
 
     let (tx, rx) = mpsc::channel::<Vec<CapturedRequest>>();
-    let server = thread::spawn(move || {
+    let server = tokio::thread_spawn::spawn(move || {
         let mut captured = Vec::new();
         let deadline = Instant::now() + Duration::from_secs(3);
 
@@ -243,7 +243,7 @@ fn otlp_http_exporter_sends_traces_to_collector()
                     }
                 }
                 Err(err) if err.kind() == std::io::ErrorKind::WouldBlock => {
-                    thread::sleep(Duration::from_millis(10));
+                    tokio::thread_spawn::sleep(Duration::from_millis(10));
                 }
                 Err(_) => break,
             }
@@ -325,7 +325,7 @@ fn otlp_http_exporter_sends_traces_to_collector()
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn otlp_http_exporter_sends_traces_to_collector_in_tokio_runtime()
 -> std::result::Result<(), Box<dyn std::error::Error>> {
     let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
@@ -333,7 +333,7 @@ async fn otlp_http_exporter_sends_traces_to_collector_in_tokio_runtime()
     listener.set_nonblocking(true).expect("set_nonblocking");
 
     let (tx, rx) = mpsc::channel::<Vec<CapturedRequest>>();
-    let server = thread::spawn(move || {
+    let server = tokio::thread_spawn::spawn(move || {
         let mut captured = Vec::new();
         let deadline = Instant::now() + Duration::from_secs(3);
 
@@ -351,7 +351,7 @@ async fn otlp_http_exporter_sends_traces_to_collector_in_tokio_runtime()
                     }
                 }
                 Err(err) if err.kind() == std::io::ErrorKind::WouldBlock => {
-                    thread::sleep(Duration::from_millis(10));
+                    tokio::thread_spawn::sleep(Duration::from_millis(10));
                 }
                 Err(_) => break,
             }
@@ -441,7 +441,7 @@ fn otlp_http_exporter_sends_traces_to_collector_in_current_thread_tokio_runtime(
     listener.set_nonblocking(true).expect("set_nonblocking");
 
     let (tx, rx) = mpsc::channel::<Vec<CapturedRequest>>();
-    let server = thread::spawn(move || {
+    let server = tokio::thread_spawn::spawn(move || {
         let mut captured = Vec::new();
         let deadline = Instant::now() + Duration::from_secs(3);
 
@@ -459,7 +459,7 @@ fn otlp_http_exporter_sends_traces_to_collector_in_current_thread_tokio_runtime(
                     }
                 }
                 Err(err) if err.kind() == std::io::ErrorKind::WouldBlock => {
-                    thread::sleep(Duration::from_millis(10));
+                    tokio::thread_spawn::sleep(Duration::from_millis(10));
                 }
                 Err(_) => break,
             }
@@ -469,7 +469,7 @@ fn otlp_http_exporter_sends_traces_to_collector_in_current_thread_tokio_runtime(
     });
 
     let (runtime_result_tx, runtime_result_rx) = mpsc::channel::<std::result::Result<(), String>>();
-    let runtime_thread = thread::spawn(move || {
+    let runtime_thread = tokio::thread_spawn::spawn(move || {
         let runtime = tokio::runtime::Builder::new_current_thread()
             .enable_all()
             .build()

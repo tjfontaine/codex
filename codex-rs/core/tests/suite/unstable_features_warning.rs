@@ -15,7 +15,7 @@ use tempfile::TempDir;
 use tokio::time::timeout;
 use toml::toml;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn emits_warning_when_unstable_features_enabled_via_config() {
     let home = TempDir::new().expect("tempdir");
     let mut config = load_default_config_for_test(&home).await;
@@ -55,7 +55,7 @@ async fn emits_warning_when_unstable_features_enabled_via_config() {
     assert!(message.contains("suppress_unstable_features_warning = true"));
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn suppresses_warning_when_configured() {
     let home = TempDir::new().expect("tempdir");
     let mut config = load_default_config_for_test(&home).await;

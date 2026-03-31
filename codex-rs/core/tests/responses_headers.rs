@@ -23,7 +23,7 @@ use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 use wiremock::matchers::header;
 
-#[tokio::test]
+#[test]
 async fn responses_stream_includes_subagent_header_on_review() {
     core_test_support::skip_if_no_network!();
 
@@ -135,7 +135,7 @@ async fn responses_stream_includes_subagent_header_on_review() {
     assert_eq!(request.header("x-codex-sandbox"), None);
 }
 
-#[tokio::test]
+#[test]
 async fn responses_stream_includes_subagent_header_on_other() {
     core_test_support::skip_if_no_network!();
 
@@ -247,7 +247,7 @@ async fn responses_stream_includes_subagent_header_on_other() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn responses_respects_model_info_overrides_from_config() {
     core_test_support::skip_if_no_network!();
 
@@ -373,7 +373,7 @@ async fn responses_respects_model_info_overrides_from_config() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() {
     core_test_support::skip_if_no_network!();
 

@@ -598,6 +598,7 @@ impl Codex {
         let session_source_clone = session_configuration.session_source.clone();
         let (agent_status_tx, agent_status_rx) = watch::channel(AgentStatus::PendingInit);
 
+        console_log::console_log!("[diag-trace] codex.rs: BEFORE Session::new");
         let session = Session::new(
             session_configuration,
             config.clone(),
@@ -620,10 +621,13 @@ impl Codex {
             map_session_init_error(&e, &config.codex_home)
         })?;
         let thread_id = session.conversation_id;
+        console_log::console_log!("[diag-trace] codex.rs: Session::new DONE, thread_id={}", thread_id);
 
         // This task will run until Op::Shutdown is received.
         let session_for_loop = Arc::clone(&session);
+        console_log::console_log!("[diag-trace] codex.rs: BEFORE spawning submission_loop");
         let session_loop_handle = tokio::spawn(async move {
+            console_log::console_log!("[diag-trace] codex.rs: submission_loop task STARTED");
             submission_loop(session_for_loop, config, rx_sub)
                 .instrument(info_span!("session_loop", thread_id = %thread_id))
                 .await;
@@ -1592,7 +1596,7 @@ impl Session {
         }
 
         let auth = auth.as_ref();
-        let auth_mode = auth.map(CodexAuth::auth_mode).map(TelemetryAuthMode::from);
+        let auth_mode = auth.map(CodexAuth::auth_mode).map(|m| TelemetryAuthMode::from_display(&m));
         let account_id = auth.and_then(CodexAuth::get_account_id);
         let account_email = auth.and_then(CodexAuth::get_account_email);
         let originator = crate::default_client::originator().value;
@@ -1608,7 +1612,7 @@ impl Session {
             session_model.as_str(),
             account_id.clone(),
             account_email.clone(),
-            auth_mode,
+            auth_mode.clone(),
             originator.clone(),
             config.otel.log_user_prompt,
             terminal_type.clone(),
@@ -1871,6 +1875,7 @@ impl Session {
             let mut guard = network_policy_decider_session.write().await;
             *guard = Arc::downgrade(&sess);
         }
+        console_log::console_log!("[diag-trace] codex.rs: Session::new ABOUT TO dispatch SessionConfigured");
         // Dispatch the SessionConfiguredEvent first and then report any errors.
         // If resuming, include converted initial messages in the payload so UIs can render them immediately.
         let initial_messages = initial_history.get_event_msgs();
@@ -1900,6 +1905,7 @@ impl Session {
             sess.send_event_raw(event).await;
         }
 
+        console_log::console_log!("[diag-trace] codex.rs: SessionConfigured events SENT");
         // Start the watcher after SessionConfigured so it cannot emit earlier events.
         sess.start_file_watcher_listener();
         // Construct sandbox_state before MCP startup so it can be sent to each
@@ -4150,8 +4156,10 @@ impl Session {
 }
 
 async fn submission_loop(sess: Arc<Session>, config: Arc<Config>, rx_sub: Receiver<Submission>) {
+    console_log::console_log!("[diag-trace] codex.rs: submission_loop ENTERED, waiting for first Op");
     // To break out of this loop, send Op::Shutdown.
     while let Ok(sub) = rx_sub.recv().await {
+        console_log::console_log!("[diag-trace] codex.rs: submission_loop received op: {:?}", sub.op);
         debug!(?sub, "Submission");
         let dispatch_span = submission_dispatch_span(&sub);
         let should_exit = async {
@@ -7014,13 +7022,30 @@ async fn try_run_sampling_request(
             from = field::Empty,
         );
 
-        let event = match stream
-            .next()
-            .instrument(trace_span!(parent: &handle_responses, "receiving"))
-            .or_cancel(&cancellation_token)
-            .await
+        let stream_idle_timeout = turn_context.provider.stream_idle_timeout();
+        let event = match tokio::time::timeout(
+            stream_idle_timeout,
+            stream
+                .next()
+                .instrument(trace_span!(parent: &handle_responses, "receiving")),
+        )
+        .or_cancel(&cancellation_token)
+        .await
         {
-            Ok(event) => event,
+            Ok(Ok(event)) => event,
+            Ok(Err(_elapsed)) => {
+                tracing::warn!(
+                    timeout_secs = stream_idle_timeout.as_secs(),
+                    "stream.next() idle timeout in try_run_sampling_request"
+                );
+                break Err(CodexErr::Stream(
+                    format!(
+                        "stream idle timeout: no response events for {}s",
+                        stream_idle_timeout.as_secs()
+                    ),
+                    None,
+                ));
+            }
             Err(codex_async_utils::CancelErr::Cancelled) => break Err(CodexErr::TurnAborted),
         };
 

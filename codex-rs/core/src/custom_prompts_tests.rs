@@ -2,7 +2,7 @@ use super::*;
 use std::fs;
 use tempfile::tempdir;
 
-#[tokio::test]
+#[test]
 async fn empty_when_dir_missing() {
     let tmp = tempdir().expect("create TempDir");
     let missing = tmp.path().join("nope");
@@ -10,7 +10,7 @@ async fn empty_when_dir_missing() {
     assert!(found.is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn discovers_and_sorts_files() {
     let tmp = tempdir().expect("create TempDir");
     let dir = tmp.path();
@@ -22,7 +22,7 @@ async fn discovers_and_sorts_files() {
     assert_eq!(names, vec!["a", "b"]);
 }
 
-#[tokio::test]
+#[test]
 async fn excludes_builtins() {
     let tmp = tempdir().expect("create TempDir");
     let dir = tmp.path();
@@ -35,7 +35,7 @@ async fn excludes_builtins() {
     assert_eq!(names, vec!["foo"]);
 }
 
-#[tokio::test]
+#[test]
 async fn skips_non_utf8_files() {
     let tmp = tempdir().expect("create TempDir");
     let dir = tmp.path();
@@ -48,7 +48,7 @@ async fn skips_non_utf8_files() {
     assert_eq!(names, vec!["good"]);
 }
 
-#[tokio::test]
+#[test]
 #[cfg(unix)]
 async fn discovers_symlinked_md_files() {
     let tmp = tempdir().expect("create TempDir");
@@ -67,7 +67,7 @@ async fn discovers_symlinked_md_files() {
     assert_eq!(names, vec!["link", "real"]);
 }
 
-#[tokio::test]
+#[test]
 async fn parses_frontmatter_and_strips_from_body() {
     let tmp = tempdir().expect("create TempDir");
     let dir = tmp.path();

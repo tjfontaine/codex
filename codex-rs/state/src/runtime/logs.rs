@@ -318,7 +318,7 @@ WHERE id IN (
         let max_bytes = usize::try_from(LOG_PARTITION_SIZE_LIMIT_BYTES).unwrap_or(usize::MAX);
         // Bound the fetched rows in SQL first so over-retained partitions do not have to load
         // every row into memory, then apply the exact whole-line byte cap after formatting.
-        let rows = sqlx::query_as::<_, FeedbackLogRow>(
+        let rows = sqlx::query_as::<FeedbackLogRow>(
             r#"
 WITH latest_process AS (
     SELECT process_uuid
@@ -513,7 +513,7 @@ mod tests {
 
     async fn log_row_count(path: &Path) -> i64 {
         let pool = open_db_pool(path).await;
-        let count = sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM logs")
+        let count = sqlx::query_scalar::<i64>("SELECT COUNT(*) FROM logs")
             .fetch_one(&pool)
             .await
             .expect("count log rows");
@@ -521,7 +521,7 @@ mod tests {
         count
     }
 
-    #[tokio::test]
+    #[test]
     async fn insert_logs_use_dedicated_log_database() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -554,7 +554,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn init_migrates_message_only_logs_db_to_feedback_log_body_schema() {
         let codex_home = unique_temp_dir();
         tokio::fs::create_dir_all(&codex_home)
@@ -609,7 +609,7 @@ mod tests {
         assert_eq!(rows[0].message.as_deref(), Some("legacy-body"));
 
         let migrated_pool = open_db_pool(logs_path.as_path()).await;
-        let columns = sqlx::query_scalar::<_, String>("SELECT name FROM pragma_table_info('logs')")
+        let columns = sqlx::query_scalar::<String>("SELECT name FROM pragma_table_info('logs')")
             .fetch_all(&migrated_pool)
             .await
             .expect("load migrated columns");
@@ -630,7 +630,7 @@ mod tests {
                 "estimated_bytes".to_string(),
             ]
         );
-        let indexes = sqlx::query_scalar::<_, String>(
+        let indexes = sqlx::query_scalar::<String>(
             "SELECT name FROM pragma_index_list('logs') ORDER BY name",
         )
         .fetch_all(&migrated_pool)
@@ -666,7 +666,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn query_logs_with_search_matches_rendered_body_substring() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -719,7 +719,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn insert_logs_prunes_old_rows_when_thread_exceeds_size_limit() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -773,7 +773,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn insert_logs_prunes_single_thread_row_when_it_exceeds_size_limit() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -811,7 +811,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn insert_logs_prunes_threadless_rows_per_process_uuid_only() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -880,7 +880,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn insert_logs_prunes_single_threadless_process_row_when_it_exceeds_size_limit() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -918,7 +918,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn insert_logs_prunes_threadless_rows_with_null_process_uuid() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -986,7 +986,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn insert_logs_prunes_single_threadless_null_process_row_when_it_exceeds_limit() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1024,7 +1024,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn insert_logs_prunes_old_rows_when_thread_exceeds_row_limit() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1067,7 +1067,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn insert_logs_prunes_old_threadless_rows_when_process_exceeds_row_limit() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1114,7 +1114,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn insert_logs_prunes_old_threadless_null_process_rows_when_row_limit_exceeded() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1161,7 +1161,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn query_feedback_logs_returns_newest_lines_within_limit_in_order() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1231,7 +1231,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn query_feedback_logs_excludes_oversized_newest_row() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1281,7 +1281,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn query_feedback_logs_includes_threadless_rows_from_same_process() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1364,7 +1364,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn query_feedback_logs_excludes_threadless_rows_from_prior_processes() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1447,7 +1447,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn query_feedback_logs_keeps_newest_suffix_across_thread_and_threadless_logs() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())

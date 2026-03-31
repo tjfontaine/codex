@@ -1,13 +1,10 @@
 [package]
 name = "codex-utils-cargo-bin"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
-
-[lints]
-workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [dependencies]
-assert_cmd = { workspace = true }
-runfiles = { workspace = true }
-thiserror = { workspace = true }
+assert_cmd = { version = "2" }
+runfiles = { git = "https://github.com/dzbarsky/rules_rust", rev = "b56cbaa8465e74127f1ea216f813cd377295ad81" }
+thiserror = { version = "2.0.17" }

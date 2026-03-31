@@ -84,8 +84,9 @@ use std::time::Instant;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 use tokio::sync::oneshot::error::TryRecvError;
-use tokio_tungstenite::tungstenite::Error;
-use tokio_tungstenite::tungstenite::Message;
+// Re-use the tungstenite stub types from codex_api::telemetry
+use codex_api::telemetry::Error;
+use codex_api::telemetry::Message;
 use tracing::instrument;
 use tracing::trace;
 use tracing::warn;
@@ -1012,7 +1013,7 @@ impl ModelClientSession {
                 self.client.state.provider.stream_idle_timeout(),
             )
             .map_err(map_api_error)?;
-            let (stream, _last_request_rx) = map_response_stream(stream, session_telemetry.clone());
+            let (stream, _last_request_rx) = map_response_stream(stream, session_telemetry.clone(), self.client.state.provider.stream_idle_timeout());
             return Ok(stream);
         }
 
@@ -1056,7 +1057,7 @@ impl ModelClientSession {
 
             match stream_result {
                 Ok(stream) => {
-                    let (stream, _) = map_response_stream(stream, session_telemetry.clone());
+                    let (stream, _) = map_response_stream(stream, session_telemetry.clone(), self.client.state.provider.stream_idle_timeout());
                     return Ok(stream);
                 }
                 Err(ApiError::Transport(
@@ -1187,7 +1188,7 @@ impl ModelClientSession {
                 .await
                 .map_err(map_api_error)?;
             let (stream, last_request_rx) =
-                map_response_stream(stream_result, session_telemetry.clone());
+                map_response_stream(stream_result, session_telemetry.clone(), self.client.state.provider.stream_idle_timeout());
             self.websocket_session.last_response_rx = Some(last_request_rx);
             return Ok(WebsocketStreamOutcome::Stream(stream));
         }
@@ -1405,6 +1406,7 @@ fn build_responses_headers(
 fn map_response_stream<S>(
     api_stream: S,
     session_telemetry: SessionTelemetry,
+    idle_timeout: Duration,
 ) -> (ResponseStream, oneshot::Receiver<LastResponse>)
 where
     S: futures::Stream<Item = std::result::Result<ResponseEvent, ApiError>>
@@ -1420,7 +1422,28 @@ where
         let mut tx_last_response = Some(tx_last_response);
         let mut items_added: Vec<ResponseItem> = Vec::new();
         let mut api_stream = api_stream;
-        while let Some(event) = api_stream.next().await {
+        loop {
+            let event = match tokio::time::timeout(idle_timeout, api_stream.next()).await {
+                Ok(Some(event)) => event,
+                Ok(None) => break, // stream ended normally
+                Err(_elapsed) => {
+                    // Idle timeout -- no event received within the deadline.
+                    tracing::warn!(
+                        timeout_secs = idle_timeout.as_secs(),
+                        "API response stream idle timeout -- no events received"
+                    );
+                    let _ = tx_event
+                        .send(Err(CodexErr::Stream(
+                            format!(
+                                "stream idle timeout: no events for {}s",
+                                idle_timeout.as_secs()
+                            ),
+                            None,
+                        )))
+                        .await;
+                    break;
+                }
+            };
             match event {
                 Ok(ResponseEvent::OutputItemDone(item)) => {
                     items_added.push(item.clone());

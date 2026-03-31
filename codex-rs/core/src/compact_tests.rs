@@ -185,7 +185,7 @@ fn build_token_limited_compacted_history_appends_summary_message() {
     assert_eq!(summary, summary_text);
 }
 
-#[tokio::test]
+#[test]
 async fn process_compacted_history_replaces_developer_messages() {
     let compacted_history = vec![
         ResponseItem::Message {
@@ -230,7 +230,7 @@ async fn process_compacted_history_replaces_developer_messages() {
     assert_eq!(refreshed, expected);
 }
 
-#[tokio::test]
+#[test]
 async fn process_compacted_history_reinjects_full_initial_context() {
     let compacted_history = vec![ResponseItem::Message {
         id: None,
@@ -255,7 +255,7 @@ async fn process_compacted_history_reinjects_full_initial_context() {
     assert_eq!(refreshed, expected);
 }
 
-#[tokio::test]
+#[test]
 async fn process_compacted_history_drops_non_user_content_messages() {
     let compacted_history = vec![
         ResponseItem::Message {
@@ -331,7 +331,7 @@ keep me updated
     assert_eq!(refreshed, expected);
 }
 
-#[tokio::test]
+#[test]
 async fn process_compacted_history_inserts_context_before_last_real_user_message_only() {
     let compacted_history = vec![
         ResponseItem::Message {
@@ -398,7 +398,7 @@ async fn process_compacted_history_inserts_context_before_last_real_user_message
     assert_eq!(refreshed, expected);
 }
 
-#[tokio::test]
+#[test]
 async fn process_compacted_history_reinjects_model_switch_message() {
     let compacted_history = vec![ResponseItem::Message {
         id: None,

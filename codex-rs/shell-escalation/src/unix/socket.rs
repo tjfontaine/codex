@@ -430,7 +430,7 @@ mod tests {
         Ok(fds)
     }
 
-    #[tokio::test]
+    #[test]
     async fn async_socket_round_trips_payload_and_fds() -> std::io::Result<()> {
         let (server, client) = AsyncSocket::pair()?;
         let payload = TestPayload {
@@ -455,7 +455,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn async_socket_handles_large_payload() -> std::io::Result<()> {
         let (server, client) = AsyncSocket::pair()?;
         let payload = vec![b'A'; 10_000];
@@ -466,7 +466,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn async_datagram_sockets_round_trip_messages() -> std::io::Result<()> {
         let (server, client) = AsyncDatagramSocket::pair()?;
         let data = b"datagram payload".to_vec();
@@ -506,7 +506,7 @@ mod tests {
         assert_eq!(std::io::ErrorKind::InvalidInput, err.kind());
     }
 
-    #[tokio::test]
+    #[test]
     async fn receive_fails_when_peer_closes_before_header() {
         let (server, client) = AsyncSocket::pair().expect("failed to create socket pair");
         drop(client);

@@ -11,7 +11,6 @@ pub struct ExecveWrapperCli {
     argv: Vec<String>,
 }
 
-#[tokio::main]
 pub async fn main_execve_wrapper() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env())

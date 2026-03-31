@@ -96,7 +96,7 @@ impl FeedbackNoteView {
         };
         let classification = feedback_classification(self.category);
 
-        let mut thread_id = self.snapshot.thread_id.clone();
+        let mut thread_id = self.snapshot.thread_id.clone().unwrap_or_default();
 
         let result = self.snapshot.upload_feedback(
             classification,
@@ -104,7 +104,7 @@ impl FeedbackNoteView {
             self.include_logs,
             &attachment_paths,
             Some(SessionSource::Cli),
-            /*logs_override*/ None,
+            /*logs_override*/ None::<Vec<u8>>,
         );
 
         match result {

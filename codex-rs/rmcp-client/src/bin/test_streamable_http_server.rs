@@ -273,7 +273,6 @@ fn parse_bind_addr() -> Result<SocketAddr, Box<dyn std::error::Error>> {
     Ok(bind_addr.parse()?)
 }
 
-#[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let bind_addr = parse_bind_addr()?;
     let session_failure_state = SessionFailureState::default();

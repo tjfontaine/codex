@@ -27,9 +27,15 @@ use super::frame_rate_limiter::FrameRateLimiter;
 ///
 /// Clones of this type can be freely shared across tasks to make it possible to trigger frame draws
 /// from anywhere in the TUI code.
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct FrameRequester {
     frame_schedule_tx: mpsc::UnboundedSender<Instant>,
+    draw_tx: broadcast::Sender<()>,
+}
+impl std::fmt::Debug for FrameRequester {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("FrameRequester").finish()
+    }
 }
 
 impl FrameRequester {
@@ -38,21 +44,25 @@ impl FrameRequester {
     /// The provided `draw_tx` is used to notify the TUI event loop of scheduled draws.
     pub fn new(draw_tx: broadcast::Sender<()>) -> Self {
         let (tx, rx) = mpsc::unbounded_channel();
+        let draw_tx_clone = draw_tx.clone();
         let scheduler = FrameScheduler::new(rx, draw_tx);
         tokio::spawn(scheduler.run());
         Self {
             frame_schedule_tx: tx,
+            draw_tx: draw_tx_clone,
         }
     }
 
     /// Schedule a frame draw as soon as possible.
     pub fn schedule_frame(&self) {
         let _ = self.frame_schedule_tx.send(Instant::now());
+        let _ = self.draw_tx.send(());
     }
 
     /// Schedule a frame draw to occur after the specified duration.
     pub fn schedule_frame_in(&self, dur: Duration) {
         let _ = self.frame_schedule_tx.send(Instant::now() + dur);
+        let _ = self.draw_tx.send(());
     }
 }
 
@@ -144,7 +154,7 @@ mod tests {
     use tokio::time;
     use tokio_util::time::FutureExt;
 
-    #[tokio::test(flavor = "current_thread", start_paused = true)]
+    #[test]
     async fn test_schedule_frame_immediate_triggers_once() {
         let (draw_tx, mut draw_rx) = broadcast::channel(16);
         let requester = FrameRequester::new(draw_tx);
@@ -167,7 +177,7 @@ mod tests {
         assert!(second.is_err(), "unexpected extra draw received");
     }
 
-    #[tokio::test(flavor = "current_thread", start_paused = true)]
+    #[test]
     async fn test_schedule_frame_in_triggers_at_delay() {
         let (draw_tx, mut draw_rx) = broadcast::channel(16);
         let requester = FrameRequester::new(draw_tx);
@@ -193,7 +203,7 @@ mod tests {
         assert!(second.is_err(), "unexpected extra draw received");
     }
 
-    #[tokio::test(flavor = "current_thread", start_paused = true)]
+    #[test]
     async fn test_coalesces_multiple_requests_into_single_draw() {
         let (draw_tx, mut draw_rx) = broadcast::channel(16);
         let requester = FrameRequester::new(draw_tx);
@@ -219,7 +229,7 @@ mod tests {
         assert!(second.is_err(), "unexpected extra draw received");
     }
 
-    #[tokio::test(flavor = "current_thread", start_paused = true)]
+    #[test]
     async fn test_coalesces_mixed_immediate_and_delayed_requests() {
         let (draw_tx, mut draw_rx) = broadcast::channel(16);
         let requester = FrameRequester::new(draw_tx);
@@ -242,7 +252,7 @@ mod tests {
         assert!(second.is_err(), "unexpected extra draw received");
     }
 
-    #[tokio::test(flavor = "current_thread", start_paused = true)]
+    #[test]
     async fn test_limits_draw_notifications_to_120fps() {
         let (draw_tx, mut draw_rx) = broadcast::channel(16);
         let requester = FrameRequester::new(draw_tx);
@@ -273,7 +283,7 @@ mod tests {
         assert!(second.is_ok(), "broadcast closed unexpectedly");
     }
 
-    #[tokio::test(flavor = "current_thread", start_paused = true)]
+    #[test]
     async fn test_rate_limit_clamps_early_delayed_requests() {
         let (draw_tx, mut draw_rx) = broadcast::channel(16);
         let requester = FrameRequester::new(draw_tx);
@@ -305,7 +315,7 @@ mod tests {
         assert!(second.is_ok(), "broadcast closed unexpectedly");
     }
 
-    #[tokio::test(flavor = "current_thread", start_paused = true)]
+    #[test]
     async fn test_rate_limit_does_not_delay_future_draws() {
         let (draw_tx, mut draw_rx) = broadcast::channel(16);
         let requester = FrameRequester::new(draw_tx);
@@ -334,7 +344,7 @@ mod tests {
         assert!(second.is_ok(), "broadcast closed unexpectedly");
     }
 
-    #[tokio::test(flavor = "current_thread", start_paused = true)]
+    #[test]
     async fn test_multiple_delayed_requests_coalesce_to_earliest() {
         let (draw_tx, mut draw_rx) = broadcast::channel(16);
         let requester = FrameRequester::new(draw_tx);

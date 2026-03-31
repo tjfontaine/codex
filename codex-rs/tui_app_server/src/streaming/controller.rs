@@ -269,7 +269,7 @@ mod tests {
             .collect()
     }
 
-    #[tokio::test]
+    #[test]
     async fn controller_loose_vs_tight_with_commit_ticks_matches_full() {
         let mut ctrl = StreamController::new(None, &test_cwd());
         let mut lines = Vec::new();

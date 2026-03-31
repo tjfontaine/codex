@@ -160,7 +160,7 @@ fn set_rollout_cwd(path: &Path, cwd: &Path) -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_basic_empty() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -184,7 +184,7 @@ async fn thread_list_basic_empty() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_reports_system_error_idle_flag_after_failed_turn() -> Result<()> {
     let responses = vec![
         create_final_assistant_message_sse_response("seeded")?,
@@ -310,7 +310,7 @@ stream_max_retries = 0
     )
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_pagination_next_cursor_none_on_last_page() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -400,7 +400,7 @@ async fn thread_list_pagination_next_cursor_none_on_last_page() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_respects_provider_filter() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -453,7 +453,7 @@ async fn thread_list_respects_provider_filter() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_respects_cwd_filter() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -513,7 +513,7 @@ async fn thread_list_respects_cwd_filter() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_respects_search_term_filter() -> Result<()> {
     let codex_home = TempDir::new()?;
     std::fs::write(
@@ -590,7 +590,7 @@ sqlite = true
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_empty_source_kinds_defaults_to_interactive_only() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -636,7 +636,7 @@ async fn thread_list_empty_source_kinds_defaults_to_interactive_only() -> Result
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_filters_by_source_kind_subagent_thread_spawn() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -690,7 +690,7 @@ async fn thread_list_filters_by_source_kind_subagent_thread_spawn() -> Result<()
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_filters_by_subagent_variant() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -801,7 +801,7 @@ async fn thread_list_filters_by_subagent_variant() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_fetches_until_limit_or_exhausted() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -856,7 +856,7 @@ async fn thread_list_fetches_until_limit_or_exhausted() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_enforces_max_limit() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -899,7 +899,7 @@ async fn thread_list_enforces_max_limit() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_stops_when_not_enough_filtered_results_exist() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -953,7 +953,7 @@ async fn thread_list_stops_when_not_enough_filtered_results_exist() -> Result<()
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_includes_git_info() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -1001,7 +1001,7 @@ async fn thread_list_includes_git_info() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_default_sorts_by_created_at() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -1050,7 +1050,7 @@ async fn thread_list_default_sorts_by_created_at() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_sort_updated_at_orders_by_mtime() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -1112,7 +1112,7 @@ async fn thread_list_sort_updated_at_orders_by_mtime() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_updated_at_paginates_with_cursor() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -1196,7 +1196,7 @@ async fn thread_list_updated_at_paginates_with_cursor() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_created_at_tie_breaks_by_uuid() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -1239,7 +1239,7 @@ async fn thread_list_created_at_tie_breaks_by_uuid() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_updated_at_tie_breaks_by_uuid() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -1293,7 +1293,7 @@ async fn thread_list_updated_at_tie_breaks_by_uuid() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_updated_at_uses_mtime() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -1339,7 +1339,7 @@ async fn thread_list_updated_at_uses_mtime() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_archived_filter() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;
@@ -1400,7 +1400,7 @@ async fn thread_list_archived_filter() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_list_invalid_cursor_returns_error() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_minimal_config(codex_home.path())?;

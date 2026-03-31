@@ -495,7 +495,7 @@ where
     spans.into_iter().skip(baseline_len).collect()
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn thread_start_jsonrpc_span_exports_server_span_and_parents_children() -> Result<()> {
     let _guard = tracing_test_guard().lock().await;
     let mut harness = TracingHarness::new().await?;
@@ -566,7 +566,7 @@ async fn thread_start_jsonrpc_span_exports_server_span_and_parents_children() ->
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn turn_start_jsonrpc_span_parents_core_turn_spans() -> Result<()> {
     let _guard = tracing_test_guard().lock().await;
     let mut harness = TracingHarness::new().await?;

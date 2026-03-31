@@ -1,28 +1,21 @@
 [package]
 name = "codex-artifacts"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [dependencies]
-codex-package-manager = { workspace = true }
-reqwest = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-tempfile = { workspace = true }
-thiserror = { workspace = true }
-tokio = { workspace = true, features = ["fs", "io-util", "process", "time"] }
-url = { workspace = true }
-which = { workspace = true }
-
-[lints]
-workspace = true
+codex-package-manager = { path = "../package-manager" }
+reqwest = { path = "../../../codex-wasm/wasi-reqwest" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+tempfile = { version = "3.23.0" }
+thiserror = { version = "2.0.17" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
+url = { version = "2" }
 
 [dev-dependencies]
-flate2 = { workspace = true }
-pretty_assertions = { workspace = true }
-sha2 = { workspace = true }
-tar = { workspace = true }
-tokio = { workspace = true, features = ["fs", "io-util", "macros", "process", "rt", "rt-multi-thread", "time"] }
-wiremock = { workspace = true }
-zip = { workspace = true }
+pretty_assertions = { version = "1.4.1" }
+sha2 = { version = "0.10" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
+wiremock = { version = "0.6" }

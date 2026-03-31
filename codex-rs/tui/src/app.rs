@@ -39,9 +39,20 @@ use crate::tui::TuiEvent;
 use crate::update_action::UpdateAction;
 use crate::version::CODEX_CLI_VERSION;
 use codex_ansi_escape::ansi_escape_line;
-use codex_app_server_client::DEFAULT_IN_PROCESS_CHANNEL_CAPACITY;
-use codex_app_server_client::InProcessAppServerClient;
-use codex_app_server_client::InProcessClientStartArgs;
+// codex-app-server-client stripped for WASM
+#[allow(dead_code)]
+const DEFAULT_IN_PROCESS_CHANNEL_CAPACITY: usize = 64;
+#[allow(dead_code)] struct InProcessAppServerClient;
+impl InProcessAppServerClient {
+    async fn start(_args: InProcessClientStartArgs) -> color_eyre::Result<Self> { color_eyre::eyre::bail!("not available in WASM") }
+    fn request_handle(&self) -> InProcessRequestHandle { InProcessRequestHandle }
+    async fn shutdown(&self) -> color_eyre::Result<()> { Ok(()) }
+}
+#[allow(dead_code)] struct InProcessRequestHandle;
+impl InProcessRequestHandle {
+    async fn request_typed<Req: serde::Serialize, Resp: serde::de::DeserializeOwned>(&self, _req: Req) -> color_eyre::Result<Resp> { color_eyre::eyre::bail!("not available") }
+}
+#[allow(dead_code)] struct InProcessClientStartArgs { _private: () }
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::ConfigLayerSource;
 use codex_app_server_protocol::ConfigWarningNotification;
@@ -268,24 +279,7 @@ async fn start_plugin_request_client(
     cloud_requirements: CloudRequirementsLoader,
     feedback: codex_feedback::CodexFeedback,
 ) -> Result<InProcessAppServerClient> {
-    InProcessAppServerClient::start(InProcessClientStartArgs {
-        arg0_paths,
-        config_warnings: config_warning_notifications(&config),
-        config: Arc::new(config),
-        cli_overrides: cli_kv_overrides,
-        loader_overrides,
-        cloud_requirements,
-        feedback,
-        session_source: SessionSource::Cli,
-        enable_codex_api_key_env: false,
-        client_name: "codex-tui".to_string(),
-        client_version: env!("CARGO_PKG_VERSION").to_string(),
-        experimental_api: true,
-        opt_out_notification_methods: Vec::new(),
-        channel_capacity: DEFAULT_IN_PROCESS_CHANNEL_CAPACITY,
-    })
-    .await
-    .wrap_err("failed to start embedded app server for plugin request")
+    { let _ = (&arg0_paths, &config, &cli_kv_overrides, &loader_overrides, &cloud_requirements, &feedback); color_eyre::eyre::bail!("plugin requests not available in WASM") }
 }
 
 async fn request_plugins_list(
@@ -1725,6 +1719,7 @@ impl App {
     }
 
     async fn enqueue_thread_event(&mut self, thread_id: ThreadId, event: Event) -> Result<()> {
+        console_log::console_log!("[event-trace] enqueue_thread_event: thread={} msg={:?} active={:?}", thread_id, std::mem::discriminant(&event.msg), self.active_thread_id);
         let refresh_pending_thread_approvals =
             ThreadEventStore::event_can_change_pending_thread_approvals(&event);
         let inactive_interactive_request = if self.active_thread_id != Some(thread_id) {
@@ -1744,6 +1739,7 @@ impl App {
             guard.active
         };
 
+        console_log::console_log!("[event-trace] enqueue should_send={} refresh_approvals={}", should_send, refresh_pending_thread_approvals);
         if should_send {
             // Never await a bounded channel send on the main TUI loop: if the receiver falls behind,
             // `send().await` can block and the UI stops drawing. If the channel is full, wait in a
@@ -2213,10 +2209,12 @@ impl App {
                     .enabled(Feature::DefaultModeRequestUserInput),
             },
         ));
+        console_log::console_log!("[tui-trace] App::run ThreadManager created, fetching models...");
         let mut model = thread_manager
             .get_models_manager()
             .get_default_model(&config.model, RefreshStrategy::Offline)
             .await;
+        console_log::console_log!("[tui-trace] App::run got default model: {}", model);
         let available_models = thread_manager
             .get_models_manager()
             .list_models(RefreshStrategy::Offline)
@@ -2250,7 +2248,7 @@ impl App {
         };
         let auth_mode = auth_ref
             .map(CodexAuth::auth_mode)
-            .map(TelemetryAuthMode::from);
+            .map(|m| TelemetryAuthMode::from_display(&m));
         let session_telemetry = SessionTelemetry::new(
             ThreadId::new(),
             model.as_str(),
@@ -2274,6 +2272,7 @@ impl App {
         let status_line_invalid_items_warned = Arc::new(AtomicBool::new(false));
         let terminal_title_invalid_items_warned = Arc::new(AtomicBool::new(false));
 
+        console_log::console_log!("[tui-trace] App::run creating ChatWidget...");
         let enhanced_keys_supported = tui.enhanced_keys_supported();
         let wait_for_initial_session_configured =
             Self::should_wait_for_initial_session(&session_selection);
@@ -2512,10 +2511,7 @@ impl App {
                         } else {
                             None
                         }
-                    }, if App::should_handle_active_thread_events(
-                        waiting_for_initial_session_configured,
-                        app.active_thread_rx.is_some()
-                    ) => {
+                    } => {
                         if let Some(event) = active {
                             if let Err(err) = app.handle_active_thread_event(tui, event).await {
                                 break Err(err);
@@ -2532,7 +2528,7 @@ impl App {
                         }
                     }
                     // Listen on new thread creation due to collab tools.
-                    created = thread_created_rx.recv(), if listen_for_threads => {
+                    created = thread_created_rx.recv() => {
                         match created {
                             Ok(thread_id) => {
                                 if let Err(err) = app.handle_thread_created(thread_id).await {
@@ -2870,9 +2866,9 @@ impl App {
                 {
                     let tx = self.app_event_tx.clone();
                     let running = self.commit_anim_running.clone();
-                    thread::spawn(move || {
+                    tokio::thread_spawn::spawn(move || {
                         while running.load(Ordering::Relaxed) {
-                            thread::sleep(COMMIT_ANIMATION_TICK);
+                            tokio::thread_spawn::sleep(COMMIT_ANIMATION_TICK);
                             tx.send(AppEvent::CommitTick);
                         }
                     });
@@ -4075,6 +4071,7 @@ impl App {
     /// thread shutdowns fail over to the primary thread, while user-requested
     /// app exits consume only the tracked shutdown completion and then proceed.
     async fn handle_active_thread_event(&mut self, tui: &mut tui::Tui, event: Event) -> Result<()> {
+        console_log::console_log!("[event-trace] handle_active_thread_event: msg={:?}", std::mem::discriminant(&event.msg));
         // Capture this before any potential thread switch: we only want to clear
         // the exit marker when the currently active thread acknowledges shutdown.
         let pending_shutdown_exit_completed = matches!(&event.msg, EventMsg::ShutdownComplete)
@@ -4620,7 +4617,7 @@ mod tests {
             .join("\n")
     }
 
-    #[tokio::test]
+    #[test]
     async fn startup_custom_prompt_deprecation_notice_emits_when_prompts_exist() -> Result<()> {
         let codex_home = tempdir()?;
         let prompts_dir = codex_home.path().join("prompts");
@@ -4643,7 +4640,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn startup_custom_prompt_deprecation_notice_skips_missing_prompts_dir() -> Result<()> {
         let codex_home = tempdir()?;
         let (tx_raw, mut rx) = unbounded_channel();
@@ -4655,7 +4652,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn startup_custom_prompt_deprecation_notice_skips_empty_prompts_dir() -> Result<()> {
         let codex_home = tempdir()?;
         std::fs::create_dir_all(codex_home.path().join("prompts"))?;
@@ -4692,7 +4689,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn enqueue_primary_event_delivers_session_configured_before_buffered_approval()
     -> Result<()> {
         let (mut app, mut app_event_rx, _op_rx) = make_test_app_with_channels().await;
@@ -4778,7 +4775,7 @@ mod tests {
         panic!("expected approval action to submit a thread-scoped op");
     }
 
-    #[tokio::test]
+    #[test]
     async fn routed_thread_event_does_not_recreate_channel_after_reset() -> Result<()> {
         let mut app = make_test_app().await;
         let thread_id = ThreadId::new();
@@ -4806,7 +4803,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn reset_thread_event_state_aborts_listener_tasks() {
         struct NotifyOnDrop(Option<tokio::sync::oneshot::Sender<()>>);
 
@@ -4841,7 +4838,7 @@ mod tests {
             .expect("listener task drop notification should succeed");
     }
 
-    #[tokio::test]
+    #[test]
     async fn enqueue_thread_event_does_not_block_when_channel_full() -> Result<()> {
         let mut app = make_test_app().await;
         let thread_id = ThreadId::new();
@@ -4882,7 +4879,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn replay_thread_snapshot_restores_draft_and_queued_input() {
         let mut app = make_test_app().await;
         let thread_id = ThreadId::new();
@@ -4964,7 +4961,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn replayed_turn_complete_submits_restored_queued_follow_up() {
         let (mut app, _app_event_rx, _op_rx) = make_test_app_with_channels().await;
         let thread_id = ThreadId::new();
@@ -5046,7 +5043,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn replay_only_thread_keeps_restored_queue_visible() {
         let (mut app, _app_event_rx, _op_rx) = make_test_app_with_channels().await;
         let thread_id = ThreadId::new();
@@ -5127,7 +5124,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn replay_thread_snapshot_keeps_queue_when_running_state_only_comes_from_snapshot() {
         let (mut app, _app_event_rx, _op_rx) = make_test_app_with_channels().await;
         let thread_id = ThreadId::new();
@@ -5202,7 +5199,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn replay_thread_snapshot_does_not_submit_queue_before_replay_catches_up() {
         let (mut app, _app_event_rx, _op_rx) = make_test_app_with_channels().await;
         let thread_id = ThreadId::new();
@@ -5312,7 +5309,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn replace_chat_widget_preserves_terminal_title_cache_for_empty_replacement_title() {
         let (mut app, _app_event_rx, _op_rx) = make_test_app_with_channels().await;
         app.chat_widget.last_terminal_title = Some("my-project | Ready".to_string());
@@ -5326,7 +5323,7 @@ mod tests {
         assert_eq!(app.chat_widget.last_terminal_title, None);
     }
 
-    #[tokio::test]
+    #[test]
     async fn replace_chat_widget_keeps_replacement_terminal_title_cache_when_present() {
         let (mut app, _app_event_rx, _op_rx) = make_test_app_with_channels().await;
         app.chat_widget.last_terminal_title = Some("old-project | Ready".to_string());
@@ -5344,7 +5341,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn replay_thread_snapshot_restores_pending_pastes_for_submit() {
         let (mut app, _app_event_rx, _op_rx) = make_test_app_with_channels().await;
         let thread_id = ThreadId::new();
@@ -5418,7 +5415,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn replay_thread_snapshot_restores_collaboration_mode_for_draft_submit() {
         let (mut app, _app_event_rx, _op_rx) = make_test_app_with_channels().await;
         let thread_id = ThreadId::new();
@@ -5522,7 +5519,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn replay_thread_snapshot_restores_collaboration_mode_without_input() {
         let (mut app, _app_event_rx, _op_rx) = make_test_app_with_channels().await;
         let thread_id = ThreadId::new();
@@ -5599,7 +5596,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn replayed_interrupted_turn_restores_queued_input_to_composer() {
         let (mut app, _app_event_rx, _op_rx) = make_test_app_with_channels().await;
         let thread_id = ThreadId::new();
@@ -5681,7 +5678,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn live_turn_started_refreshes_status_line_with_runtime_context_window() {
         let mut app = make_test_app().await;
         app.chat_widget
@@ -5704,7 +5701,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn open_agent_picker_keeps_missing_threads_for_replay() -> Result<()> {
         let mut app = make_test_app().await;
         let thread_id = ThreadId::new();
@@ -5726,7 +5723,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn open_agent_picker_keeps_cached_closed_threads() -> Result<()> {
         let mut app = make_test_app().await;
         let thread_id = ThreadId::new();
@@ -5753,7 +5750,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn open_agent_picker_prompts_to_enable_multi_agent_when_disabled() -> Result<()> {
         let (mut app, mut app_event_rx, _op_rx) = make_test_app_with_channels().await;
         let _ = app.config.features.disable(Feature::Collab);
@@ -5780,7 +5777,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn update_feature_flags_enabling_guardian_selects_guardian_approvals() -> Result<()> {
         let (mut app, mut app_event_rx, mut op_rx) = make_test_app_with_channels().await;
         let codex_home = tempdir()?;
@@ -5863,7 +5860,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn update_feature_flags_disabling_guardian_clears_review_policy_and_restores_default()
     -> Result<()> {
         let (mut app, mut app_event_rx, mut op_rx) = make_test_app_with_channels().await;
@@ -5954,7 +5951,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn update_feature_flags_enabling_guardian_overrides_explicit_manual_review_policy()
     -> Result<()> {
         let (mut app, _app_event_rx, mut op_rx) = make_test_app_with_channels().await;
@@ -6022,7 +6019,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn update_feature_flags_disabling_guardian_clears_manual_review_policy_without_history()
     -> Result<()> {
         let (mut app, mut app_event_rx, mut op_rx) = make_test_app_with_channels().await;
@@ -6081,7 +6078,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn update_feature_flags_enabling_guardian_in_profile_sets_profile_auto_review_policy()
     -> Result<()> {
         let (mut app, _app_event_rx, mut op_rx) = make_test_app_with_channels().await;
@@ -6152,7 +6149,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn update_feature_flags_disabling_guardian_in_profile_allows_inherited_user_reviewer()
     -> Result<()> {
         let (mut app, mut app_event_rx, mut op_rx) = make_test_app_with_channels().await;
@@ -6240,7 +6237,7 @@ guardian_approval = true
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn update_feature_flags_disabling_guardian_in_profile_keeps_inherited_non_user_reviewer_enabled()
     -> Result<()> {
         let (mut app, mut app_event_rx, mut op_rx) = make_test_app_with_channels().await;
@@ -6309,7 +6306,7 @@ guardian_approval = true
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn open_agent_picker_allows_existing_agent_threads_when_feature_is_disabled() -> Result<()>
     {
         let (mut app, mut app_event_rx, _op_rx) = make_test_app_with_channels().await;
@@ -6328,7 +6325,7 @@ guardian_approval = true
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn refresh_pending_thread_approvals_only_lists_inactive_threads() {
         let mut app = make_test_app().await;
         let main_thread_id =
@@ -6385,7 +6382,7 @@ guardian_approval = true
         assert!(app.chat_widget.pending_thread_approvals().is_empty());
     }
 
-    #[tokio::test]
+    #[test]
     async fn inactive_thread_approval_bubbles_into_active_view() -> Result<()> {
         let mut app = make_test_app().await;
         let main_thread_id =
@@ -6500,7 +6497,7 @@ guardian_approval = true
         assert_snapshot!("agent_picker_item_name", snapshot);
     }
 
-    #[tokio::test]
+    #[test]
     async fn active_non_primary_shutdown_target_returns_none_for_non_shutdown_event() -> Result<()>
     {
         let mut app = make_test_app().await;
@@ -6514,7 +6511,7 @@ guardian_approval = true
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn active_non_primary_shutdown_target_returns_none_for_primary_thread_shutdown()
     -> Result<()> {
         let mut app = make_test_app().await;
@@ -6529,7 +6526,7 @@ guardian_approval = true
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn active_non_primary_shutdown_target_returns_ids_for_non_primary_shutdown() -> Result<()>
     {
         let mut app = make_test_app().await;
@@ -6545,7 +6542,7 @@ guardian_approval = true
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn active_non_primary_shutdown_target_returns_none_when_shutdown_exit_is_pending()
     -> Result<()> {
         let mut app = make_test_app().await;
@@ -6562,7 +6559,7 @@ guardian_approval = true
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn active_non_primary_shutdown_target_still_switches_for_other_pending_exit_thread()
     -> Result<()> {
         let mut app = make_test_app().await;
@@ -6691,19 +6688,19 @@ guardian_approval = true
         rendered
     }
 
-    #[tokio::test]
+    #[test]
     async fn clear_ui_after_long_transcript_snapshots_fresh_header_only() {
         let rendered = render_clear_ui_header_after_long_transcript_for_snapshot().await;
         assert_snapshot!("clear_ui_after_long_transcript_fresh_header_only", rendered);
     }
 
-    #[tokio::test]
+    #[test]
     async fn ctrl_l_clear_ui_after_long_transcript_reuses_clear_header_snapshot() {
         let rendered = render_clear_ui_header_after_long_transcript_for_snapshot().await;
         assert_snapshot!("clear_ui_after_long_transcript_fresh_header_only", rendered);
     }
 
-    #[tokio::test]
+    #[test]
     async fn clear_ui_header_shows_fast_status_only_for_gpt54() {
         let mut app = make_test_app().await;
         app.config.cwd = PathBuf::from("/tmp/project");
@@ -6929,7 +6926,7 @@ guardian_approval = true
         s
     }
 
-    #[tokio::test]
+    #[test]
     async fn model_migration_prompt_only_shows_for_deprecated_models() {
         let seen = BTreeMap::new();
         assert!(should_show_model_migration_prompt(
@@ -7078,7 +7075,7 @@ guardian_approval = true
         assert_eq!(selected, None);
     }
 
-    #[tokio::test]
+    #[test]
     async fn model_migration_prompt_respects_hide_flag_and_self_target() {
         let mut seen = BTreeMap::new();
         seen.insert("gpt-5".to_string(), "gpt-5.1".to_string());
@@ -7096,7 +7093,7 @@ guardian_approval = true
         ));
     }
 
-    #[tokio::test]
+    #[test]
     async fn model_migration_prompt_skips_when_target_missing_or_hidden() {
         let mut available = all_model_presets();
         let mut current = available
@@ -7140,7 +7137,7 @@ guardian_approval = true
         assert!(target_preset_for_upgrade(&with_hidden_target, "gpt-5.2-codex").is_none());
     }
 
-    #[tokio::test]
+    #[test]
     async fn model_migration_prompt_shows_for_hidden_model() {
         let codex_home = tempdir().expect("temp codex home");
         let config = ConfigBuilder::default()
@@ -7201,7 +7198,7 @@ guardian_approval = true
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn update_reasoning_effort_updates_collaboration_mode() {
         let mut app = make_test_app().await;
         app.chat_widget
@@ -7219,7 +7216,7 @@ guardian_approval = true
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn refresh_in_memory_config_from_disk_loads_latest_apps_state() -> Result<()> {
         let mut app = make_test_app().await;
         let codex_home = tempdir()?;
@@ -7258,7 +7255,7 @@ guardian_approval = true
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn refresh_in_memory_config_from_disk_best_effort_keeps_current_config_on_error()
     -> Result<()> {
         let mut app = make_test_app().await;
@@ -7274,7 +7271,7 @@ guardian_approval = true
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn refresh_in_memory_config_from_disk_uses_active_chat_widget_cwd() -> Result<()> {
         let mut app = make_test_app().await;
         let original_cwd = app.config.cwd.clone();
@@ -7312,7 +7309,7 @@ guardian_approval = true
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn rebuild_config_for_resume_or_fallback_uses_current_config_on_same_cwd_error()
     -> Result<()> {
         let mut app = make_test_app().await;
@@ -7330,7 +7327,7 @@ guardian_approval = true
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn rebuild_config_for_resume_or_fallback_errors_when_cwd_changes() -> Result<()> {
         let mut app = make_test_app().await;
         let codex_home = tempdir()?;
@@ -7348,7 +7345,7 @@ guardian_approval = true
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn sync_tui_theme_selection_updates_chat_widget_config_copy() {
         let mut app = make_test_app().await;
 
@@ -7361,7 +7358,7 @@ guardian_approval = true
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn fresh_session_config_uses_current_service_tier() {
         let mut app = make_test_app().await;
         app.chat_widget
@@ -7375,7 +7372,7 @@ guardian_approval = true
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn backtrack_selection_with_duplicate_history_targets_unique_turn() {
         let (mut app, _app_event_rx, mut op_rx) = make_test_app_with_channels().await;
 
@@ -7511,7 +7508,7 @@ guardian_approval = true
         assert_eq!(rollback_turns, Some(1));
     }
 
-    #[tokio::test]
+    #[test]
     async fn backtrack_remote_image_only_selection_clears_existing_composer_draft() {
         let (mut app, _app_event_rx, mut op_rx) = make_test_app_with_channels().await;
 
@@ -7545,7 +7542,7 @@ guardian_approval = true
         assert_eq!(rollback_turns, Some(1));
     }
 
-    #[tokio::test]
+    #[test]
     async fn backtrack_resubmit_preserves_data_image_urls_in_user_turn() {
         let (mut app, _app_event_rx, mut op_rx) = make_test_app_with_channels().await;
 
@@ -7611,7 +7608,7 @@ guardian_approval = true
         }));
     }
 
-    #[tokio::test]
+    #[test]
     async fn replayed_initial_messages_apply_rollback_in_queue_order() {
         let (mut app, mut app_event_rx, _op_rx) = make_test_app_with_channels().await;
 
@@ -7692,7 +7689,7 @@ guardian_approval = true
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn live_rollback_during_replay_is_applied_in_app_event_order() {
         let (mut app, mut app_event_rx, _op_rx) = make_test_app_with_channels().await;
 
@@ -7769,7 +7766,7 @@ guardian_approval = true
         assert_eq!(user_messages, vec!["first prompt".to_string()]);
     }
 
-    #[tokio::test]
+    #[test]
     async fn queued_rollback_syncs_overlay_and_clears_deferred_history() {
         let mut app = make_test_app().await;
         app.transcript_cells = vec![
@@ -7822,7 +7819,7 @@ guardian_approval = true
         assert_eq!(overlay_cell_count, app.transcript_cells.len());
     }
 
-    #[tokio::test]
+    #[test]
     async fn new_session_requests_shutdown_for_previous_conversation() {
         let (mut app, mut app_event_rx, mut op_rx) = make_test_app_with_channels().await;
 
@@ -7863,7 +7860,7 @@ guardian_approval = true
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn shutdown_first_exit_returns_immediate_exit_when_shutdown_submit_fails() {
         let mut app = make_test_app().await;
         let thread_id = ThreadId::new();
@@ -7878,7 +7875,7 @@ guardian_approval = true
         ));
     }
 
-    #[tokio::test]
+    #[test]
     async fn shutdown_first_exit_waits_for_shutdown_when_submit_succeeds() {
         let (mut app, _app_event_rx, mut op_rx) = make_test_app_with_channels().await;
         let thread_id = ThreadId::new();
@@ -7891,7 +7888,7 @@ guardian_approval = true
         assert_eq!(op_rx.try_recv(), Ok(Op::Shutdown));
     }
 
-    #[tokio::test]
+    #[test]
     async fn clear_only_ui_reset_preserves_chat_session_state() {
         let mut app = make_test_app().await;
         let thread_id = ThreadId::new();
@@ -7946,12 +7943,12 @@ guardian_approval = true
         assert_eq!(app.chat_widget.composer_text_with_pending(), "draft prompt");
     }
 
-    #[tokio::test]
+    #[test]
     async fn session_summary_skip_zero_usage() {
         assert!(session_summary(TokenUsage::default(), None, None).is_none());
     }
 
-    #[tokio::test]
+    #[test]
     async fn session_summary_includes_resume_hint() {
         let usage = TokenUsage {
             input_tokens: 10,
@@ -7972,7 +7969,7 @@ guardian_approval = true
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn session_summary_prefers_name_over_id() {
         let usage = TokenUsage {
             input_tokens: 10,

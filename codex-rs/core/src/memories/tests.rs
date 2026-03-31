@@ -64,7 +64,7 @@ fn stage_one_output_schema_requires_rollout_slug_and_keeps_it_nullable() {
     assert_eq!(rollout_slug_types, vec!["null", "string"]);
 }
 
-#[tokio::test]
+#[test]
 async fn clear_memory_root_contents_preserves_root_directory() {
     let dir = tempdir().expect("tempdir");
     let root = dir.path().join("memory");
@@ -103,7 +103,7 @@ async fn clear_memory_root_contents_preserves_root_directory() {
 }
 
 #[cfg(unix)]
-#[tokio::test]
+#[test]
 async fn clear_memory_root_contents_rejects_symlinked_root() {
     let dir = tempdir().expect("tempdir");
     let target = dir.path().join("outside");
@@ -130,7 +130,7 @@ async fn clear_memory_root_contents_rejects_symlinked_root() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn sync_rollout_summaries_and_raw_memories_file_keeps_latest_memories_only() {
     let dir = tempdir().expect("tempdir");
     let root = dir.path().join("memory");
@@ -236,7 +236,7 @@ async fn sync_rollout_summaries_and_raw_memories_file_keeps_latest_memories_only
     assert!(rollout_path_pos < file_pos);
 }
 
-#[tokio::test]
+#[test]
 async fn sync_rollout_summaries_uses_timestamp_hash_and_sanitized_slug_filename() {
     let dir = tempdir().expect("tempdir");
     let root = dir.path().join("memory");
@@ -332,7 +332,7 @@ async fn sync_rollout_summaries_uses_timestamp_hash_and_sanitized_slug_filename(
     );
 }
 
-#[tokio::test]
+#[test]
 async fn rebuild_raw_memories_file_adds_canonical_rollout_summary_file_header() {
     let dir = tempdir().expect("tempdir");
     let root = dir.path().join("memory");
@@ -588,7 +588,7 @@ mod phase2 {
         pretty_assertions::assert_eq!(completion, 456);
     }
 
-    #[tokio::test]
+    #[test]
     async fn dispatch_skips_when_global_job_is_not_dirty() {
         let harness = DispatchHarness::new().await;
 
@@ -599,7 +599,7 @@ mod phase2 {
         pretty_assertions::assert_eq!(thread_ids.len(), 0);
     }
 
-    #[tokio::test]
+    #[test]
     async fn dispatch_skips_when_global_job_is_already_running() {
         let harness = DispatchHarness::new().await;
         harness
@@ -630,7 +630,7 @@ mod phase2 {
         pretty_assertions::assert_eq!(thread_ids.len(), 0);
     }
 
-    #[tokio::test]
+    #[test]
     async fn dispatch_reclaims_stale_global_lock_and_starts_consolidation() {
         let harness = DispatchHarness::new().await;
         harness.seed_stage1_output(Utc::now().timestamp()).await;
@@ -716,7 +716,7 @@ mod phase2 {
         harness.shutdown_threads().await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn dispatch_with_empty_stage1_outputs_rebuilds_local_artifacts() {
         let harness = DispatchHarness::new().await;
         let root = memory_root(&harness.config.codex_home);
@@ -808,7 +808,7 @@ mod phase2 {
         harness.shutdown_threads().await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn dispatch_marks_job_for_retry_when_sandbox_policy_cannot_be_overridden() {
         let harness = DispatchHarness::new().await;
         harness
@@ -833,7 +833,7 @@ mod phase2 {
         pretty_assertions::assert_eq!(thread_ids.len(), 0);
     }
 
-    #[tokio::test]
+    #[test]
     async fn dispatch_marks_job_for_retry_when_syncing_artifacts_fails() {
         let harness = DispatchHarness::new().await;
         harness.seed_stage1_output(100).await;
@@ -855,7 +855,7 @@ mod phase2 {
         pretty_assertions::assert_eq!(thread_ids.len(), 0);
     }
 
-    #[tokio::test]
+    #[test]
     async fn dispatch_marks_job_for_retry_when_rebuilding_raw_memories_fails() {
         let harness = DispatchHarness::new().await;
         harness.seed_stage1_output(100).await;
@@ -877,7 +877,7 @@ mod phase2 {
         pretty_assertions::assert_eq!(thread_ids.len(), 0);
     }
 
-    #[tokio::test]
+    #[test]
     async fn dispatch_marks_job_for_retry_when_spawn_agent_fails() {
         let codex_home = tempfile::tempdir().expect("create temp codex home");
         let mut config = test_config();

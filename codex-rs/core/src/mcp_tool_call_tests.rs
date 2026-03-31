@@ -108,7 +108,7 @@ fn approval_question_text_prepends_safety_reason() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn approval_elicitation_request_uses_message_override_and_preserves_tool_params_keys() {
     let (session, turn_context) = make_session_and_context().await;
     let question = build_mcp_tool_approval_question(
@@ -439,7 +439,7 @@ fn sanitize_mcp_tool_result_for_model_preserves_image_when_supported() {
     assert_eq!(got, original);
 }
 
-#[tokio::test]
+#[test]
 async fn mcp_tool_call_request_meta_includes_turn_metadata_for_custom_server() {
     let (_, turn_context) = make_session_and_context().await;
     let expected_turn_metadata = serde_json::from_str::<serde_json::Value>(
@@ -462,7 +462,7 @@ async fn mcp_tool_call_request_meta_includes_turn_metadata_for_custom_server() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn codex_apps_tool_call_request_meta_includes_turn_metadata_and_codex_apps_meta() {
     let (_, turn_context) = make_session_and_context().await;
     let expected_turn_metadata = serde_json::from_str::<serde_json::Value>(
@@ -776,7 +776,7 @@ fn approval_elicitation_meta_merges_session_and_always_persist_with_connector_so
     );
 }
 
-#[tokio::test]
+#[test]
 async fn approval_callsite_mode_distinguishes_default_always_allow_and_full_access() {
     let (_session, mut turn_context) = make_session_and_context().await;
 
@@ -887,7 +887,7 @@ fn accepted_elicitation_without_content_defaults_to_accept() {
     assert_eq!(response, McpToolApprovalDecision::Accept);
 }
 
-#[tokio::test]
+#[test]
 async fn persist_codex_app_tool_approval_writes_tool_override() {
     let tmp = tempdir().expect("tempdir");
 
@@ -926,7 +926,7 @@ async fn persist_codex_app_tool_approval_writes_tool_override() {
     assert!(contents.contains("[apps.calendar.tools.\"calendar/list_events\"]"));
 }
 
-#[tokio::test]
+#[test]
 async fn maybe_persist_mcp_tool_approval_reloads_session_config() {
     let (session, turn_context) = make_session_and_context().await;
     let codex_home = session.codex_home().await;
@@ -965,7 +965,7 @@ async fn maybe_persist_mcp_tool_approval_reloads_session_config() {
     assert_eq!(mcp_tool_approval_is_remembered(&session, &key).await, true);
 }
 
-#[tokio::test]
+#[test]
 async fn approve_mode_skips_when_annotations_do_not_require_approval() {
     let (session, turn_context) = make_session_and_context().await;
     let session = Arc::new(session);
@@ -998,7 +998,7 @@ async fn approve_mode_skips_when_annotations_do_not_require_approval() {
     assert_eq!(decision, None);
 }
 
-#[tokio::test]
+#[test]
 async fn approve_mode_blocks_when_arc_returns_interrupt_for_model() {
     use wiremock::Mock;
     use wiremock::MockServer;
@@ -1067,7 +1067,7 @@ async fn approve_mode_blocks_when_arc_returns_interrupt_for_model() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn full_access_auto_mode_blocks_when_arc_returns_interrupt_for_model() {
     use wiremock::Mock;
     use wiremock::MockServer;
@@ -1144,7 +1144,7 @@ async fn full_access_auto_mode_blocks_when_arc_returns_interrupt_for_model() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn approve_mode_routes_arc_ask_user_to_guardian_when_guardian_reviewer_is_enabled() {
     use wiremock::Mock;
     use wiremock::ResponseTemplate;

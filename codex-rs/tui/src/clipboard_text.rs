@@ -58,13 +58,7 @@ pub fn copy_text_to_clipboard(text: &str) -> Result<(), String> {
         return copy_via_osc52(text);
     }
 
-    let error = match arboard::Clipboard::new() {
-        Ok(mut clipboard) => match clipboard.set_text(text.to_string()) {
-            Ok(()) => return Ok(()),
-            Err(err) => format!("clipboard unavailable: {err}"),
-        },
-        Err(err) => format!("clipboard unavailable: {err}"),
-    };
+    let error = "clipboard not available in WASM".to_string();
 
     #[cfg(target_os = "linux")]
     let error = if is_probably_wsl() {

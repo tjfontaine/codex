@@ -69,7 +69,7 @@ async fn write_session_with_user_event(codex_home: &Path) -> io::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn applies_when_sessions_exist_and_no_personality() -> io::Result<()> {
     let temp = TempDir::new()?;
     write_session_with_user_event(temp.path()).await?;
@@ -85,7 +85,7 @@ async fn applies_when_sessions_exist_and_no_personality() -> io::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn skips_when_marker_exists() -> io::Result<()> {
     let temp = TempDir::new()?;
     create_marker(&temp.path().join(PERSONALITY_MIGRATION_FILENAME)).await?;
@@ -98,7 +98,7 @@ async fn skips_when_marker_exists() -> io::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn skips_when_personality_explicit() -> io::Result<()> {
     let temp = TempDir::new()?;
     ConfigEditsBuilder::new(temp.path())
@@ -121,7 +121,7 @@ async fn skips_when_personality_explicit() -> io::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn skips_when_no_sessions() -> io::Result<()> {
     let temp = TempDir::new()?;
     let config_toml = ConfigToml::default();

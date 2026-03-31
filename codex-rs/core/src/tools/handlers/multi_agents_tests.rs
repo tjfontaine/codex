@@ -94,7 +94,7 @@ where
     }
 }
 
-#[tokio::test]
+#[test]
 async fn handler_rejects_non_function_payloads() {
     let (session, turn) = make_session_and_context().await;
     let invocation = invocation(
@@ -116,7 +116,7 @@ async fn handler_rejects_non_function_payloads() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn spawn_agent_rejects_empty_message() {
     let (session, turn) = make_session_and_context().await;
     let invocation = invocation(
@@ -134,7 +134,7 @@ async fn spawn_agent_rejects_empty_message() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn spawn_agent_rejects_when_message_and_items_are_both_set() {
     let (session, turn) = make_session_and_context().await;
     let invocation = invocation(
@@ -157,7 +157,7 @@ async fn spawn_agent_rejects_when_message_and_items_are_both_set() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn spawn_agent_uses_explorer_role_and_preserves_approval_policy() {
     #[derive(Debug, Deserialize)]
     struct SpawnAgentResult {
@@ -216,7 +216,7 @@ async fn spawn_agent_uses_explorer_role_and_preserves_approval_policy() {
     assert_eq!(snapshot.model_provider_id, "ollama");
 }
 
-#[tokio::test]
+#[test]
 async fn spawn_agent_includes_task_name_key_when_not_named() {
     let (mut session, turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -243,7 +243,7 @@ async fn spawn_agent_includes_task_name_key_when_not_named() {
     assert_eq!(success, Some(true));
 }
 
-#[tokio::test]
+#[test]
 async fn spawn_agent_errors_when_manager_dropped() {
     let (session, turn) = make_session_and_context().await;
     let invocation = invocation(
@@ -261,7 +261,7 @@ async fn spawn_agent_errors_when_manager_dropped() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn multi_agent_v2_spawn_returns_path_and_send_input_accepts_relative_path() {
     #[derive(Debug, Deserialize)]
     struct SpawnAgentResult {
@@ -339,7 +339,7 @@ async fn multi_agent_v2_spawn_returns_path_and_send_input_accepts_relative_path(
         .expect("send_input should accept v2 path");
 }
 
-#[tokio::test]
+#[test]
 async fn multi_agent_v2_spawn_includes_agent_id_key_when_named() {
     let (mut session, mut turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -378,7 +378,7 @@ async fn multi_agent_v2_spawn_includes_agent_id_key_when_named() {
     assert_eq!(success, Some(true));
 }
 
-#[tokio::test]
+#[test]
 async fn multi_agent_v2_spawn_surfaces_task_name_validation_errors() {
     let (mut session, mut turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -415,7 +415,7 @@ async fn multi_agent_v2_spawn_surfaces_task_name_validation_errors() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn spawn_agent_reapplies_runtime_sandbox_after_role_config() {
     fn pick_allowed_sandbox_policy(
         constraint: &crate::config::Constrained<SandboxPolicy>,
@@ -509,7 +509,7 @@ async fn spawn_agent_reapplies_runtime_sandbox_after_role_config() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn spawn_agent_rejects_when_depth_limit_exceeded() {
     let (mut session, mut turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -541,7 +541,7 @@ async fn spawn_agent_rejects_when_depth_limit_exceeded() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn spawn_agent_allows_depth_up_to_configured_max_depth() {
     #[derive(Debug, Deserialize)]
     struct SpawnAgentResult {
@@ -587,7 +587,7 @@ async fn spawn_agent_allows_depth_up_to_configured_max_depth() {
     assert_eq!(success, Some(true));
 }
 
-#[tokio::test]
+#[test]
 async fn send_input_rejects_empty_message() {
     let (session, turn) = make_session_and_context().await;
     let invocation = invocation(
@@ -605,7 +605,7 @@ async fn send_input_rejects_empty_message() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn send_input_rejects_when_message_and_items_are_both_set() {
     let (session, turn) = make_session_and_context().await;
     let invocation = invocation(
@@ -629,7 +629,7 @@ async fn send_input_rejects_when_message_and_items_are_both_set() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn send_input_rejects_invalid_id() {
     let (session, turn) = make_session_and_context().await;
     let invocation = invocation(
@@ -650,7 +650,7 @@ async fn send_input_rejects_invalid_id() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn send_input_reports_missing_agent() {
     let (mut session, turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -671,7 +671,7 @@ async fn send_input_reports_missing_agent() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn send_input_interrupts_before_prompt() {
     let (mut session, turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -710,7 +710,7 @@ async fn send_input_interrupts_before_prompt() {
         .expect("shutdown should submit");
 }
 
-#[tokio::test]
+#[test]
 async fn send_input_accepts_structured_items() {
     let (mut session, turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -761,7 +761,7 @@ async fn send_input_accepts_structured_items() {
         .expect("shutdown should submit");
 }
 
-#[tokio::test]
+#[test]
 async fn resume_agent_rejects_invalid_id() {
     let (session, turn) = make_session_and_context().await;
     let invocation = invocation(
@@ -779,7 +779,7 @@ async fn resume_agent_rejects_invalid_id() {
     assert!(msg.starts_with("invalid agent id not-a-uuid:"));
 }
 
-#[tokio::test]
+#[test]
 async fn resume_agent_reports_missing_agent() {
     let (mut session, turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -800,7 +800,7 @@ async fn resume_agent_reports_missing_agent() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn resume_agent_noops_for_active_agent() {
     let (mut session, turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -836,7 +836,7 @@ async fn resume_agent_noops_for_active_agent() {
         .expect("shutdown should submit");
 }
 
-#[tokio::test]
+#[test]
 async fn resume_agent_restores_closed_agent_and_accepts_send_input() {
     let (mut session, turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -916,7 +916,7 @@ async fn resume_agent_restores_closed_agent_and_accepts_send_input() {
         .expect("shutdown resumed agent");
 }
 
-#[tokio::test]
+#[test]
 async fn resume_agent_rejects_when_depth_limit_exceeded() {
     let (mut session, mut turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -948,7 +948,7 @@ async fn resume_agent_rejects_when_depth_limit_exceeded() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn wait_agent_rejects_non_positive_timeout() {
     let (session, turn) = make_session_and_context().await;
     let invocation = invocation(
@@ -969,7 +969,7 @@ async fn wait_agent_rejects_non_positive_timeout() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn wait_agent_rejects_invalid_target() {
     let (session, turn) = make_session_and_context().await;
     let invocation = invocation(
@@ -987,7 +987,7 @@ async fn wait_agent_rejects_invalid_target() {
     assert_eq!(msg, "live agent path `/root/invalid` not found");
 }
 
-#[tokio::test]
+#[test]
 async fn wait_agent_rejects_empty_targets() {
     let (session, turn) = make_session_and_context().await;
     let invocation = invocation(
@@ -1005,7 +1005,7 @@ async fn wait_agent_rejects_empty_targets() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn multi_agent_v2_wait_agent_accepts_targets_argument() {
     let (mut session, mut turn) = make_session_and_context().await;
     let target = ThreadId::new().to_string();
@@ -1040,7 +1040,7 @@ async fn multi_agent_v2_wait_agent_accepts_targets_argument() {
     assert_eq!(success, None);
 }
 
-#[tokio::test]
+#[test]
 async fn wait_agent_returns_not_found_for_missing_agents() {
     let (mut session, turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -1076,7 +1076,7 @@ async fn wait_agent_returns_not_found_for_missing_agents() {
     assert_eq!(success, None);
 }
 
-#[tokio::test]
+#[test]
 async fn wait_agent_times_out_when_status_is_not_final() {
     let (mut session, turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -1116,7 +1116,7 @@ async fn wait_agent_times_out_when_status_is_not_final() {
         .expect("shutdown should submit");
 }
 
-#[tokio::test]
+#[test]
 async fn wait_agent_clamps_short_timeouts_to_minimum() {
     let (mut session, turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -1151,7 +1151,7 @@ async fn wait_agent_clamps_short_timeouts_to_minimum() {
         .expect("shutdown should submit");
 }
 
-#[tokio::test]
+#[test]
 async fn wait_agent_returns_final_status_without_timeout() {
     let (mut session, turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -1200,7 +1200,7 @@ async fn wait_agent_returns_final_status_without_timeout() {
     assert_eq!(success, None);
 }
 
-#[tokio::test]
+#[test]
 async fn multi_agent_v2_wait_agent_returns_statuses_keyed_by_path() {
     #[derive(Debug, Deserialize)]
     struct SpawnAgentResult {
@@ -1293,7 +1293,7 @@ async fn multi_agent_v2_wait_agent_returns_statuses_keyed_by_path() {
     assert_eq!(success, None);
 }
 
-#[tokio::test]
+#[test]
 async fn close_agent_submits_shutdown_and_returns_previous_status() {
     let (mut session, turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -1329,7 +1329,7 @@ async fn close_agent_submits_shutdown_and_returns_previous_status() {
     assert_eq!(status_after, AgentStatus::NotFound);
 }
 
-#[tokio::test]
+#[test]
 async fn tool_handlers_cascade_close_and_resume_and_keep_explicitly_closed_subtrees_closed() {
     let (_session, turn) = make_session_and_context().await;
     let manager = thread_manager();
@@ -1523,7 +1523,7 @@ async fn tool_handlers_cascade_close_and_resume_and_keep_explicitly_closed_subtr
     assert_eq!(shutdown_report.timed_out, Vec::<ThreadId>::new());
 }
 
-#[tokio::test]
+#[test]
 async fn build_agent_spawn_config_uses_turn_context_values() {
     fn pick_allowed_sandbox_policy(
         constraint: &crate::config::Constrained<SandboxPolicy>,
@@ -1596,7 +1596,7 @@ async fn build_agent_spawn_config_uses_turn_context_values() {
     assert_eq!(config, expected);
 }
 
-#[tokio::test]
+#[test]
 async fn build_agent_spawn_config_preserves_base_user_instructions() {
     let (_session, mut turn) = make_session_and_context().await;
     let mut base_config = (*turn.config).clone();
@@ -1612,7 +1612,7 @@ async fn build_agent_spawn_config_preserves_base_user_instructions() {
     assert_eq!(config.user_instructions, base_config.user_instructions);
 }
 
-#[tokio::test]
+#[test]
 async fn build_agent_resume_config_clears_base_instructions() {
     let (_session, mut turn) = make_session_and_context().await;
     let mut base_config = (*turn.config).clone();

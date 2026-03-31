@@ -84,7 +84,7 @@ fn scan_index_returns_none_when_entry_missing() -> std::io::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn find_thread_names_by_ids_prefers_latest_entry() -> std::io::Result<()> {
     let temp = TempDir::new()?;
     let path = session_index_path(temp.path());

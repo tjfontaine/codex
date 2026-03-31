@@ -25,7 +25,7 @@ use wiremock::matchers::path;
 
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn plugin_uninstall_removes_plugin_cache_and_config_entry() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_installed_plugin(&codex_home, "debug", "sample-plugin")?;
@@ -77,7 +77,7 @@ enabled = true
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_uninstall_force_remote_sync_calls_remote_uninstall_first() -> Result<()> {
     let server = MockServer::start().await;
     let codex_home = TempDir::new()?;
@@ -145,7 +145,7 @@ enabled = true
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_uninstall_tracks_analytics_event() -> Result<()> {
     let analytics_server = start_analytics_events_server().await?;
     let codex_home = TempDir::new()?;

@@ -101,7 +101,7 @@ exit 1
     assert_eq!(read_curated_plugins_sha(tmp.path()).as_deref(), Some(sha));
 }
 
-#[tokio::test]
+#[test]
 async fn sync_openai_plugins_repo_falls_back_to_http_when_git_is_unavailable() {
     let tmp = tempdir().expect("tempdir");
     let server = MockServer::start().await;
@@ -155,7 +155,7 @@ async fn sync_openai_plugins_repo_falls_back_to_http_when_git_is_unavailable() {
 }
 
 #[cfg(unix)]
-#[tokio::test]
+#[test]
 async fn sync_openai_plugins_repo_falls_back_to_http_when_git_sync_fails() {
     use std::os::unix::fs::PermissionsExt;
 
@@ -229,7 +229,7 @@ exit 1
     assert_eq!(read_curated_plugins_sha(tmp.path()).as_deref(), Some(sha));
 }
 
-#[tokio::test]
+#[test]
 async fn sync_openai_plugins_repo_skips_archive_download_when_sha_matches() {
     let tmp = tempdir().expect("tempdir");
     let repo_path = curated_plugins_repo_path(tmp.path());
@@ -275,7 +275,7 @@ async fn sync_openai_plugins_repo_skips_archive_download_when_sha_matches() {
     assert!(repo_path.join(".agents/plugins/marketplace.json").is_file());
 }
 
-#[tokio::test]
+#[test]
 async fn startup_remote_plugin_sync_writes_marker_and_reconciles_state() {
     let tmp = tempdir().expect("tempdir");
     let curated_root = curated_plugins_repo_path(tmp.path());

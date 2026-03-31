@@ -84,7 +84,7 @@ fn build_subagent_headers_sets_other_subagent_label() {
     assert_eq!(value, Some("memory_consolidation"));
 }
 
-#[tokio::test]
+#[test]
 async fn summarize_memories_returns_empty_for_empty_input() {
     let client = test_model_client(SessionSource::Cli);
     let model_info = test_model_info();

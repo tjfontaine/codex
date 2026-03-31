@@ -1,22 +1,18 @@
 [package]
 name = "codex-arg0"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [lib]
 name = "codex_arg0"
 path = "src/lib.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-anyhow = { workspace = true }
-codex-apply-patch = { workspace = true }
-codex-linux-sandbox = { workspace = true }
-codex-shell-escalation = { workspace = true }
-codex-utils-home-dir = { workspace = true }
-dotenvy = { workspace = true }
-tempfile = { workspace = true }
-tokio = { workspace = true, features = ["rt-multi-thread"] }
+anyhow = { version = "1" }
+codex-apply-patch = { path = "../apply-patch" }
+codex-shell-escalation = { path = "../shell-escalation" }
+codex-utils-home-dir = { path = "../utils/home-dir" }
+dotenvy = { version = "0.15.7" }
+tempfile = { version = "3.23.0" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }

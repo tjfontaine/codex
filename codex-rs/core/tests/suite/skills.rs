@@ -34,7 +34,7 @@ fn system_skill_md_path(home: impl AsRef<Path>, name: &str) -> std::path::PathBu
         .join("SKILL.md")
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn user_turn_includes_skill_instructions() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -105,7 +105,7 @@ async fn user_turn_includes_skill_instructions() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn skill_load_errors_surface_in_session_configured() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -159,7 +159,7 @@ async fn skill_load_errors_surface_in_session_configured() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn list_skills_includes_system_cache_entries() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

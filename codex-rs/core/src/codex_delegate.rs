@@ -724,21 +724,14 @@ fn spawn_guardian_review(
     cancel_token: CancellationToken,
 ) -> oneshot::Receiver<ReviewDecision> {
     let (tx, rx) = oneshot::channel();
-    std::thread::spawn(move || {
-        let Ok(runtime) = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-        else {
-            let _ = tx.send(ReviewDecision::Denied);
-            return;
-        };
-        let decision = runtime.block_on(review_approval_request_with_cancel(
+    tokio::spawn(async move {
+        let decision = review_approval_request_with_cancel(
             &session,
             &turn,
             request,
             retry_reason,
             cancel_token,
-        ));
+        ).await;
         let _ = tx.send(decision);
     });
     rx
@@ -778,7 +771,6 @@ where
     F: core::future::Future<Output = Option<RequestUserInputResponse>>,
 {
     tokio::select! {
-        biased;
         _ = cancel_token.cancelled() => {
             let empty = RequestUserInputResponse {
                 answers: HashMap::new(),
@@ -804,7 +796,6 @@ where
     F: core::future::Future<Output = Option<RequestPermissionsResponse>>,
 {
     tokio::select! {
-        biased;
         _ = cancel_token.cancelled() => {
             let empty = RequestPermissionsResponse {
                 permissions: Default::default(),
@@ -834,7 +825,6 @@ where
     F: core::future::Future<Output = codex_protocol::protocol::ReviewDecision>,
 {
     tokio::select! {
-        biased;
         _ = cancel_token.cancelled() => {
             if let Some(review_cancel_token) = review_cancel_token {
                 review_cancel_token.cancel();

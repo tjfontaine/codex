@@ -17,7 +17,7 @@ use tokio::time::timeout;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn windows_sandbox_setup_start_emits_completion_notification() -> Result<()> {
     let responses = Vec::new();
     let server = create_mock_responses_server_sequence_unchecked(responses).await;
@@ -63,7 +63,7 @@ async fn windows_sandbox_setup_start_emits_completion_notification() -> Result<(
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn windows_sandbox_setup_start_rejects_relative_cwd() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mut mcp = McpProcess::new(codex_home.path()).await?;

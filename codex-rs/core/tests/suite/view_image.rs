@@ -131,7 +131,7 @@ async fn write_workspace_png(
     write_workspace_file(test, rel_path, png_bytes(width, height, rgba)?).await
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn user_turn_with_local_image_attaches_image() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -223,7 +223,7 @@ async fn user_turn_with_local_image_attaches_image() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn view_image_tool_attaches_local_image() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -357,7 +357,7 @@ async fn view_image_tool_attaches_local_image() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn view_image_tool_can_preserve_original_resolution_when_requested_on_gpt5_3_codex()
 -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
@@ -465,7 +465,7 @@ async fn view_image_tool_can_preserve_original_resolution_when_requested_on_gpt5
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn view_image_tool_errors_clearly_for_unsupported_detail_values() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -547,7 +547,7 @@ async fn view_image_tool_errors_clearly_for_unsupported_detail_values() -> anyho
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn view_image_tool_treats_null_detail_as_omitted() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -648,7 +648,7 @@ async fn view_image_tool_treats_null_detail_as_omitted() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn view_image_tool_resizes_when_model_lacks_original_detail_support() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -755,7 +755,7 @@ async fn view_image_tool_resizes_when_model_lacks_original_detail_support() -> a
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn view_image_tool_does_not_force_original_resolution_with_capability_feature_only()
 -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
@@ -862,7 +862,7 @@ async fn view_image_tool_does_not_force_original_resolution_with_capability_feat
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn js_repl_emit_image_attaches_local_image() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -980,7 +980,7 @@ await codex.emitImage(out);
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn js_repl_view_image_requires_explicit_emit() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1083,7 +1083,7 @@ console.log(out.type);
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn view_image_tool_errors_when_path_is_directory() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1157,7 +1157,7 @@ async fn view_image_tool_errors_when_path_is_directory() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn view_image_tool_errors_for_non_image_files() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1238,7 +1238,7 @@ async fn view_image_tool_errors_for_non_image_files() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn view_image_tool_errors_when_file_missing() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1315,7 +1315,7 @@ async fn view_image_tool_errors_when_file_missing() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn view_image_tool_returns_unsupported_message_for_text_only_model() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1431,7 +1431,7 @@ async fn view_image_tool_returns_unsupported_message_for_text_only_model() -> an
 }
 
 #[cfg(not(debug_assertions))]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn replaces_invalid_local_image_after_bad_request() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 

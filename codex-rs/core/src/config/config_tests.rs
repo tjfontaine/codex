@@ -1536,7 +1536,7 @@ fn web_search_mode_for_turn_falls_back_when_live_is_disallowed() -> anyhow::Resu
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn project_profile_overrides_user_profile() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
     let workspace = TempDir::new()?;
@@ -1752,7 +1752,7 @@ fn config_honors_explicit_file_oauth_store_mode() -> std::io::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn managed_config_overrides_oauth_store_mode() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
     let managed_path = codex_home.path().join("managed_config.toml");
@@ -1801,7 +1801,7 @@ async fn managed_config_overrides_oauth_store_mode() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn load_global_mcp_servers_returns_empty_if_missing() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -1811,7 +1811,7 @@ async fn load_global_mcp_servers_returns_empty_if_missing() -> anyhow::Result<()
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn replace_mcp_servers_round_trips_entries() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -1879,7 +1879,7 @@ async fn replace_mcp_servers_round_trips_entries() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn managed_config_wins_over_cli_overrides() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
     let managed_path = codex_home.path().join("managed_config.toml");
@@ -1918,7 +1918,7 @@ async fn managed_config_wins_over_cli_overrides() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn load_global_mcp_servers_accepts_legacy_ms_field() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
     let config_path = codex_home.path().join(CONFIG_TOML_FILE);
@@ -1940,7 +1940,7 @@ startup_timeout_ms = 2500
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn load_global_mcp_servers_rejects_inline_bearer_token() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
     let config_path = codex_home.path().join(CONFIG_TOML_FILE);
@@ -1965,7 +1965,7 @@ bearer_token = "secret"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn replace_mcp_servers_serializes_env_sorted() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -2040,7 +2040,7 @@ ZIG_VAR = "3"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn replace_mcp_servers_serializes_env_vars() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -2091,7 +2091,7 @@ async fn replace_mcp_servers_serializes_env_vars() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn replace_mcp_servers_serializes_cwd() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -2143,7 +2143,7 @@ async fn replace_mcp_servers_serializes_cwd() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn replace_mcp_servers_streamable_http_serializes_bearer_token() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -2206,7 +2206,7 @@ startup_timeout_sec = 2.0
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn replace_mcp_servers_streamable_http_serializes_custom_headers() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -2282,7 +2282,7 @@ X-Auth = "DOCS_AUTH"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn replace_mcp_servers_streamable_http_removes_optional_sections() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -2378,7 +2378,7 @@ url = "https://example.com/mcp"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn replace_mcp_servers_streamable_http_isolates_headers_between_servers() -> anyhow::Result<()>
 {
     let codex_home = TempDir::new()?;
@@ -2488,7 +2488,7 @@ async fn replace_mcp_servers_streamable_http_isolates_headers_between_servers() 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn replace_mcp_servers_serializes_disabled_flag() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -2534,7 +2534,7 @@ async fn replace_mcp_servers_serializes_disabled_flag() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn replace_mcp_servers_serializes_required_flag() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -2580,7 +2580,7 @@ async fn replace_mcp_servers_serializes_required_flag() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn replace_mcp_servers_serializes_tool_filters() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -2631,7 +2631,7 @@ async fn replace_mcp_servers_serializes_tool_filters() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn replace_mcp_servers_streamable_http_serializes_oauth_resource() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -2676,7 +2676,7 @@ async fn replace_mcp_servers_streamable_http_serializes_oauth_resource() -> anyh
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn set_model_updates_defaults() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -2694,7 +2694,7 @@ async fn set_model_updates_defaults() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn set_model_overwrites_existing_model() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
     let config_path = codex_home.path().join(CONFIG_TOML_FILE);
@@ -2732,7 +2732,7 @@ model = "gpt-4.1"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn set_model_updates_profile() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -2758,7 +2758,7 @@ async fn set_model_updates_profile() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn set_model_updates_existing_profile() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
     let config_path = codex_home.path().join(CONFIG_TOML_FILE);
@@ -2806,7 +2806,7 @@ model = "gpt-5.1-codex"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn set_feature_enabled_updates_profile() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -2841,7 +2841,7 @@ async fn set_feature_enabled_updates_profile() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn set_feature_enabled_persists_default_false_feature_disable_in_profile()
 -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
@@ -2883,7 +2883,7 @@ async fn set_feature_enabled_persists_default_false_feature_disable_in_profile()
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn set_feature_enabled_profile_disable_overrides_root_enable() -> anyhow::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -3093,7 +3093,7 @@ fn load_config_rejects_missing_agent_role_config_file() -> std::io::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn agent_role_relative_config_file_resolves_against_config_toml() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
     let role_config_path = codex_home.path().join("agents").join("researcher.toml");
@@ -3142,7 +3142,7 @@ nickname_candidates = ["Hypatia", "Noether"]
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn agent_role_file_metadata_overrides_config_toml_metadata() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
     let role_config_path = codex_home.path().join("agents").join("researcher.toml");
@@ -3193,7 +3193,7 @@ nickname_candidates = ["Noether"]
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn agent_role_file_without_developer_instructions_is_dropped_with_warning()
 -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
@@ -3261,7 +3261,7 @@ model = "gpt-5"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn legacy_agent_role_config_file_allows_missing_developer_instructions() -> std::io::Result<()>
 {
     let codex_home = TempDir::new()?;
@@ -3312,7 +3312,7 @@ config_file = "./agents/researcher.toml"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn agent_role_without_description_after_merge_is_dropped_with_warning() -> std::io::Result<()>
 {
     let codex_home = TempDir::new()?;
@@ -3365,7 +3365,7 @@ description = "Review role"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn discovered_agent_role_file_without_name_is_dropped_with_warning() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
     let repo_root = TempDir::new()?;
@@ -3430,7 +3430,7 @@ developer_instructions = "Review carefully"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn agent_role_file_name_takes_precedence_over_config_key() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
     let role_config_path = codex_home.path().join("agents").join("researcher.toml");
@@ -3475,7 +3475,7 @@ config_file = "./agents/researcher.toml"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn loads_legacy_split_agent_roles_from_config_toml() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
     let researcher_path = codex_home.path().join("agents").join("researcher.toml");
@@ -3565,7 +3565,7 @@ nickname_candidates = ["Atlas"]
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn discovers_multiple_standalone_agent_role_files() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
     let repo_root = TempDir::new()?;
@@ -3695,7 +3695,7 @@ developer_instructions = "Write carefully"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn mixed_legacy_and_standalone_agent_role_sources_merge_with_precedence()
 -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
@@ -3841,7 +3841,7 @@ model = "gpt-5"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn higher_precedence_agent_role_can_inherit_description_from_lower_layer()
 -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
@@ -5346,7 +5346,7 @@ fn test_untrusted_project_gets_unless_trusted_approval_policy() -> anyhow::Resul
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn requirements_disallowing_default_sandbox_falls_back_to_required_default()
 -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
@@ -5370,7 +5370,7 @@ async fn requirements_disallowing_default_sandbox_falls_back_to_required_default
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn explicit_sandbox_mode_falls_back_when_disallowed_by_requirements() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
     std::fs::write(
@@ -5407,7 +5407,7 @@ async fn explicit_sandbox_mode_falls_back_when_disallowed_by_requirements() -> s
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn requirements_web_search_mode_overrides_danger_full_access_default() -> std::io::Result<()>
 {
     let codex_home = TempDir::new()?;
@@ -5442,7 +5442,7 @@ async fn requirements_web_search_mode_overrides_danger_full_access_default() -> 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn requirements_disallowing_default_approval_falls_back_to_required_default()
 -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
@@ -5477,7 +5477,7 @@ trust_level = "untrusted"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn explicit_approval_policy_falls_back_when_disallowed_by_requirements() -> std::io::Result<()>
 {
     let codex_home = TempDir::new()?;
@@ -5505,7 +5505,7 @@ async fn explicit_approval_policy_falls_back_when_disallowed_by_requirements() -
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn feature_requirements_normalize_effective_feature_values() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -5539,7 +5539,7 @@ async fn feature_requirements_normalize_effective_feature_values() -> std::io::R
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn explicit_feature_config_is_normalized_by_requirements() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
     std::fs::write(
@@ -5594,7 +5594,7 @@ fn missing_system_bwrap_warning_matches_system_bwrap_presence() {
     assert!(missing_system_bwrap_warning().is_none());
 }
 
-#[tokio::test]
+#[test]
 async fn approvals_reviewer_defaults_to_manual_only_without_guardian_feature() -> std::io::Result<()>
 {
     let codex_home = TempDir::new()?;
@@ -5609,7 +5609,7 @@ async fn approvals_reviewer_defaults_to_manual_only_without_guardian_feature() -
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn approvals_reviewer_stays_manual_only_when_guardian_feature_is_enabled()
 -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
@@ -5630,7 +5630,7 @@ guardian_approval = true
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn approvals_reviewer_can_be_set_in_config_without_guardian_approval() -> std::io::Result<()>
 {
     let codex_home = TempDir::new()?;
@@ -5650,7 +5650,7 @@ async fn approvals_reviewer_can_be_set_in_config_without_guardian_approval() -> 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn approvals_reviewer_can_be_set_in_profile_without_guardian_approval() -> std::io::Result<()>
 {
     let codex_home = TempDir::new()?;
@@ -5676,7 +5676,7 @@ approvals_reviewer = "guardian_subagent"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn smart_approvals_alias_is_migrated_to_guardian_approval() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
     std::fs::write(
@@ -5707,7 +5707,7 @@ smart_approvals = true
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn smart_approvals_alias_is_migrated_in_profiles() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
     std::fs::write(
@@ -5741,7 +5741,7 @@ smart_approvals = true
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn smart_approvals_alias_migration_preserves_disabled_profile_override() -> std::io::Result<()>
 {
     let codex_home = TempDir::new()?;
@@ -5777,7 +5777,7 @@ smart_approvals = false
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn smart_approvals_alias_migration_preserves_existing_approvals_reviewer()
 -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
@@ -5807,7 +5807,7 @@ smart_approvals = true
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn smart_approvals_alias_migration_does_not_override_canonical_disabled_flag()
 -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
@@ -5836,7 +5836,7 @@ smart_approvals = true
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn feature_requirements_normalize_runtime_feature_mutations() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -5872,7 +5872,7 @@ async fn feature_requirements_normalize_runtime_feature_mutations() -> std::io::
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn feature_requirements_reject_collab_legacy_alias() {
     let codex_home = TempDir::new().expect("tempdir");
 

@@ -1,15 +1,15 @@
 [package]
 name = "codex-debug-client"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [dependencies]
-anyhow.workspace = true
-clap = { workspace = true, features = ["derive"] }
-codex-app-server-protocol.workspace = true
-serde.workspace = true
-serde_json.workspace = true
+anyhow = { version = "1" }
+clap = { version = "4", features = ["derive"] }
+codex-app-server-protocol = { path = "../app-server-protocol" }
+serde = { version = "1" }
+serde_json = { version = "1" }
 
 [dev-dependencies]
-pretty_assertions.workspace = true
+pretty_assertions = { version = "1.4.1" }

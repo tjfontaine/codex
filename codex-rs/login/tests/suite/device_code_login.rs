@@ -113,7 +113,7 @@ fn server_opts(
     opts
 }
 
-#[tokio::test]
+#[test]
 async fn device_code_login_integration_succeeds() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -151,7 +151,7 @@ async fn device_code_login_integration_succeeds() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn device_code_login_rejects_workspace_mismatch() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -189,7 +189,7 @@ async fn device_code_login_rejects_workspace_mismatch() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn device_code_login_integration_handles_usercode_http_failure() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -220,7 +220,7 @@ async fn device_code_login_integration_handles_usercode_http_failure() -> anyhow
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn device_code_login_integration_persists_without_api_key_on_exchange_failure()
 -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
@@ -263,7 +263,7 @@ async fn device_code_login_integration_persists_without_api_key_on_exchange_fail
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn device_code_login_integration_handles_error_payload() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 

@@ -115,7 +115,7 @@ fn head_tail_buffer_default_preserves_prefix_and_suffix() {
     assert!(rendered.ends_with(b"bc"));
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn unified_exec_persists_across_requests() -> anyhow::Result<()> {
     skip_if_sandbox!(Ok(()));
 
@@ -147,7 +147,7 @@ async fn unified_exec_persists_across_requests() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn multi_unified_exec_sessions() -> anyhow::Result<()> {
     skip_if_sandbox!(Ok(()));
 
@@ -190,7 +190,7 @@ async fn multi_unified_exec_sessions() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn unified_exec_timeouts() -> anyhow::Result<()> {
     skip_if_sandbox!(Ok(()));
 
@@ -233,7 +233,7 @@ async fn unified_exec_timeouts() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn unified_exec_pause_blocks_yield_timeout() -> anyhow::Result<()> {
     skip_if_sandbox!(Ok(()));
 
@@ -265,7 +265,7 @@ async fn unified_exec_pause_blocks_yield_timeout() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 #[ignore] // Ignored while we have a better way to test this.
 async fn requests_with_large_timeout_are_capped() -> anyhow::Result<()> {
     let (session, turn) = test_session_and_turn().await;
@@ -278,7 +278,7 @@ async fn requests_with_large_timeout_are_capped() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 #[ignore] // Ignored while we have a better way to test this.
 async fn completed_commands_do_not_persist_sessions() -> anyhow::Result<()> {
     let (session, turn) = test_session_and_turn().await;
@@ -304,7 +304,7 @@ async fn completed_commands_do_not_persist_sessions() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn reusing_completed_process_returns_unknown_process() -> anyhow::Result<()> {
     skip_if_sandbox!(Ok(()));
 

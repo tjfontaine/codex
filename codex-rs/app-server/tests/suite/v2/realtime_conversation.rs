@@ -40,7 +40,7 @@ use tokio::time::timeout;
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(10);
 const STARTUP_CONTEXT_HEADER: &str = "Startup context from Codex.";
 
-#[tokio::test]
+#[test]
 async fn realtime_conversation_streams_v2_notifications() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -287,7 +287,7 @@ async fn realtime_conversation_streams_v2_notifications() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn realtime_conversation_stop_emits_closed_notification() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -366,7 +366,7 @@ async fn realtime_conversation_stop_emits_closed_notification() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn realtime_conversation_requires_feature_flag() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

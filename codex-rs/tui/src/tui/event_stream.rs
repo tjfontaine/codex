@@ -29,9 +29,38 @@ use crossterm::event::Event;
 use tokio::sync::broadcast;
 use tokio::sync::watch;
 use tokio_stream::Stream;
-use tokio_stream::wrappers::BroadcastStream;
-use tokio_stream::wrappers::WatchStream;
-use tokio_stream::wrappers::errors::BroadcastStreamRecvError;
+/// Thin WatchStream wrapper for our shim watch::Receiver.
+struct WatchStream<T: Clone>(tokio::sync::watch::Receiver<T>);
+impl<T: Clone> WatchStream<T> {
+    fn from_changes(rx: tokio::sync::watch::Receiver<T>) -> Self { Self(rx) }
+}
+impl<T: Clone + Unpin> WatchStream<T> {
+    fn poll_next(self: std::pin::Pin<&mut Self>, cx: &mut std::task::Context<'_>) -> std::task::Poll<Option<T>> {
+        let this = self.get_mut();
+        match this.0.poll_changed(cx.waker()) {
+            Ok(true) => Poll::Ready(Some(this.0.borrow_and_update().clone())),
+            Ok(false) => Poll::Pending,
+            Err(_) => Poll::Ready(None),
+        }
+    }
+}
+/// Thin BroadcastStream wrapper for our shim broadcast::Receiver.
+struct BroadcastStream<T: Clone>(tokio::sync::broadcast::Receiver<T>);
+impl<T: Clone> BroadcastStream<T> {
+    fn new(rx: tokio::sync::broadcast::Receiver<T>) -> Self { Self(rx) }
+}
+#[derive(Debug)]
+enum BroadcastStreamRecvError { Lagged(u64) }
+impl<T: Clone + Unpin> BroadcastStream<T> {
+    fn poll_next(self: std::pin::Pin<&mut Self>, cx: &mut std::task::Context<'_>) -> std::task::Poll<Option<Result<T, BroadcastStreamRecvError>>> {
+        match self.get_mut().0.poll_recv(cx.waker()) {
+            Ok(val) => Poll::Ready(Some(Ok(val))),
+            Err(tokio::sync::broadcast::error::TryRecvError::Lagged(n)) => Poll::Ready(Some(Err(BroadcastStreamRecvError::Lagged(n)))),
+            Err(tokio::sync::broadcast::error::TryRecvError::Empty) => Poll::Pending,
+            Err(tokio::sync::broadcast::error::TryRecvError::Closed) => Poll::Ready(None),
+        }
+    }
+}
 
 use super::TuiEvent;
 
@@ -388,7 +417,7 @@ mod tests {
         (broker, handle, draw_tx, draw_rx, terminal_focused)
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn key_event_skips_unmapped() {
         let (broker, handle, _draw_tx, draw_rx, terminal_focused) = setup();
         let mut stream = make_stream(broker, draw_rx, terminal_focused);
@@ -408,7 +437,7 @@ mod tests {
         }
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn draw_and_key_events_yield_both() {
         let (broker, handle, draw_tx, draw_rx, terminal_focused) = setup();
         let mut stream = make_stream(broker, draw_rx, terminal_focused);
@@ -438,7 +467,7 @@ mod tests {
         assert!(saw_draw && saw_key, "expected both draw and key events");
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn lagged_draw_maps_to_draw() {
         let (broker, _handle, draw_tx, draw_rx, terminal_focused) = setup();
         let mut stream = make_stream(broker, draw_rx.resubscribe(), terminal_focused);
@@ -451,7 +480,7 @@ mod tests {
         assert!(matches!(first, Some(TuiEvent::Draw)));
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn error_or_eof_ends_stream() {
         let (broker, handle, _draw_tx, draw_rx, terminal_focused) = setup();
         let mut stream = make_stream(broker, draw_rx, terminal_focused);
@@ -462,7 +491,7 @@ mod tests {
         assert!(next.is_none());
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn resume_wakes_paused_stream() {
         let (broker, handle, _draw_tx, draw_rx, terminal_focused) = setup();
         let mut stream = make_stream(broker.clone(), draw_rx, terminal_focused);
@@ -486,7 +515,7 @@ mod tests {
         }
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn resume_wakes_pending_stream() {
         let (broker, handle, _draw_tx, draw_rx, terminal_focused) = setup();
         let mut stream = make_stream(broker.clone(), draw_rx, terminal_focused);

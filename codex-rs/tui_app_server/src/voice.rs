@@ -212,7 +212,7 @@ pub fn transcribe_async(
     context: Option<String>,
     tx: AppEventSender,
 ) {
-    std::thread::spawn(move || {
+    tokio::thread_spawn::spawn(move || {
         // Enforce minimum duration to avoid garbage outputs.
         const MIN_DURATION_SECONDS: f32 = 1.0;
         let duration_seconds = clip_duration_seconds(&audio);

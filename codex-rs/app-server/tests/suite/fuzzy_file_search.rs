@@ -209,7 +209,7 @@ async fn assert_no_session_updates_for(
     }
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn test_fuzzy_file_search_sorts_and_includes_indices() -> Result<()> {
     // Prepare a temporary Codex home and a separate root with test files.
     let codex_home = TempDir::new()?;
@@ -285,7 +285,7 @@ async fn test_fuzzy_file_search_sorts_and_includes_indices() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn test_fuzzy_file_search_accepts_cancellation_token() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(codex_home.path())?;
@@ -330,7 +330,7 @@ async fn test_fuzzy_file_search_accepts_cancellation_token() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn test_fuzzy_file_search_session_streams_updates() -> Result<()> {
     let codex_home = TempDir::new()?;
     let root = TempDir::new()?;
@@ -358,7 +358,7 @@ async fn test_fuzzy_file_search_session_streams_updates() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn test_fuzzy_file_search_session_no_updates_after_complete_until_query_edited() -> Result<()>
 {
     let codex_home = TempDir::new()?;
@@ -385,7 +385,7 @@ async fn test_fuzzy_file_search_session_no_updates_after_complete_until_query_ed
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn test_fuzzy_file_search_session_update_before_start_errors() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mut mcp = initialized_mcp(&codex_home).await?;
@@ -394,7 +394,7 @@ async fn test_fuzzy_file_search_session_update_before_start_errors() -> Result<(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn test_fuzzy_file_search_session_update_works_without_waiting_for_start_response()
 -> Result<()> {
     let codex_home = TempDir::new()?;
@@ -432,7 +432,7 @@ async fn test_fuzzy_file_search_session_update_works_without_waiting_for_start_r
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn test_fuzzy_file_search_session_multiple_query_updates_work() -> Result<()> {
     let codex_home = TempDir::new()?;
     let root = TempDir::new()?;
@@ -466,7 +466,7 @@ async fn test_fuzzy_file_search_session_multiple_query_updates_work() -> Result<
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn test_fuzzy_file_search_session_update_after_stop_fails() -> Result<()> {
     let codex_home = TempDir::new()?;
     let root = TempDir::new()?;
@@ -484,7 +484,7 @@ async fn test_fuzzy_file_search_session_update_after_stop_fails() -> Result<()> 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn test_fuzzy_file_search_session_stops_sending_updates_after_stop() -> Result<()> {
     let codex_home = TempDir::new()?;
     let root = TempDir::new()?;
@@ -510,7 +510,7 @@ async fn test_fuzzy_file_search_session_stops_sending_updates_after_stop() -> Re
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn test_fuzzy_file_search_two_sessions_are_independent() -> Result<()> {
     let codex_home = TempDir::new()?;
     let root_a = TempDir::new()?;
@@ -549,7 +549,7 @@ async fn test_fuzzy_file_search_two_sessions_are_independent() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn test_fuzzy_file_search_query_cleared_sends_blank_snapshot() -> Result<()> {
     let codex_home = TempDir::new()?;
     let root = TempDir::new()?;

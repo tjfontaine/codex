@@ -175,7 +175,7 @@ use codex_app_server_protocol::WindowsSandboxSetupStartResponse;
 use codex_app_server_protocol::build_turns_from_rollout_items;
 use codex_arg0::Arg0DispatchPaths;
 use codex_backend_client::Client as BackendClient;
-use codex_chatgpt::connectors;
+use codex_core::connectors;
 use codex_cloud_requirements::cloud_requirements_loader;
 use codex_core::AuthManager;
 use codex_core::CodexAuth;
@@ -8719,7 +8719,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn read_summary_from_rollout_returns_empty_preview_when_no_user_message() -> Result<()> {
         use codex_protocol::protocol::RolloutItem;
         use codex_protocol::protocol::RolloutLine;
@@ -8775,7 +8775,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn read_summary_from_rollout_preserves_agent_nickname() -> Result<()> {
         use codex_protocol::protocol::RolloutItem;
         use codex_protocol::protocol::RolloutLine;
@@ -8822,7 +8822,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn aborting_pending_request_clears_pending_state() -> Result<()> {
         let thread_id = ThreadId::from_string("bfd12a78-5900-467b-9bc5-d3d35df08191")?;
         let connection_id = ConnectionId(7);
@@ -8917,7 +8917,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn removing_thread_state_clears_listener_and_active_turn_history() -> Result<()> {
         let manager = ThreadStateManager::new();
         let thread_id = ThreadId::from_string("ad7f0408-99b8-4f6e-a46f-bd0eec433370")?;
@@ -8958,7 +8958,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn removing_auto_attached_connection_preserves_listener_for_other_connections()
     -> Result<()> {
         let manager = ThreadStateManager::new();
@@ -8996,7 +8996,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn closed_connection_cannot_be_reintroduced_by_auto_subscribe() -> Result<()> {
         let manager = ThreadStateManager::new();
         let thread_id = ThreadId::from_string("ad7f0408-99b8-4f6e-a46f-bd0eec433370")?;

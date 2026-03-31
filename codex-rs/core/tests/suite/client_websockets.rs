@@ -92,7 +92,7 @@ struct WebsocketTestHarness {
     session_telemetry: SessionTelemetry,
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_streams_request() {
     skip_if_no_network!();
 
@@ -129,7 +129,7 @@ async fn responses_websocket_streams_request() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_streams_without_feature_flag_when_provider_supports_websockets() {
     skip_if_no_network!();
 
@@ -151,7 +151,7 @@ async fn responses_websocket_streams_without_feature_flag_when_provider_supports
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_reuses_connection_with_per_turn_trace_payloads() {
     skip_if_no_network!();
 
@@ -219,7 +219,7 @@ async fn responses_websocket_reuses_connection_with_per_turn_trace_payloads() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_preconnect_does_not_replace_turn_trace_payload() {
     skip_if_no_network!();
 
@@ -257,7 +257,7 @@ async fn responses_websocket_preconnect_does_not_replace_turn_trace_payload() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_preconnect_reuses_connection() {
     skip_if_no_network!();
 
@@ -282,7 +282,7 @@ async fn responses_websocket_preconnect_reuses_connection() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_request_prewarm_reuses_connection() {
     skip_if_no_network!();
 
@@ -331,7 +331,7 @@ async fn responses_websocket_request_prewarm_reuses_connection() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_reuses_connection_after_session_drop() {
     skip_if_no_network!();
 
@@ -359,7 +359,7 @@ async fn responses_websocket_reuses_connection_after_session_drop() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_preconnect_is_reused_even_with_header_changes() {
     skip_if_no_network!();
 
@@ -401,7 +401,7 @@ async fn responses_websocket_preconnect_is_reused_even_with_header_changes() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_request_prewarm_is_reused_even_with_header_changes() {
     skip_if_no_network!();
 
@@ -466,7 +466,7 @@ async fn responses_websocket_request_prewarm_is_reused_even_with_header_changes(
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_prewarm_uses_v2_when_provider_supports_websockets() {
     skip_if_no_network!();
 
@@ -523,7 +523,7 @@ async fn responses_websocket_prewarm_uses_v2_when_provider_supports_websockets()
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_preconnect_runs_when_only_v2_feature_enabled() {
     skip_if_no_network!();
 
@@ -562,7 +562,7 @@ async fn responses_websocket_preconnect_runs_when_only_v2_feature_enabled() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_v2_requests_use_v2_when_provider_supports_websockets() {
     skip_if_no_network!();
 
@@ -611,7 +611,7 @@ async fn responses_websocket_v2_requests_use_v2_when_provider_supports_websocket
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_v2_incremental_requests_are_reused_across_turns() {
     skip_if_no_network!();
 
@@ -655,7 +655,7 @@ async fn responses_websocket_v2_incremental_requests_are_reused_across_turns() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_v2_wins_when_both_features_enabled() {
     skip_if_no_network!();
 
@@ -704,7 +704,7 @@ async fn responses_websocket_v2_wins_when_both_features_enabled() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 #[traced_test]
 async fn responses_websocket_emits_websocket_telemetry_events() {
     skip_if_no_network!();
@@ -736,7 +736,7 @@ async fn responses_websocket_emits_websocket_telemetry_events() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_includes_timing_metrics_header_when_runtime_metrics_enabled() {
     skip_if_no_network!();
 
@@ -785,7 +785,7 @@ async fn responses_websocket_includes_timing_metrics_header_when_runtime_metrics
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_omits_timing_metrics_header_when_runtime_metrics_disabled() {
     skip_if_no_network!();
 
@@ -810,7 +810,7 @@ async fn responses_websocket_omits_timing_metrics_header_when_runtime_metrics_di
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_emits_reasoning_included_event() {
     skip_if_no_network!();
 
@@ -854,7 +854,7 @@ async fn responses_websocket_emits_reasoning_included_event() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_emits_rate_limit_events() {
     skip_if_no_network!();
 
@@ -948,7 +948,7 @@ async fn responses_websocket_emits_rate_limit_events() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_usage_limit_error_emits_rate_limit_event() {
     skip_if_no_network!();
 
@@ -1043,7 +1043,7 @@ async fn responses_websocket_usage_limit_error_emits_rate_limit_event() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_invalid_request_error_with_status_is_forwarded() {
     skip_if_no_network!();
 
@@ -1101,7 +1101,7 @@ async fn responses_websocket_invalid_request_error_with_status_is_forwarded() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_connection_limit_error_reconnects_and_completes() {
     skip_if_no_network!();
 
@@ -1139,7 +1139,7 @@ async fn responses_websocket_connection_limit_error_reconnects_and_completes() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_uses_incremental_create_on_prefix() {
     skip_if_no_network!();
 
@@ -1184,7 +1184,7 @@ async fn responses_websocket_uses_incremental_create_on_prefix() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_forwards_turn_metadata_on_initial_and_incremental_create() {
     skip_if_no_network!();
 
@@ -1258,7 +1258,7 @@ async fn responses_websocket_forwards_turn_metadata_on_initial_and_incremental_c
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_uses_previous_response_id_when_prefix_after_completed() {
     skip_if_no_network!();
 
@@ -1298,7 +1298,7 @@ async fn responses_websocket_uses_previous_response_id_when_prefix_after_complet
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_creates_on_non_prefix() {
     skip_if_no_network!();
 
@@ -1331,7 +1331,7 @@ async fn responses_websocket_creates_on_non_prefix() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_creates_when_non_input_request_fields_change() {
     skip_if_no_network!();
 
@@ -1367,7 +1367,7 @@ async fn responses_websocket_creates_when_non_input_request_fields_change() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_v2_creates_with_previous_response_id_on_prefix() {
     skip_if_no_network!();
 
@@ -1409,7 +1409,7 @@ async fn responses_websocket_v2_creates_with_previous_response_id_on_prefix() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_v2_creates_without_previous_response_id_when_non_input_fields_change()
 {
     skip_if_no_network!();
@@ -1446,7 +1446,7 @@ async fn responses_websocket_v2_creates_without_previous_response_id_when_non_in
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_v2_after_error_uses_full_create_without_previous_response_id() {
     skip_if_no_network!();
 
@@ -1536,7 +1536,7 @@ async fn responses_websocket_v2_after_error_uses_full_create_without_previous_re
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_v2_surfaces_terminal_error_without_close_handshake() {
     skip_if_no_network!();
 
@@ -1595,7 +1595,7 @@ async fn responses_websocket_v2_surfaces_terminal_error_without_close_handshake(
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_websocket_v2_sets_openai_beta_header() {
     skip_if_no_network!();
 

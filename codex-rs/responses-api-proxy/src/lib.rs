@@ -100,7 +100,7 @@ pub fn run_main(args: Args) -> Result<()> {
     for request in server.incoming_requests() {
         let client = client.clone();
         let forward_config = forward_config.clone();
-        std::thread::spawn(move || {
+        tokio::thread_spawn::spawn(move || {
             if http_shutdown && request.method() == &Method::Get && request.url() == "/shutdown" {
                 let _ = request.respond(Response::new_empty(StatusCode(200)));
                 std::process::exit(0);

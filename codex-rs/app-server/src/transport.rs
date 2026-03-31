@@ -769,7 +769,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn enqueue_incoming_request_returns_overload_error_when_queue_is_full() {
         let connection_id = ConnectionId(42);
         let (transport_event_tx, mut transport_event_rx) = mpsc::channel(1);
@@ -830,7 +830,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn enqueue_incoming_response_waits_instead_of_dropping_when_queue_is_full() {
         let connection_id = ConnectionId(42);
         let (transport_event_tx, mut transport_event_rx) = mpsc::channel(1);
@@ -901,7 +901,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn enqueue_incoming_request_does_not_block_when_writer_queue_is_full() {
         let connection_id = ConnectionId(42);
         let (transport_event_tx, _transport_event_rx) = mpsc::channel(1);
@@ -953,7 +953,7 @@ mod tests {
         assert_eq!(queued_json, json!({ "method": "queued" }));
     }
 
-    #[tokio::test]
+    #[test]
     async fn to_connection_notification_respects_opt_out_filters() {
         let connection_id = ConnectionId(7);
         let (writer_tx, mut writer_rx) = mpsc::channel(1);
@@ -995,7 +995,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn to_connection_legacy_notifications_are_dropped_for_external_clients() {
         let connection_id = ConnectionId(10);
         let (writer_tx, mut writer_rx) = mpsc::channel(1);
@@ -1033,7 +1033,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn to_connection_legacy_notifications_are_preserved_for_in_process_clients() {
         let connection_id = ConnectionId(11);
         let (writer_tx, mut writer_rx) = mpsc::channel(1);
@@ -1078,7 +1078,7 @@ mod tests {
         ));
     }
 
-    #[tokio::test]
+    #[test]
     async fn command_execution_request_approval_strips_experimental_fields_without_capability() {
         let connection_id = ConnectionId(8);
         let (writer_tx, mut writer_rx) = mpsc::channel(1);
@@ -1145,7 +1145,7 @@ mod tests {
         assert_eq!(json["params"].get("skillMetadata"), None);
     }
 
-    #[tokio::test]
+    #[test]
     async fn command_execution_request_approval_keeps_experimental_fields_with_capability() {
         let connection_id = ConnectionId(9);
         let (writer_tx, mut writer_rx) = mpsc::channel(1);
@@ -1228,7 +1228,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn broadcast_does_not_block_on_slow_connection() {
         let fast_connection_id = ConnectionId(1);
         let slow_connection_id = ConnectionId(2);
@@ -1307,7 +1307,7 @@ mod tests {
         ));
     }
 
-    #[tokio::test]
+    #[test]
     async fn to_connection_stdio_waits_instead_of_disconnecting_when_writer_queue_is_full() {
         let connection_id = ConnectionId(3);
         let (writer_tx, mut writer_rx) = mpsc::channel(1);

@@ -53,7 +53,7 @@ use wiremock::MockServer;
 
 const REMOTE_MODEL_SLUG: &str = "codex-test";
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn remote_models_get_model_info_uses_longest_matching_prefix() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -113,7 +113,7 @@ async fn remote_models_get_model_info_uses_longest_matching_prefix() -> Result<(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn remote_models_long_model_slug_is_sent_with_high_reasoning() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -202,7 +202,7 @@ async fn remote_models_long_model_slug_is_sent_with_high_reasoning() -> Result<(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn namespaced_model_slug_uses_catalog_metadata_without_fallback_warning() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -266,7 +266,7 @@ async fn namespaced_model_slug_uses_catalog_metadata_without_fallback_warning() 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn remote_models_remote_model_uses_unified_exec() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -417,7 +417,7 @@ async fn remote_models_remote_model_uses_unified_exec() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn remote_models_truncation_policy_without_override_preserves_remote() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -461,7 +461,7 @@ async fn remote_models_truncation_policy_without_override_preserves_remote() -> 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn remote_models_truncation_policy_with_tool_output_override() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -506,7 +506,7 @@ async fn remote_models_truncation_policy_with_tool_output_override() -> Result<(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn remote_models_apply_remote_base_instructions() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -632,7 +632,7 @@ async fn remote_models_apply_remote_base_instructions() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn remote_models_do_not_append_removed_builtin_presets() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -689,7 +689,7 @@ async fn remote_models_do_not_append_removed_builtin_presets() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn remote_models_merge_adds_new_high_priority_first() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -733,7 +733,7 @@ async fn remote_models_merge_adds_new_high_priority_first() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn remote_models_merge_replaces_overlapping_model() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -787,7 +787,7 @@ async fn remote_models_merge_replaces_overlapping_model() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn remote_models_merge_preserves_bundled_models_on_empty_response() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -820,7 +820,7 @@ async fn remote_models_merge_preserves_bundled_models_on_empty_response() -> Res
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn remote_models_request_times_out_after_5s() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -887,7 +887,7 @@ async fn remote_models_request_times_out_after_5s() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn remote_models_hide_picker_only_models() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));

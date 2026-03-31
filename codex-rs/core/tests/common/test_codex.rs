@@ -225,7 +225,7 @@ fn wait_for_remote_listen_url(container_name: &str, stdout_path: &str) -> Result
                 "timed out waiting for remote exec-server listen URL in container `{container_name}` after {REMOTE_EXEC_SERVER_START_TIMEOUT:?}"
             ));
         }
-        std::thread::sleep(REMOTE_EXEC_SERVER_POLL_INTERVAL);
+        tokio::thread_spawn::sleep(REMOTE_EXEC_SERVER_POLL_INTERVAL);
     }
 }
 

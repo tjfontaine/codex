@@ -647,7 +647,7 @@ host_executable(name = "git", paths = ["{allowed_git_literal}"])
 }
 
 #[cfg(target_os = "macos")]
-#[tokio::test]
+#[test]
 async fn prepare_escalated_exec_turn_default_preserves_macos_seatbelt_extensions() {
     let cwd = AbsolutePathBuf::from_absolute_path(std::env::temp_dir()).unwrap();
     let executor = CoreShellCommandExecutor {
@@ -699,7 +699,7 @@ async fn prepare_escalated_exec_turn_default_preserves_macos_seatbelt_extensions
 }
 
 #[cfg(target_os = "macos")]
-#[tokio::test]
+#[test]
 async fn prepare_escalated_exec_permissions_preserve_macos_seatbelt_extensions() {
     let cwd = AbsolutePathBuf::from_absolute_path(std::env::temp_dir()).unwrap();
     let executor = CoreShellCommandExecutor {
@@ -773,7 +773,7 @@ async fn prepare_escalated_exec_permissions_preserve_macos_seatbelt_extensions()
 }
 
 #[cfg(target_os = "macos")]
-#[tokio::test]
+#[test]
 async fn prepare_escalated_exec_permission_profile_unions_turn_and_requested_macos_extensions() {
     let cwd = AbsolutePathBuf::from_absolute_path(std::env::temp_dir()).unwrap();
     let sandbox_policy = SandboxPolicy::new_read_only_policy();

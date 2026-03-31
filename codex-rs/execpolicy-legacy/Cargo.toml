@@ -1,8 +1,8 @@
 [package]
 name = "codex-execpolicy-legacy"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 description = "Legacy exec policy engine for validating proposed exec calls."
 
 [[bin]]
@@ -13,23 +13,19 @@ path = "src/main.rs"
 name = "codex_execpolicy_legacy"
 path = "src/lib.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-allocative = { workspace = true }
-anyhow = { workspace = true }
-clap = { workspace = true, features = ["derive"] }
-derive_more = { workspace = true, features = ["display"] }
-env_logger = { workspace = true }
-log = { workspace = true }
-multimap = { workspace = true }
-path-absolutize = { workspace = true }
-regex-lite = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-serde_with = { workspace = true, features = ["macros"] }
-starlark = { workspace = true }
+allocative = { version = "0.3.3" }
+anyhow = { version = "1" }
+clap = { version = "4", features = ["derive"] }
+derive_more = { version = "2", features = ["display"] }
+env_logger = { version = "0.11.9" }
+log = { version = "0.4" }
+multimap = { version = "0.10.0" }
+regex-lite = { version = "0.1.8" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+serde_with = { version = "3.17", features = ["macros"] }
+starlark = { version = "0.13.0" }
 
 [dev-dependencies]
-tempfile = { workspace = true }
+tempfile = { version = "3.23.0" }

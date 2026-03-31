@@ -350,7 +350,7 @@ fn spawn_input_loop(
     process_handle: Arc<StdMutex<Option<HANDLE>>>,
     log_dir: Option<PathBuf>,
 ) -> std::thread::JoinHandle<()> {
-    std::thread::spawn(move || {
+    tokio::thread_spawn::spawn(move || {
         loop {
             let msg = match read_frame(&mut reader) {
                 Ok(Some(v)) => v,

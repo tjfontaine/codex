@@ -58,7 +58,7 @@ fn absolute_path(path: std::path::PathBuf) -> AbsolutePathBuf {
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_get_metadata_returns_expected_fields(use_remote: bool) -> Result<()> {
     let context = create_file_system_context(use_remote).await?;
     let file_system = context.file_system;
@@ -80,7 +80,7 @@ async fn file_system_get_metadata_returns_expected_fields(use_remote: bool) -> R
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_methods_cover_surface_area(use_remote: bool) -> Result<()> {
     let context = create_file_system_context(use_remote).await?;
     let file_system = context.file_system;
@@ -183,7 +183,7 @@ async fn file_system_methods_cover_surface_area(use_remote: bool) -> Result<()> 
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_copy_rejects_directory_without_recursive(use_remote: bool) -> Result<()> {
     let context = create_file_system_context(use_remote).await?;
     let file_system = context.file_system;
@@ -214,7 +214,7 @@ async fn file_system_copy_rejects_directory_without_recursive(use_remote: bool) 
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_copy_rejects_copying_directory_into_descendant(
     use_remote: bool,
 ) -> Result<()> {
@@ -247,7 +247,7 @@ async fn file_system_copy_rejects_copying_directory_into_descendant(
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_copy_preserves_symlinks_in_recursive_copy(use_remote: bool) -> Result<()> {
     let context = create_file_system_context(use_remote).await?;
     let file_system = context.file_system;
@@ -281,7 +281,7 @@ async fn file_system_copy_preserves_symlinks_in_recursive_copy(use_remote: bool)
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_copy_ignores_unknown_special_files_in_recursive_copy(
     use_remote: bool,
 ) -> Result<()> {
@@ -324,7 +324,7 @@ async fn file_system_copy_ignores_unknown_special_files_in_recursive_copy(
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_copy_rejects_standalone_fifo_source(use_remote: bool) -> Result<()> {
     let context = create_file_system_context(use_remote).await?;
     let file_system = context.file_system;

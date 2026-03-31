@@ -26,7 +26,7 @@ fn write_skill(root: &TempDir, name: &str) -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn skills_list_includes_skills_from_per_cwd_extra_user_roots() -> Result<()> {
     let codex_home = TempDir::new()?;
     let cwd = TempDir::new()?;
@@ -64,7 +64,7 @@ async fn skills_list_includes_skills_from_per_cwd_extra_user_roots() -> Result<(
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn skills_list_rejects_relative_extra_user_roots() -> Result<()> {
     let codex_home = TempDir::new()?;
     let cwd = TempDir::new()?;
@@ -98,7 +98,7 @@ async fn skills_list_rejects_relative_extra_user_roots() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn skills_list_ignores_per_cwd_extra_roots_for_unknown_cwd() -> Result<()> {
     let codex_home = TempDir::new()?;
     let requested_cwd = TempDir::new()?;
@@ -137,7 +137,7 @@ async fn skills_list_ignores_per_cwd_extra_roots_for_unknown_cwd() -> Result<()>
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn skills_list_uses_cached_result_until_force_reload() -> Result<()> {
     let codex_home = TempDir::new()?;
     let cwd = TempDir::new()?;
@@ -219,7 +219,7 @@ async fn skills_list_uses_cached_result_until_force_reload() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn skills_changed_notification_is_emitted_after_skill_change() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_skill(&codex_home, "demo")?;

@@ -14,7 +14,7 @@ use serde_json::json;
 use std::sync::Arc;
 use tempfile::tempdir;
 
-#[tokio::test]
+#[test]
 async fn refresh_without_id_token() {
     let codex_home = tempdir().unwrap();
     let fake_jwt = write_auth_file(
@@ -83,7 +83,7 @@ fn missing_auth_json_returns_none() {
     assert_eq!(auth, None);
 }
 
-#[tokio::test]
+#[test]
 #[serial(codex_api_key)]
 async fn pro_account_with_no_api_key_uses_chatgpt_auth() {
     let codex_home = tempdir().unwrap();
@@ -133,7 +133,7 @@ async fn pro_account_with_no_api_key_uses_chatgpt_auth() {
     );
 }
 
-#[tokio::test]
+#[test]
 #[serial(codex_api_key)]
 async fn loads_api_key_from_auth_json() {
     let dir = tempdir().unwrap();
@@ -298,7 +298,7 @@ impl Drop for EnvVarGuard {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn enforce_login_restrictions_logs_out_for_method_mismatch() {
     let codex_home = tempdir().unwrap();
     login_with_api_key(codex_home.path(), "sk-test", AuthCredentialsStoreMode::File)
@@ -315,7 +315,7 @@ async fn enforce_login_restrictions_logs_out_for_method_mismatch() {
     );
 }
 
-#[tokio::test]
+#[test]
 #[serial(codex_api_key)]
 async fn enforce_login_restrictions_logs_out_for_workspace_mismatch() {
     let codex_home = tempdir().unwrap();
@@ -340,7 +340,7 @@ async fn enforce_login_restrictions_logs_out_for_workspace_mismatch() {
     );
 }
 
-#[tokio::test]
+#[test]
 #[serial(codex_api_key)]
 async fn enforce_login_restrictions_allows_matching_workspace() {
     let codex_home = tempdir().unwrap();
@@ -363,7 +363,7 @@ async fn enforce_login_restrictions_allows_matching_workspace() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn enforce_login_restrictions_allows_api_key_if_login_method_not_set_but_forced_chatgpt_workspace_id_is_set()
  {
     let codex_home = tempdir().unwrap();
@@ -379,7 +379,7 @@ async fn enforce_login_restrictions_allows_api_key_if_login_method_not_set_but_f
     );
 }
 
-#[tokio::test]
+#[test]
 #[serial(codex_api_key)]
 async fn enforce_login_restrictions_blocks_env_api_key_when_chatgpt_required() {
     let _guard = EnvVarGuard::set(CODEX_API_KEY_ENV_VAR, "sk-env");

@@ -1,3 +1,4 @@
+#![allow(unused_imports, dead_code, unused_variables, unreachable_code)]
 use crossbeam_channel::Receiver;
 use crossbeam_channel::Sender;
 use crossbeam_channel::after;
@@ -161,6 +162,11 @@ pub fn create_session(
     reporter: Arc<dyn SessionReporter>,
     cancel_flag: Option<Arc<AtomicBool>>,
 ) -> anyhow::Result<FileSearchSession> {
+    #[cfg(target_arch = "wasm32")]
+    {
+        let _ = (&search_directories, &options, &reporter, &cancel_flag);
+        anyhow::bail!("File search is not available in the browser (requires OS threads)");
+    }
     let FileSearchOptions {
         limit,
         exclude,
@@ -202,10 +208,10 @@ pub fn create_session(
     });
 
     let matcher_inner = inner.clone();
-    thread::spawn(move || matcher_worker(matcher_inner, work_rx, nucleo));
+    tokio::thread_spawn::spawn(move || matcher_worker(matcher_inner, work_rx, nucleo));
 
     let walker_inner = inner.clone();
-    thread::spawn(move || walker_worker(walker_inner, override_matcher, injector));
+    tokio::thread_spawn::spawn(move || walker_worker(walker_inner, override_matcher, injector));
 
     Ok(FileSearchSession { inner })
 }
@@ -800,10 +806,10 @@ mod tests {
         .expect("session");
 
         session.update_query("file-00");
-        thread::sleep(Duration::from_millis(20));
+        tokio::thread_spawn::sleep(Duration::from_millis(20));
         let first_snapshot = reporter.snapshot();
         session.update_query("file-01");
-        thread::sleep(Duration::from_millis(20));
+        tokio::thread_spawn::sleep(Duration::from_millis(20));
         let second_snapshot = reporter.snapshot();
         let _ = reporter.wait_for_complete(Duration::from_secs(5));
         let completed_snapshot = reporter.snapshot();
@@ -918,7 +924,7 @@ mod tests {
         session_a.update_query("file-0");
         session_b.update_query("file-1");
 
-        thread::sleep(Duration::from_millis(5));
+        tokio::thread_spawn::sleep(Duration::from_millis(5));
         drop(session_a);
 
         let completed = reporter_b.wait_for_complete(Duration::from_secs(5));
@@ -1012,7 +1018,7 @@ mod tests {
         };
         let (tx, rx) = std::sync::mpsc::channel();
 
-        let handle = thread::spawn(move || {
+        let handle = tokio::thread_spawn::spawn(move || {
             let result = run("file-", vec![search_dir], options, Some(cancel_flag));
             let _ = tx.send(result);
         });

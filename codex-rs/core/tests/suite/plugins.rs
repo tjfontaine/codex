@@ -184,7 +184,7 @@ fn tool_description(body: &serde_json::Value, tool_name: &str) -> Option<String>
         })
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn capability_sections_render_in_developer_message_in_order() -> Result<()> {
     skip_if_no_network!(Ok(()));
     let server = start_mock_server().await;
@@ -254,7 +254,7 @@ async fn capability_sections_render_in_developer_message_in_order() -> Result<()
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn explicit_plugin_mentions_inject_plugin_guidance() -> Result<()> {
     skip_if_no_network!(Ok(()));
     let server = start_mock_server().await;
@@ -339,7 +339,7 @@ async fn explicit_plugin_mentions_inject_plugin_guidance() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn explicit_plugin_mentions_track_plugin_used_analytics() -> Result<()> {
     skip_if_no_network!(Ok(()));
     let server = start_mock_server().await;
@@ -403,7 +403,7 @@ async fn explicit_plugin_mentions_track_plugin_used_analytics() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+#[test]
 async fn plugin_mcp_tools_are_listed() -> Result<()> {
     skip_if_no_network!(Ok(()));
     let server = start_mock_server().await;

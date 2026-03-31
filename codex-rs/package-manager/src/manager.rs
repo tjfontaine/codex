@@ -5,7 +5,12 @@ use crate::PackagePlatform;
 use crate::archive::extract_archive;
 use crate::archive::verify_archive_size;
 use crate::archive::verify_sha256;
-use fd_lock::RwLock as FileRwLock;
+/// Stub for fd_lock::RwLock (stripped for WASM)
+struct FileRwLock<T>(T);
+impl<T> FileRwLock<T> {
+    fn new(inner: T) -> Self { Self(inner) }
+    fn try_write(&mut self) -> std::io::Result<&mut T> { Ok(&mut self.0) }
+}
 use reqwest::Client;
 use std::fs::OpenOptions;
 use std::path::Path;

@@ -570,7 +570,7 @@ fn diff_buffers(a: &Buffer, b: &Buffer) -> Vec<DrawCommand> {
     updates
 }
 
-fn draw<I>(writer: &mut impl Write, commands: I) -> io::Result<()>
+fn draw<I>(mut writer: &mut impl Write, commands: I) -> io::Result<()>
 where
     I: Iterator<Item = DrawCommand>,
 {

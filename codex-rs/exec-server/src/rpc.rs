@@ -496,7 +496,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn rpc_client_matches_out_of_order_responses_by_request_id() {
         let (client_stdin, server_reader) = tokio::io::duplex(4096);
         let (mut server_writer, client_stdout) = tokio::io::duplex(4096);

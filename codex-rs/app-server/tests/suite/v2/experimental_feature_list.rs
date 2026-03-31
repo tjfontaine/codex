@@ -18,7 +18,7 @@ use tokio::time::timeout;
 
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn experimental_feature_list_returns_feature_metadata_with_stage() -> Result<()> {
     let codex_home = TempDir::new()?;
     let config = ConfigBuilder::default()

@@ -397,6 +397,12 @@ fn system_requirements_toml_file() -> io::Result<AbsolutePathBuf> {
     windows_system_requirements_toml_file()
 }
 
+
+#[cfg(not(any(unix, windows)))]
+fn system_requirements_toml_file() -> io::Result<AbsolutePathBuf> {
+    AbsolutePathBuf::from_absolute_path(Path::new("/etc/codex/requirements.toml"))
+}
+
 #[cfg(unix)]
 fn system_config_toml_file() -> io::Result<AbsolutePathBuf> {
     AbsolutePathBuf::from_absolute_path(Path::new(SYSTEM_CONFIG_TOML_FILE_UNIX))
@@ -405,6 +411,12 @@ fn system_config_toml_file() -> io::Result<AbsolutePathBuf> {
 #[cfg(windows)]
 fn system_config_toml_file() -> io::Result<AbsolutePathBuf> {
     windows_system_config_toml_file()
+}
+
+
+#[cfg(not(any(unix, windows)))]
+fn system_config_toml_file() -> io::Result<AbsolutePathBuf> {
+    AbsolutePathBuf::from_absolute_path(Path::new("/etc/codex/config.toml"))
 }
 
 #[cfg(windows)]

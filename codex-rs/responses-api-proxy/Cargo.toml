@@ -1,8 +1,8 @@
 [package]
 name = "codex-responses-api-proxy"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [lib]
 name = "codex_responses_api_proxy"
@@ -12,17 +12,13 @@ path = "src/lib.rs"
 name = "codex-responses-api-proxy"
 path = "src/main.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-anyhow = { workspace = true }
-clap = { workspace = true, features = ["derive"] }
-codex-process-hardening = { workspace = true }
-ctor = { workspace = true }
-libc = { workspace = true }
-reqwest = { workspace = true, features = ["blocking", "json", "rustls-tls"] }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-tiny_http = { workspace = true }
-zeroize = { workspace = true }
+anyhow = { version = "1" }
+clap = { version = "4", features = ["derive"] }
+ctor = { version = "0.6.3" }
+libc = { version = "0.2.182" }
+reqwest = { path = "../../../codex-wasm/wasi-reqwest" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+tiny_http = { version = "0.12" }
+zeroize = { version = "1.8.2" }

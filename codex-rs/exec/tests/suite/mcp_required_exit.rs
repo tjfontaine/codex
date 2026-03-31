@@ -5,7 +5,7 @@ use core_test_support::responses;
 use core_test_support::test_codex_exec::test_codex_exec;
 use predicates::str::contains;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn exits_non_zero_when_required_mcp_server_fails_to_initialize() -> anyhow::Result<()> {
     let test = test_codex_exec();
 

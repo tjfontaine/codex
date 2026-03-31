@@ -211,7 +211,7 @@ mod tests {
         encoded.into_inner()
     }
 
-    #[tokio::test(flavor = "multi_thread")]
+    #[test]
     async fn returns_original_image_when_within_bounds() {
         for (format, mime) in [
             (ImageFormat::Png, "image/png"),
@@ -234,7 +234,7 @@ mod tests {
         }
     }
 
-    #[tokio::test(flavor = "multi_thread")]
+    #[test]
     async fn downscales_large_image() {
         for (format, mime) in [
             (ImageFormat::Png, "image/png"),
@@ -264,7 +264,7 @@ mod tests {
         }
     }
 
-    #[tokio::test(flavor = "multi_thread")]
+    #[test]
     async fn preserves_large_image_in_original_mode() {
         let image = ImageBuffer::from_pixel(4096, 2048, Rgba([180u8, 30, 30, 255]));
         let original_bytes = image_bytes(&image, ImageFormat::Png);
@@ -282,7 +282,7 @@ mod tests {
         assert_eq!(processed.bytes, original_bytes);
     }
 
-    #[tokio::test(flavor = "multi_thread")]
+    #[test]
     async fn fails_cleanly_for_invalid_images() {
         let err = load_for_prompt_bytes(
             Path::new("in-memory-image"),
@@ -297,7 +297,7 @@ mod tests {
         ));
     }
 
-    #[tokio::test(flavor = "multi_thread")]
+    #[test]
     async fn reprocesses_updated_file_contents() {
         {
             IMAGE_CACHE.clear();

@@ -117,7 +117,7 @@ mod tests {
     use super::Environment;
     use pretty_assertions::assert_eq;
 
-    #[tokio::test]
+    #[test]
     async fn create_without_remote_exec_server_url_does_not_connect() {
         let environment = Environment::create(None).await.expect("create environment");
 
@@ -125,7 +125,7 @@ mod tests {
         assert!(environment.remote_exec_server_client.is_none());
     }
 
-    #[tokio::test]
+    #[test]
     async fn default_environment_has_ready_local_executor() {
         let environment = Environment::default();
 

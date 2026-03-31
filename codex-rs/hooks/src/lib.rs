@@ -1,3 +1,4 @@
+#![allow(unused_variables, unused_mut, unused_imports)]
 mod engine;
 pub mod events;
 mod legacy_notify;

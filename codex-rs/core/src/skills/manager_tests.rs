@@ -35,7 +35,7 @@ fn new_with_disabled_bundled_skills_removes_stale_cached_system_skills() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn skills_for_config_reuses_cache_for_same_effective_config() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let cwd = tempfile::tempdir().expect("tempdir");
@@ -68,7 +68,7 @@ async fn skills_for_config_reuses_cache_for_same_effective_config() {
     assert_eq!(outcome2.skills, outcome1.skills);
 }
 
-#[tokio::test]
+#[test]
 async fn skills_for_cwd_reuses_cached_entry_even_when_entry_has_extra_roots() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let cwd = tempfile::tempdir().expect("tempdir");
@@ -120,7 +120,7 @@ async fn skills_for_cwd_reuses_cached_entry_even_when_entry_has_extra_roots() {
     assert_eq!(outcome_without_extra.errors, outcome_with_extra.errors);
 }
 
-#[tokio::test]
+#[test]
 async fn skills_for_config_excludes_bundled_skills_when_disabled_in_config() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let cwd = tempfile::tempdir().expect("tempdir");
@@ -179,7 +179,7 @@ async fn skills_for_config_excludes_bundled_skills_when_disabled_in_config() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn skills_for_cwd_with_extra_roots_only_refreshes_on_force_reload() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let cwd = tempfile::tempdir().expect("tempdir");
@@ -362,7 +362,7 @@ enabled = false
 }
 
 #[cfg_attr(windows, ignore)]
-#[tokio::test]
+#[test]
 async fn skills_for_config_ignores_cwd_cache_when_session_flags_reenable_skill() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let cwd = tempfile::tempdir().expect("tempdir");

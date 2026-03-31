@@ -9,7 +9,7 @@ use codex_exec_server::InitializeResponse;
 use common::exec_server::exec_server;
 use pretty_assertions::assert_eq;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn exec_server_accepts_initialize() -> anyhow::Result<()> {
     let mut server = exec_server().await?;
     let initialize_id = server

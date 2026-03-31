@@ -825,7 +825,7 @@ mod tests {
     use crate::state::validate_policy_against_constraints;
     use pretty_assertions::assert_eq;
 
-    #[tokio::test]
+    #[test]
     async fn host_blocked_denied_wins_over_allowed() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["example.com".to_string()],
@@ -839,7 +839,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn host_blocked_requires_allowlist_match() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["example.com".to_string()],
@@ -858,7 +858,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn add_allowed_domain_removes_matching_deny_entry() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             denied_domains: vec!["example.com".to_string()],
@@ -876,7 +876,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn add_denied_domain_removes_matching_allow_entry() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["example.com".to_string()],
@@ -894,7 +894,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn add_allowed_domain_succeeds_when_managed_baseline_allows_expansion() {
         let config = NetworkProxyConfig {
             network: NetworkProxySettings {
@@ -926,7 +926,7 @@ mod tests {
         assert!(denied.is_empty());
     }
 
-    #[tokio::test]
+    #[test]
     async fn add_allowed_domain_rejects_expansion_when_managed_baseline_is_fixed() {
         let config = NetworkProxyConfig {
             network: NetworkProxySettings {
@@ -956,7 +956,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn add_denied_domain_rejects_expansion_when_managed_baseline_is_fixed() {
         let config = NetworkProxyConfig {
             network: NetworkProxySettings {
@@ -986,7 +986,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn blocked_snapshot_does_not_consume_entries() {
         let state = network_proxy_state_for_policy(NetworkProxySettings::default());
 
@@ -1025,7 +1025,7 @@ mod tests {
         assert_eq!(drained[0].port, snapshot[0].port);
     }
 
-    #[tokio::test]
+    #[test]
     async fn drain_blocked_returns_buffered_window() {
         let state = network_proxy_state_for_policy(NetworkProxySettings::default());
 
@@ -1072,7 +1072,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn host_blocked_subdomain_wildcards_exclude_apex() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["*.openai.com".to_string()],
@@ -1089,7 +1089,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn host_blocked_rejects_loopback_when_local_binding_disabled() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["example.com".to_string()],
@@ -1107,7 +1107,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn host_blocked_allows_loopback_when_explicitly_allowlisted_and_local_binding_disabled() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["localhost".to_string()],
@@ -1121,7 +1121,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn host_blocked_allows_private_ip_literal_when_explicitly_allowlisted() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["10.0.0.1".to_string()],
@@ -1135,7 +1135,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn host_blocked_rejects_scoped_ipv6_literal_when_not_allowlisted() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["example.com".to_string()],
@@ -1149,7 +1149,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn host_blocked_allows_scoped_ipv6_literal_when_explicitly_allowlisted() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["fe80::1%lo0".to_string()],
@@ -1163,7 +1163,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn host_blocked_rejects_private_ip_literals_when_local_binding_disabled() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["example.com".to_string()],
@@ -1177,7 +1177,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn host_blocked_rejects_loopback_when_allowlist_empty() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec![],
@@ -1595,7 +1595,7 @@ mod tests {
     }
 
     #[cfg(target_os = "macos")]
-    #[tokio::test]
+    #[test]
     async fn unix_socket_allowlist_is_respected_on_macos() {
         let socket_path = "/tmp/example.sock".to_string();
         let state = network_proxy_state_for_policy(NetworkProxySettings {
@@ -1614,7 +1614,7 @@ mod tests {
     }
 
     #[cfg(target_os = "macos")]
-    #[tokio::test]
+    #[test]
     async fn unix_socket_allowlist_resolves_symlinks() {
         use std::os::unix::fs::symlink;
         use tempfile::tempdir;
@@ -1643,7 +1643,7 @@ mod tests {
     }
 
     #[cfg(target_os = "macos")]
-    #[tokio::test]
+    #[test]
     async fn unix_socket_allow_all_flag_bypasses_allowlist() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["example.com".to_string()],
@@ -1656,7 +1656,7 @@ mod tests {
     }
 
     #[cfg(not(target_os = "macos"))]
-    #[tokio::test]
+    #[test]
     async fn unix_socket_allowlist_is_rejected_on_non_macos() {
         let socket_path = "/tmp/example.sock".to_string();
         let state = network_proxy_state_for_policy(NetworkProxySettings {

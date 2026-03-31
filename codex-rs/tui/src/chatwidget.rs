@@ -58,8 +58,23 @@ use crate::terminal_title::set_terminal_title;
 use crate::text_formatting::proper_join;
 use crate::version::CODEX_CLI_VERSION;
 use codex_app_server_protocol::ConfigLayerSource;
-use codex_backend_client::Client as BackendClient;
-use codex_chatgpt::connectors;
+// codex-backend-client stripped for WASM — rate limit checking not available
+#[allow(dead_code)]
+struct BackendClient;
+impl BackendClient {
+    fn from_auth(_base_url: impl AsRef<str>, _auth: &codex_login::CodexAuth) -> Result<Self, std::io::Error> {
+        Err(std::io::Error::other("backend client not available in WASM"))
+    }
+    async fn get_rate_limits_many(&self) -> Result<RateLimitsResponse, std::io::Error> {
+        Err(std::io::Error::other("not available in WASM"))
+    }
+}
+#[allow(dead_code)]
+struct RateLimitsResponse;
+impl RateLimitsResponse {
+    fn rate_limits(&self) -> Vec<()> { Vec::new() }
+}
+use codex_core::connectors;
 use codex_core::config::Config;
 use codex_core::config::Constrained;
 use codex_core::config::ConstraintResult;
@@ -203,20 +218,7 @@ const CONNECTORS_SELECTION_VIEW_ID: &str = "connectors-selection";
 /// an explicit decision about which binding that terminal should use.
 fn queued_message_edit_binding_for_terminal(terminal_name: TerminalName) -> KeyBinding {
     match terminal_name {
-        TerminalName::AppleTerminal | TerminalName::WarpTerminal | TerminalName::VsCode => {
-            key_hint::shift(KeyCode::Left)
-        }
-        TerminalName::Ghostty
-        | TerminalName::Iterm2
-        | TerminalName::WezTerm
-        | TerminalName::Kitty
-        | TerminalName::Alacritty
-        | TerminalName::Konsole
-        | TerminalName::GnomeTerminal
-        | TerminalName::Vte
-        | TerminalName::WindowsTerminal
-        | TerminalName::Dumb
-        | TerminalName::Unknown => key_hint::alt(KeyCode::Up),
+        _ => key_hint::alt(KeyCode::Up),
     }
 }
 
@@ -1441,9 +1443,7 @@ impl ChatWidget {
             event,
             self.show_welcome_banner,
             startup_tooltip_override,
-            self.auth_manager
-                .auth_cached()
-                .and_then(|auth| auth.account_plan_type()),
+            None::<codex_protocol::account::PlanType>,
             show_fast_status,
         );
         self.apply_session_info_cell(session_info_cell);
@@ -1582,7 +1582,7 @@ impl ChatWidget {
             self.app_event_tx.clone(),
             category,
             self.current_rollout_path.clone(),
-            snapshot.feedback_diagnostics(),
+            &snapshot.feedback_diagnostics(),
         );
         self.bottom_pane.show_selection_view(params);
         self.request_redraw();
@@ -5998,11 +5998,10 @@ impl ChatWidget {
 
             let result: Result<ConnectorsSnapshot, String> = async {
                 let all_connectors =
-                    connectors::list_all_connectors_with_options(&config, force_refetch).await?;
-                let connectors = connectors::merge_connectors_with_accessible(
-                    all_connectors,
+                    { let _ = (&config, force_refetch); Vec::<connectors::AppInfo>::new() };
+                let connectors = connectors::merge_plugin_apps_with_accessible(
+                    Vec::new(),
                     accessible_connectors,
-                    /*all_connectors_loaded*/ true,
                 );
                 Ok(ConnectorsSnapshot { connectors })
             }
@@ -8936,10 +8935,9 @@ impl ChatWidget {
         match result {
             Ok(mut snapshot) => {
                 if !is_final {
-                    snapshot.connectors = connectors::merge_connectors_with_accessible(
+                    snapshot.connectors = connectors::merge_plugin_apps_with_accessible(
                         Vec::new(),
                         snapshot.connectors,
-                        /*all_connectors_loaded*/ false,
                     );
                 }
                 snapshot.connectors =
@@ -9514,9 +9512,12 @@ fn hook_event_label(event_name: codex_protocol::protocol::HookEventName) -> &'st
 }
 
 async fn fetch_rate_limits(base_url: String, auth: CodexAuth) -> Vec<RateLimitSnapshot> {
-    match BackendClient::from_auth(base_url, &auth) {
+    let _ = (base_url, auth);
+    return Vec::new();
+    #[allow(unreachable_code)]
+    match BackendClient::from_auth(String::new(), &CodexAuth::from_api_key("")) {
         Ok(client) => match client.get_rate_limits_many().await {
-            Ok(snapshots) => snapshots,
+            Ok(_snapshots) => Vec::new(),
             Err(err) => {
                 debug!(error = ?err, "failed to fetch rate limits from /usage");
                 Vec::new()

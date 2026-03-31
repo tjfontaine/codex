@@ -19,11 +19,9 @@ use quick_xml::se::to_string as to_xml_string;
 use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
-use ts_rs::TS;
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
 #[serde(tag = "type")]
-#[ts(tag = "type")]
 pub enum TurnItem {
     UserMessage(UserMessageItem),
     HookPrompt(HookPromptItem),
@@ -35,21 +33,20 @@ pub enum TurnItem {
     ContextCompaction(ContextCompactionItem),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct UserMessageItem {
     pub id: String,
     pub content: Vec<UserInput>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema, PartialEq, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, PartialEq, Eq)]
 pub struct HookPromptItem {
     pub id: String,
     pub fragments: Vec<HookPromptFragment>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema, PartialEq, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase")]
 pub struct HookPromptFragment {
     pub text: String,
     pub hook_run_id: String,
@@ -64,14 +61,13 @@ struct HookPromptXml {
     text: String,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
 #[serde(tag = "type")]
-#[ts(tag = "type")]
 pub enum AgentMessageContent {
     Text { text: String },
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
 /// Assistant-authored message payload used in turn-item streams.
 ///
 /// `phase` is optional because not all providers/models emit it. Consumers
@@ -85,20 +81,18 @@ pub struct AgentMessageItem {
     /// This is currently used by TUI rendering to distinguish mid-turn
     /// commentary from a final answer and avoid status-indicator jitter.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub phase: Option<MessagePhase>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub memory_citation: Option<MemoryCitation>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct PlanItem {
     pub id: String,
     pub text: String,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct ReasoningItem {
     pub id: String,
     pub summary_text: Vec<String>,
@@ -106,27 +100,25 @@ pub struct ReasoningItem {
     pub raw_content: Vec<String>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, PartialEq)]
 pub struct WebSearchItem {
     pub id: String,
     pub query: String,
     pub action: WebSearchAction,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, PartialEq)]
 pub struct ImageGenerationItem {
     pub id: String,
     pub status: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub revised_prompt: Option<String>,
     pub result: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub saved_path: Option<String>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct ContextCompactionItem {
     pub id: String,
 }

@@ -323,7 +323,7 @@ mod tests {
         let destination = tmp.path().join("destination.exe");
 
         fs::write(&destination, b"same-size").expect("write destination");
-        std::thread::sleep(std::time::Duration::from_secs(1));
+        tokio::thread_spawn::sleep(std::time::Duration::from_secs(1));
         fs::write(&source, b"same-size").expect("write source");
         assert!(!destination_is_fresh(&source, &destination).expect("stale metadata"));
 

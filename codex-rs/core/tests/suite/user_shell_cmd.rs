@@ -31,7 +31,7 @@ use tempfile::TempDir;
 use tokio::time::Duration;
 use tokio::time::timeout;
 
-#[tokio::test]
+#[test]
 async fn user_shell_cmd_ls_and_cat_in_temp_dir() {
     // Create a temporary working directory with a known file.
     let cwd = TempDir::new().unwrap();
@@ -96,7 +96,7 @@ async fn user_shell_cmd_ls_and_cat_in_temp_dir() {
     assert_eq!(stdout, contents);
 }
 
-#[tokio::test]
+#[test]
 async fn user_shell_cmd_can_be_interrupted() {
     // Set up isolated config and conversation.
     let server = start_mock_server().await;
@@ -137,7 +137,7 @@ async fn user_shell_cmd_can_be_interrupted() {
     assert_eq!(ev.reason, TurnAbortReason::Interrupted);
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn user_shell_command_does_not_replace_active_turn() -> anyhow::Result<()> {
     let server = start_mock_server().await;
     let mut builder = test_codex().with_model("gpt-5.1");
@@ -247,7 +247,7 @@ async fn user_shell_command_does_not_replace_active_turn() -> anyhow::Result<()>
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn user_shell_command_history_is_persisted_and_shared_with_model() -> anyhow::Result<()> {
     let server = responses::start_mock_server().await;
     // Disable it to ease command matching.
@@ -330,7 +330,7 @@ async fn user_shell_command_history_is_persisted_and_shared_with_model() -> anyh
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn user_shell_command_does_not_set_network_sandbox_env_var() -> anyhow::Result<()> {
     let server = responses::start_mock_server().await;
     let mut builder = core_test_support::test_codex::test_codex().with_config(|config| {
@@ -359,7 +359,7 @@ async fn user_shell_command_does_not_set_network_sandbox_env_var() -> anyhow::Re
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 #[cfg(not(target_os = "windows"))] // TODO: unignore on windows
 async fn user_shell_command_output_is_truncated_in_history() -> anyhow::Result<()> {
     let server = responses::start_mock_server().await;
@@ -422,7 +422,7 @@ async fn user_shell_command_output_is_truncated_in_history() -> anyhow::Result<(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn user_shell_command_is_truncated_only_once() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 

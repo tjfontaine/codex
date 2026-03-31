@@ -441,7 +441,7 @@ impl ChatWidget {
             .ok();
         }
 
-        std::thread::spawn(move || {
+        tokio::thread_spawn::spawn(move || {
             let mut meter = crate::voice::RecordingMeterState::new();
 
             loop {
@@ -455,7 +455,7 @@ impl ChatWidget {
                     text: meter_text,
                 });
 
-                std::thread::sleep(Duration::from_millis(60));
+                tokio::thread_spawn::sleep(Duration::from_millis(60));
             }
         });
     }

@@ -62,7 +62,7 @@ fn image_generation_artifact_path(codex_home: &Path, session_id: &str, call_id: 
         .join(format!("{}.png", sanitize(call_id)))
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn user_message_item_is_emitted() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -120,7 +120,7 @@ async fn user_message_item_is_emitted() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn assistant_message_item_is_emitted() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -172,7 +172,7 @@ async fn assistant_message_item_is_emitted() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn reasoning_item_is_emitted() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -233,7 +233,7 @@ async fn reasoning_item_is_emitted() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn web_search_item_is_emitted() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -289,7 +289,7 @@ async fn web_search_item_is_emitted() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn image_generation_call_event_is_emitted() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -352,7 +352,7 @@ async fn image_generation_call_event_is_emitted() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn image_generation_call_event_is_emitted_when_image_save_fails() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -410,7 +410,7 @@ async fn image_generation_call_event_is_emitted_when_image_save_fails() -> anyho
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn agent_message_content_delta_has_item_metadata() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -481,7 +481,7 @@ async fn agent_message_content_delta_has_item_metadata() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn plan_mode_emits_plan_item_from_proposed_plan_block() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -557,7 +557,7 @@ async fn plan_mode_emits_plan_item_from_proposed_plan_block() -> anyhow::Result<
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn plan_mode_strips_plan_from_agent_messages() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -655,7 +655,7 @@ async fn plan_mode_strips_plan_from_agent_messages() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn plan_mode_streaming_citations_are_stripped_across_added_deltas_and_done()
 -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
@@ -846,7 +846,7 @@ async fn plan_mode_streaming_citations_are_stripped_across_added_deltas_and_done
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn plan_mode_streaming_proposed_plan_tag_split_across_added_and_delta_is_parsed()
 -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
@@ -965,7 +965,7 @@ async fn plan_mode_streaming_proposed_plan_tag_split_across_added_and_delta_is_p
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn plan_mode_handles_missing_plan_close_tag() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1056,7 +1056,7 @@ async fn plan_mode_handles_missing_plan_close_tag() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn reasoning_content_delta_has_item_metadata() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1110,7 +1110,7 @@ async fn reasoning_content_delta_has_item_metadata() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn reasoning_raw_content_delta_respects_flag() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 

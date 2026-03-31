@@ -235,7 +235,7 @@ fn verified_connector_suggestion_completed_requires_accessible_connector() {
     ));
 }
 
-#[tokio::test]
+#[test]
 async fn verified_plugin_suggestion_completed_requires_installed_plugin() {
     let codex_home = tempdir().expect("tempdir should succeed");
     let curated_root = crate::plugins::curated_plugins_repo_path(codex_home.path());

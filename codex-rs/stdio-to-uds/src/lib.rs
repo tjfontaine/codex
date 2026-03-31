@@ -25,7 +25,7 @@ pub fn run(socket_path: &Path) -> anyhow::Result<()> {
         .try_clone()
         .context("failed to clone socket for reading")?;
 
-    let stdout_thread = thread::spawn(move || -> io::Result<()> {
+    let stdout_thread = tokio::thread_spawn::spawn(move || -> io::Result<()> {
         let stdout = io::stdout();
         let mut handle = stdout.lock();
         io::copy(&mut reader, &mut handle)?;

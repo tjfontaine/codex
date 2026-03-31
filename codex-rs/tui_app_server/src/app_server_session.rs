@@ -1095,7 +1095,7 @@ mod tests {
             .expect("config should build")
     }
 
-    #[tokio::test]
+    #[test]
     async fn thread_start_params_include_cwd_for_embedded_sessions() {
         let temp_dir = tempfile::tempdir().expect("tempdir");
         let config = build_config(&temp_dir).await;
@@ -1106,7 +1106,7 @@ mod tests {
         assert_eq!(params.model_provider, Some(config.model_provider_id));
     }
 
-    #[tokio::test]
+    #[test]
     async fn thread_lifecycle_params_omit_local_overrides_for_remote_sessions() {
         let temp_dir = tempfile::tempdir().expect("tempdir");
         let config = build_config(&temp_dir).await;
@@ -1125,7 +1125,7 @@ mod tests {
         assert_eq!(fork.model_provider, None);
     }
 
-    #[tokio::test]
+    #[test]
     async fn resume_response_restores_turns_from_thread_items() {
         let temp_dir = tempfile::tempdir().expect("tempdir");
         let config = build_config(&temp_dir).await;
@@ -1185,7 +1185,7 @@ mod tests {
         assert_eq!(started.turns[0], response.thread.turns[0]);
     }
 
-    #[tokio::test]
+    #[test]
     async fn session_configured_populates_history_metadata() {
         let temp_dir = tempfile::tempdir().expect("tempdir");
         let config = build_config(&temp_dir).await;

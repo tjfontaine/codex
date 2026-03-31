@@ -117,7 +117,7 @@ fn load_cached_runtime_requires_build_entrypoint() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn ensure_installed_downloads_and_extracts_zip_runtime() {
     let server = MockServer::start().await;
     let runtime_version = "2.5.6";
@@ -221,7 +221,7 @@ fn load_cached_runtime_requires_package_export() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn ensure_installed_downloads_and_extracts_tar_gz_runtime() {
     let server = MockServer::start().await;
     let runtime_version = "2.5.6";
@@ -312,7 +312,7 @@ fn load_cached_runtime_uses_custom_cache_root() {
     assert_eq!(runtime.platform(), platform);
 }
 
-#[tokio::test]
+#[test]
 #[cfg(unix)]
 async fn artifacts_client_execute_build_writes_wrapped_script_and_env() {
     let temp = TempDir::new().unwrap_or_else(|error| panic!("{error}"));

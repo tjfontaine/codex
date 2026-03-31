@@ -460,7 +460,7 @@ fn start_uninitialized(args: InProcessStartArgs) -> InProcessClientHandle {
                             }
                         }
                     }
-                    created = thread_created_rx.recv(), if listen_for_threads => {
+                    created = thread_created_rx.recv() => {
                         match created {
                             Ok(thread_id) => {
                                 let connection_ids = if session.initialized {
@@ -782,7 +782,7 @@ mod tests {
         start_test_client_with_capacity(session_source, DEFAULT_IN_PROCESS_CHANNEL_CAPACITY).await
     }
 
-    #[tokio::test]
+    #[test]
     async fn in_process_start_initializes_and_handles_typed_v2_request() {
         let client = start_test_client(SessionSource::Cli).await;
         let response = client
@@ -803,7 +803,7 @@ mod tests {
             .expect("in-process runtime should shutdown cleanly");
     }
 
-    #[tokio::test]
+    #[test]
     async fn in_process_start_uses_requested_session_source_for_thread_start() {
         for (requested_source, expected_source) in [
             (SessionSource::Cli, ApiSessionSource::Cli),
@@ -831,7 +831,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn in_process_start_clamps_zero_channel_capacity() {
         let client = start_test_client_with_capacity(SessionSource::Cli, 0).await;
         let response = loop {

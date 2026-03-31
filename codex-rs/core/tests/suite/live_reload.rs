@@ -78,7 +78,7 @@ async fn submit_skill_turn(test: &TestCodex, skill_path: PathBuf, prompt: &str) 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn live_skills_reload_refreshes_skill_cache_after_skill_change() -> Result<()> {
     let server = start_mock_server().await;
     let responses = mount_sse_sequence(

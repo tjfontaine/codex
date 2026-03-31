@@ -225,29 +225,8 @@ fn extract_zip_to_dir(
     output_dir: &Path,
     prefix_candidates: &[String],
 ) -> Result<()> {
-    let cursor = std::io::Cursor::new(bytes);
-    let mut archive = zip::ZipArchive::new(cursor).context("Failed to open zip archive")?;
-    for i in 0..archive.len() {
-        let mut file = archive.by_index(i).context("Failed to read zip entry")?;
-        if file.is_dir() {
-            continue;
-        }
-        let raw_name = file.name().to_string();
-        let normalized = normalize_zip_name(&raw_name, prefix_candidates);
-        let Some(normalized) = normalized else {
-            continue;
-        };
-        let file_path = safe_join(output_dir, &normalized)?;
-        if let Some(parent) = file_path.parent() {
-            std::fs::create_dir_all(parent)
-                .with_context(|| format!("Failed to create parent dir for {normalized}"))?;
-        }
-        let mut out = std::fs::File::create(&file_path)
-            .with_context(|| format!("Failed to create file {normalized}"))?;
-        std::io::copy(&mut file, &mut out)
-            .with_context(|| format!("Failed to write skill file {normalized}"))?;
-    }
-    Ok(())
+    let _ = (bytes, output_dir, prefix_candidates);
+    anyhow::bail!("zip extraction not available in WASM")
 }
 
 fn normalize_zip_name(name: &str, prefix_candidates: &[String]) -> Option<String> {

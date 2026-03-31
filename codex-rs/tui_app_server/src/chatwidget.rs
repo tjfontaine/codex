@@ -79,7 +79,7 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnPlanStepStatus;
 use codex_app_server_protocol::TurnStatus;
-use codex_chatgpt::connectors;
+use codex_core::connectors;
 use codex_core::config::Config;
 use codex_core::config::Constrained;
 use codex_core::config::ConstraintResult;
@@ -7195,7 +7195,7 @@ impl ChatWidget {
             let result: Result<ConnectorsSnapshot, String> = async {
                 let all_connectors =
                     connectors::list_all_connectors_with_options(&config, force_refetch).await?;
-                let connectors = connectors::merge_connectors_with_accessible(
+                let connectors = connectors::merge_plugin_apps_with_accessible(
                     all_connectors,
                     accessible_connectors,
                     /*all_connectors_loaded*/ true,
@@ -10107,7 +10107,7 @@ impl ChatWidget {
         match result {
             Ok(mut snapshot) => {
                 if !is_final {
-                    snapshot.connectors = connectors::merge_connectors_with_accessible(
+                    snapshot.connectors = connectors::merge_plugin_apps_with_accessible(
                         Vec::new(),
                         snapshot.connectors,
                         /*all_connectors_loaded*/ false,

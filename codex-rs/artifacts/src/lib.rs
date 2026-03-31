@@ -1,3 +1,4 @@
+#![allow(unused_imports)]
 mod client;
 mod runtime;
 #[cfg(all(test, not(windows)))]

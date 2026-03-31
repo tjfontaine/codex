@@ -1078,7 +1078,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_skips_non_chatgpt_auth() {
         let auth_manager = auth_manager_with_api_key();
         let codex_home = tempdir().expect("tempdir");
@@ -1092,7 +1092,7 @@ mod tests {
         assert_eq!(result, Ok(None));
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_skips_non_business_or_enterprise_plan() {
         let codex_home = tempdir().expect("tempdir");
         let service = CloudRequirementsService::new(
@@ -1105,7 +1105,7 @@ mod tests {
         assert_eq!(result, Ok(None));
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_allows_business_plan() {
         let codex_home = tempdir().expect("tempdir");
         let service = CloudRequirementsService::new(
@@ -1133,31 +1133,31 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_handles_missing_contents() {
         let result = parse_for_fetch(None);
         assert!(result.is_none());
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_handles_empty_contents() {
         let result = parse_for_fetch(Some("   "));
         assert!(result.is_none());
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_handles_invalid_toml() {
         let result = parse_for_fetch(Some("not = ["));
         assert!(result.is_none());
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_ignores_empty_requirements() {
         let result = parse_for_fetch(Some("# comment"));
         assert!(result.is_none());
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_parses_valid_toml() {
         let result = parse_for_fetch(Some("allowed_approval_policies = [\"never\"]"));
 
@@ -1178,7 +1178,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_parses_apps_requirements_toml() {
         let result = parse_for_fetch(Some(
             r#"
@@ -1203,7 +1203,7 @@ enabled = false
         );
     }
 
-    #[tokio::test(start_paused = true)]
+    #[test]
     async fn fetch_cloud_requirements_times_out() {
         let auth_manager = auth_manager_with_plan("enterprise");
         let codex_home = tempdir().expect("tempdir");
@@ -1224,7 +1224,7 @@ enabled = false
         );
     }
 
-    #[tokio::test(start_paused = true)]
+    #[test]
     async fn fetch_cloud_requirements_retries_until_success() {
         let fetcher = Arc::new(SequenceFetcher::new(vec![
             Err(request_error()),
@@ -1260,7 +1260,7 @@ enabled = false
         assert_eq!(fetcher.request_count.load(Ordering::SeqCst), 2);
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_recovers_after_unauthorized_reload() {
         let auth = managed_auth_context(
             "business",
@@ -1312,7 +1312,7 @@ enabled = false
         assert_eq!(fetcher.request_count.load(Ordering::SeqCst), 2);
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_recovers_after_unauthorized_reload_updates_cache_identity() {
         let auth = managed_auth_context(
             "business",
@@ -1377,7 +1377,7 @@ enabled = false
         assert_eq!(fetcher.request_count.load(Ordering::SeqCst), 2);
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_surfaces_auth_recovery_message() {
         let auth = managed_auth_context(
             "enterprise",
@@ -1421,7 +1421,7 @@ enabled = false
         assert_eq!(fetcher.request_count.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_unauthorized_without_recovery_uses_generic_message() {
         let auth_home = tempdir().expect("tempdir");
         write_auth_json(
@@ -1469,7 +1469,7 @@ enabled = false
         assert_eq!(fetcher.request_count.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_parse_error_does_not_retry() {
         let fetcher = Arc::new(SequenceFetcher::new(vec![
             Ok(Some("not = [".to_string())),
@@ -1487,7 +1487,7 @@ enabled = false
         assert_eq!(fetcher.request_count.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_uses_cache_when_valid() {
         let codex_home = tempdir().expect("tempdir");
         let prime_service = CloudRequirementsService::new(
@@ -1526,7 +1526,7 @@ enabled = false
         assert_eq!(fetcher.request_count.load(Ordering::SeqCst), 0);
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_writes_cache_when_identity_is_incomplete() {
         let codex_home = tempdir().expect("tempdir");
         let service = CloudRequirementsService::new(
@@ -1565,7 +1565,7 @@ enabled = false
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_does_not_use_cache_when_auth_identity_is_incomplete() {
         let codex_home = tempdir().expect("tempdir");
         let prime_service = CloudRequirementsService::new(
@@ -1606,7 +1606,7 @@ enabled = false
         assert_eq!(fetcher.request_count.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_ignores_cache_for_different_auth_identity() {
         let codex_home = tempdir().expect("tempdir");
         let prime_service = CloudRequirementsService::new(
@@ -1655,7 +1655,7 @@ enabled = false
         assert_eq!(fetcher.request_count.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_ignores_tampered_cache() {
         let codex_home = tempdir().expect("tempdir");
         let prime_service = CloudRequirementsService::new(
@@ -1708,7 +1708,7 @@ enabled = false
         assert_eq!(fetcher.request_count.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_ignores_expired_cache() {
         let codex_home = tempdir().expect("tempdir");
         let path = codex_home.path().join(CLOUD_REQUIREMENTS_CACHE_FILENAME);
@@ -1762,7 +1762,7 @@ enabled = false
         assert_eq!(fetcher.request_count.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_writes_signed_cache() {
         let codex_home = tempdir().expect("tempdir");
         let service = CloudRequirementsService::new(
@@ -1820,7 +1820,7 @@ enabled = false
         ));
     }
 
-    #[tokio::test]
+    #[test]
     async fn fetch_cloud_requirements_none_is_success_without_retry() {
         let fetcher = Arc::new(SequenceFetcher::new(vec![Ok(None), Err(request_error())]));
         let codex_home = tempdir().expect("tempdir");
@@ -1835,7 +1835,7 @@ enabled = false
         assert_eq!(fetcher.request_count.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test(start_paused = true)]
+    #[test]
     async fn fetch_cloud_requirements_stops_after_max_retries() {
         let fetcher = Arc::new(SequenceFetcher::new(vec![
             Err(request_error());
@@ -1869,7 +1869,7 @@ enabled = false
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn refresh_from_remote_updates_cached_cloud_requirements() {
         let codex_home = tempdir().expect("tempdir");
         let fetcher = Arc::new(SequenceFetcher::new(vec![

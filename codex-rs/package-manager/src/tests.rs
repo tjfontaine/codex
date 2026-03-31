@@ -133,7 +133,7 @@ impl ManagedPackage for TestPackage {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn ensure_installed_downloads_and_extracts_zip_package() {
     let server = MockServer::start().await;
     let version = "0.1.0";
@@ -204,7 +204,7 @@ async fn ensure_installed_downloads_and_extracts_zip_package() {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn resolve_cached_uses_custom_cache_root() {
     let platform = PackagePlatform::detect_current().unwrap_or_else(|error| panic!("{error}"));
     let codex_home = TempDir::new().unwrap_or_else(|error| panic!("{error}"));
@@ -242,7 +242,7 @@ async fn resolve_cached_uses_custom_cache_root() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn ensure_installed_replaces_invalid_cached_install() {
     let server = MockServer::start().await;
     let version = "0.1.0";
@@ -303,7 +303,7 @@ async fn ensure_installed_replaces_invalid_cached_install() {
     assert!(!installed.root_dir.join("broken.txt").exists());
 }
 
-#[tokio::test]
+#[test]
 async fn ensure_installed_rejects_manifest_version_mismatch() {
     let server = MockServer::start().await;
     let version = "0.1.0";
@@ -348,7 +348,7 @@ async fn ensure_installed_rejects_manifest_version_mismatch() {
     ));
 }
 
-#[tokio::test]
+#[test]
 async fn ensure_installed_serializes_concurrent_installs() {
     let server = MockServer::start().await;
     let version = "0.1.0";
@@ -412,7 +412,7 @@ async fn ensure_installed_serializes_concurrent_installs() {
     assert_eq!(first, second);
 }
 
-#[tokio::test]
+#[test]
 async fn ensure_installed_rejects_unexpected_archive_size() {
     let server = MockServer::start().await;
     let version = "0.1.0";
@@ -466,7 +466,7 @@ async fn ensure_installed_rejects_unexpected_archive_size() {
     ));
 }
 
-#[tokio::test]
+#[test]
 async fn staged_install_restore_keeps_previous_install_on_failed_promotion() {
     let temp = TempDir::new().unwrap_or_else(|error| panic!("{error}"));
     let install_dir = temp.path().join("install");
@@ -497,7 +497,7 @@ async fn staged_install_restore_keeps_previous_install_on_failed_promotion() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn ensure_installed_restores_previous_install_when_final_validation_fails() {
     let server = MockServer::start().await;
     let version = "0.1.0";

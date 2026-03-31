@@ -24,7 +24,7 @@ use tokio::time::timeout;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn turn_interrupt_aborts_running_turn() -> Result<()> {
     // Use a portable sleep command to keep the turn running.
     #[cfg(target_os = "windows")]
@@ -122,7 +122,7 @@ async fn turn_interrupt_aborts_running_turn() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_interrupt_resolves_pending_command_approval_request() -> Result<()> {
     #[cfg(target_os = "windows")]
     let shell_command = vec![

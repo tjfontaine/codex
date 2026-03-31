@@ -1000,7 +1000,7 @@ mod tests {
     use tokio::time::Duration;
     use tokio::time::timeout;
 
-    #[tokio::test]
+    #[test]
     async fn http_connect_accept_blocks_in_limited_mode() {
         let policy = NetworkProxySettings {
             allowed_domains: vec!["example.com".to_string()],
@@ -1025,7 +1025,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn http_connect_accept_allows_allowlisted_host_in_full_mode() {
         let policy = NetworkProxySettings {
             allowed_domains: vec!["example.com".to_string()],
@@ -1045,7 +1045,7 @@ mod tests {
         assert_eq!(response.status(), StatusCode::OK);
     }
 
-    #[tokio::test]
+    #[test]
     async fn http_proxy_listener_accepts_plain_http1_connect_requests() {
         let target_listener = TokioTcpListener::bind((Ipv4Addr::LOCALHOST, 0))
             .await
@@ -1104,7 +1104,7 @@ mod tests {
         let _ = target_task.await;
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn http_plain_proxy_blocks_unix_socket_when_method_not_allowed() {
         let state = Arc::new(network_proxy_state_for_policy(
             NetworkProxySettings::default(),
@@ -1131,7 +1131,7 @@ mod tests {
         );
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn http_plain_proxy_rejects_unix_socket_when_not_allowlisted() {
         let state = Arc::new(network_proxy_state_for_policy(
             NetworkProxySettings::default(),
@@ -1159,7 +1159,7 @@ mod tests {
     }
 
     #[cfg(target_os = "macos")]
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn http_plain_proxy_attempts_allowed_unix_socket_proxy() {
         let state = Arc::new(network_proxy_state_for_policy(NetworkProxySettings {
             allow_unix_sockets: vec!["/tmp/test.sock".to_string()],
@@ -1178,7 +1178,7 @@ mod tests {
         assert_eq!(response.status(), StatusCode::BAD_GATEWAY);
     }
 
-    #[tokio::test]
+    #[test]
     async fn http_connect_accept_denies_denylisted_host() {
         let policy = NetworkProxySettings {
             allowed_domains: vec!["**.openai.com".to_string()],
@@ -1203,7 +1203,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn http_plain_proxy_rejects_absolute_uri_host_header_mismatch() {
         let state = Arc::new(network_proxy_state_for_policy(
             NetworkProxySettings::default(),

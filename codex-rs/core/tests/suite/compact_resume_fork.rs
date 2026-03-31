@@ -143,7 +143,7 @@ fn normalize_compact_prompts(requests: &mut [Value]) {
     }
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 /// Scenario: compact an initial conversation, resume it, fork one turn back, and
 /// ensure the model-visible history matches expectations at each request.
 async fn compact_resume_and_fork_preserve_model_history_view() {
@@ -298,7 +298,7 @@ async fn compact_resume_and_fork_preserve_model_history_view() {
     assert_eq!(requests.len(), 5);
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 /// Scenario: after the forked branch is compacted, resuming again should reuse
 /// the compacted history and only append the new user message.
 async fn compact_resume_after_second_compaction_preserves_history() -> Result<()> {
@@ -412,7 +412,7 @@ async fn compact_resume_after_second_compaction_preserves_history() -> Result<()
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 /// Scenario: rolling back behind a pre-turn compaction should replay
 /// append-only history from the rollout file and keep earlier compacted
 /// history visible.

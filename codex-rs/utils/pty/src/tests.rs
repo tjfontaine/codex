@@ -339,7 +339,7 @@ async fn wait_for_process_exit(pid: i32, timeout_ms: u64) -> anyhow::Result<bool
     }
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pty_python_repl_emits_output_and_exits() -> anyhow::Result<()> {
     let Some(python) = find_python() else {
         eprintln!("python not found; skipping pty_python_repl_emits_output_and_exits");
@@ -388,7 +388,7 @@ async fn pty_python_repl_emits_output_and_exits() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pipe_process_round_trips_stdin() -> anyhow::Result<()> {
     let (program, args) = if cfg!(windows) {
         let cmd = std::env::var("COMSPEC").unwrap_or_else(|_| "cmd.exe".to_string());
@@ -440,7 +440,7 @@ async fn pipe_process_round_trips_stdin() -> anyhow::Result<()> {
 }
 
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pipe_process_detaches_from_parent_session() -> anyhow::Result<()> {
     let parent_sid = unsafe { libc::getsid(0) };
     if parent_sid == -1 {
@@ -482,7 +482,7 @@ async fn pipe_process_detaches_from_parent_session() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pipe_and_pty_share_interface() -> anyhow::Result<()> {
     let env_map: HashMap<String, String> = std::env::vars().collect();
 
@@ -523,7 +523,7 @@ async fn pipe_and_pty_share_interface() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pipe_drains_stderr_without_stdout_activity() -> anyhow::Result<()> {
     let Some(python) = find_python() else {
         eprintln!("python not found; skipping pipe_drains_stderr_without_stdout_activity");
@@ -544,7 +544,7 @@ async fn pipe_drains_stderr_without_stdout_activity() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pipe_process_can_expose_split_stdout_and_stderr() -> anyhow::Result<()> {
     let env_map: HashMap<String, String> = std::env::vars().collect();
     let (program, args) = shell_command(&split_stdout_stderr_command());
@@ -590,7 +590,7 @@ async fn pipe_process_can_expose_split_stdout_and_stderr() -> anyhow::Result<()>
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pipe_terminate_aborts_detached_readers() -> anyhow::Result<()> {
     if !setsid_available() {
         eprintln!("setsid not available; skipping pipe_terminate_aborts_detached_readers");
@@ -628,7 +628,7 @@ async fn pipe_terminate_aborts_detached_readers() -> anyhow::Result<()> {
 }
 
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pty_terminate_kills_background_children_in_same_process_group() -> anyhow::Result<()> {
     let env_map: HashMap<String, String> = std::env::vars().collect();
     let marker = "__codex_bg_pid:";
@@ -673,7 +673,7 @@ async fn pty_terminate_kills_background_children_in_same_process_group() -> anyh
 }
 
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pty_spawn_can_preserve_inherited_fds() -> anyhow::Result<()> {
     use std::io::Read;
     use std::os::fd::AsRawFd;
@@ -720,7 +720,7 @@ async fn pty_spawn_can_preserve_inherited_fds() -> anyhow::Result<()> {
 }
 
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pty_preserving_inherited_fds_keeps_python_repl_running() -> anyhow::Result<()> {
     use std::os::fd::AsRawFd;
     use std::os::fd::FromRawFd;
@@ -792,7 +792,7 @@ async fn pty_preserving_inherited_fds_keeps_python_repl_running() -> anyhow::Res
 }
 
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pty_spawn_with_inherited_fds_reports_exec_failures() -> anyhow::Result<()> {
     use std::os::fd::AsRawFd;
     use std::os::fd::FromRawFd;
@@ -840,7 +840,7 @@ async fn pty_spawn_with_inherited_fds_reports_exec_failures() -> anyhow::Result<
 }
 
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pty_spawn_with_inherited_fds_supports_resize() -> anyhow::Result<()> {
     use std::os::fd::AsRawFd;
     use std::os::fd::FromRawFd;
@@ -900,7 +900,7 @@ async fn pty_spawn_with_inherited_fds_supports_resize() -> anyhow::Result<()> {
 }
 
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pipe_spawn_no_stdin_can_preserve_inherited_fds() -> anyhow::Result<()> {
     use std::io::Read;
     use std::os::fd::AsRawFd;

@@ -20,7 +20,7 @@ use tokio::time::timeout;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[test]
 async fn request_permissions_round_trip() -> Result<()> {
     let codex_home = tempfile::TempDir::new()?;
     let responses = vec![

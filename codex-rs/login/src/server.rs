@@ -20,7 +20,6 @@ use std::net::TcpStream;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::thread;
 use std::time::Duration;
 
 use crate::auth::AuthCredentialsStoreMode;
@@ -158,7 +157,7 @@ pub fn run_login_server(opts: ServerOptions) -> io::Result<LoginServer> {
     let (tx, mut rx) = tokio::sync::mpsc::channel::<Request>(16);
     let _server_handle = {
         let server = server.clone();
-        thread::spawn(move || -> io::Result<()> {
+        tokio::thread_spawn::spawn(move || -> io::Result<()> {
             while let Ok(request) = server.recv() {
                 match tx.blocking_send(request) {
                     Ok(()) => {}
@@ -547,7 +546,7 @@ fn bind_server(port: u16) -> io::Result<Server> {
                         }
                     }
 
-                    thread::sleep(RETRY_DELAY);
+                    tokio::thread_spawn::sleep(RETRY_DELAY);
 
                     if attempts >= MAX_ATTEMPTS {
                         return Err(io::Error::new(

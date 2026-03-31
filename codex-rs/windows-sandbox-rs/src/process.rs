@@ -282,7 +282,7 @@ pub fn read_handle_loop<F>(handle: HANDLE, mut on_chunk: F) -> std::thread::Join
 where
     F: FnMut(&[u8]) + Send + 'static,
 {
-    std::thread::spawn(move || {
+    tokio::thread_spawn::spawn(move || {
         let mut buf = [0u8; 8192];
         loop {
             let mut read_bytes: u32 = 0;

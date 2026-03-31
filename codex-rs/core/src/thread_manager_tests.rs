@@ -89,7 +89,7 @@ fn drops_from_last_user_only() {
     assert_matches!(truncated2, InitialHistory::New);
 }
 
-#[tokio::test]
+#[test]
 async fn ignores_session_prefix_messages_when_truncating() {
     let (session, turn_context) = make_session_and_context().await;
     let mut items = session.build_initial_context(&turn_context).await;
@@ -120,7 +120,7 @@ async fn ignores_session_prefix_messages_when_truncating() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn shutdown_all_threads_bounded_submits_shutdown_to_every_thread() {
     let temp_dir = tempdir().expect("tempdir");
     let mut config = test_config();
@@ -156,7 +156,7 @@ async fn shutdown_all_threads_bounded_submits_shutdown_to_every_thread() {
     assert!(manager.list_thread_ids().await.is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn new_uses_configured_openai_provider_for_model_refresh() {
     let server = MockServer::start().await;
     let models_mock = mount_models_once(&server, ModelsResponse { models: vec![] }).await;

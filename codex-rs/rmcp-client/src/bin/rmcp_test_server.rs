@@ -127,7 +127,6 @@ impl ServerHandler for TestToolServer {
     }
 }
 
-#[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("starting rmcp test server");
     // Run the server with STDIO transport. If the client disconnects we simply

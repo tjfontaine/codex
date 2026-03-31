@@ -599,7 +599,7 @@ mod tests {
     /// intentionally fake sentinels: this test asserts that the paths are
     /// copied into the exported environment and that the socket fd stays valid
     /// until `close_client_socket()` is called.
-    #[tokio::test]
+    #[test]
     async fn start_session_exposes_wrapper_env_overlay() -> anyhow::Result<()> {
         let _guard = ESCALATE_SERVER_TEST_LOCK.lock().await;
         let execve_wrapper = PathBuf::from("/tmp/codex-execve-wrapper");
@@ -645,7 +645,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn exec_closes_parent_socket_after_shell_spawn() -> anyhow::Result<()> {
         let _guard = ESCALATE_SERVER_TEST_LOCK.lock().await;
         let after_spawn_invoked = Arc::new(AtomicBool::new(false));
@@ -679,7 +679,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn handle_escalate_session_respects_run_in_sandbox_decision() -> anyhow::Result<()> {
         let _guard = ESCALATE_SERVER_TEST_LOCK.lock().await;
         let (server, client) = AsyncSocket::pair()?;
@@ -718,7 +718,7 @@ mod tests {
         server_task.await?
     }
 
-    #[tokio::test]
+    #[test]
     async fn handle_escalate_session_resolves_relative_file_against_request_workdir()
     -> anyhow::Result<()> {
         let _guard = ESCALATE_SERVER_TEST_LOCK.lock().await;
@@ -758,7 +758,7 @@ mod tests {
         server_task.await?
     }
 
-    #[tokio::test]
+    #[test]
     async fn handle_escalate_session_executes_escalated_command() -> anyhow::Result<()> {
         let _guard = ESCALATE_SERVER_TEST_LOCK.lock().await;
         let (server, client) = AsyncSocket::pair()?;
@@ -850,7 +850,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn handle_escalate_session_accepts_received_fds_that_overlap_destinations()
     -> anyhow::Result<()> {
         let _guard = ESCALATE_SERVER_TEST_LOCK.lock().await;
@@ -923,7 +923,7 @@ mod tests {
         server_task.await?
     }
 
-    #[tokio::test]
+    #[test]
     async fn handle_escalate_session_passes_permissions_to_executor() -> anyhow::Result<()> {
         let _guard = ESCALATE_SERVER_TEST_LOCK.lock().await;
         let (server, client) = AsyncSocket::pair()?;
@@ -978,7 +978,7 @@ mod tests {
         server_task.await?
     }
 
-    #[tokio::test]
+    #[test]
     async fn dropping_session_aborts_intercept_workers_and_kills_spawned_child()
     -> anyhow::Result<()> {
         let _guard = ESCALATE_SERVER_TEST_LOCK.lock().await;

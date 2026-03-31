@@ -131,7 +131,7 @@ pub(crate) mod announcement {
 
     /// Prewarm the cache of the announcement tip.
     pub(crate) fn prewarm() {
-        let _ = thread::spawn(|| ANNOUNCEMENT_TIP.get_or_init(init_announcement_tip_in_thread));
+        let _ = tokio::thread_spawn::spawn(|| ANNOUNCEMENT_TIP.get_or_init(init_announcement_tip_in_thread));
     }
 
     /// Fetch the announcement tip, return None if the prewarm is not done yet.
@@ -167,7 +167,7 @@ pub(crate) mod announcement {
     }
 
     fn init_announcement_tip_in_thread() -> Option<String> {
-        thread::spawn(blocking_init_announcement_tip)
+        tokio::thread_spawn::spawn(blocking_init_announcement_tip)
             .join()
             .ok()
             .flatten()

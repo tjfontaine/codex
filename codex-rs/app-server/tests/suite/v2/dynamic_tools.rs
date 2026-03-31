@@ -37,7 +37,7 @@ use wiremock::MockServer;
 const DEFAULT_READ_TIMEOUT: Duration = Duration::from_secs(10);
 
 /// Ensures dynamic tool specs are serialized into the model request payload.
-#[tokio::test]
+#[test]
 async fn thread_start_injects_dynamic_tools_into_model_requests() -> Result<()> {
     let responses = vec![create_final_assistant_message_sse_response("Done")?];
     let server = create_mock_responses_server_sequence_unchecked(responses).await;
@@ -119,7 +119,7 @@ async fn thread_start_injects_dynamic_tools_into_model_requests() -> Result<()> 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_keeps_hidden_dynamic_tools_out_of_model_requests() -> Result<()> {
     let responses = vec![create_final_assistant_message_sse_response("Done")?];
     let server = create_mock_responses_server_sequence_unchecked(responses).await;
@@ -192,7 +192,7 @@ async fn thread_start_keeps_hidden_dynamic_tools_out_of_model_requests() -> Resu
 }
 
 /// Exercises the full dynamic tool call path (server request, client response, model output).
-#[tokio::test]
+#[test]
 async fn dynamic_tool_call_round_trip_sends_text_content_items_to_model() -> Result<()> {
     let call_id = "dyn-call-1";
     let tool_name = "demo_tool";
@@ -362,7 +362,7 @@ async fn dynamic_tool_call_round_trip_sends_text_content_items_to_model() -> Res
 }
 
 /// Ensures dynamic tool call responses can include structured content items.
-#[tokio::test]
+#[test]
 async fn dynamic_tool_call_round_trip_sends_content_items_to_model() -> Result<()> {
     let call_id = "dyn-call-items-1";
     let tool_name = "demo_tool";

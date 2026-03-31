@@ -5,7 +5,7 @@ use tokio::select;
 use tokio::time::timeout;
 
 /// Regression test for https://github.com/openai/codex/issues/8803.
-#[tokio::test]
+#[test]
 #[ignore = "TODO(mbolin): flaky"]
 async fn malformed_rules_should_not_panic() -> anyhow::Result<()> {
     // run_codex_cli() does not work on Windows due to PTY limitations.

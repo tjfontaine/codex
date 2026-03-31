@@ -265,7 +265,7 @@ async fn spawn_child_and_capture_snapshot(
         .await)
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn subagent_notification_is_included_without_wait() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -290,7 +290,7 @@ async fn subagent_notification_is_included_without_wait() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn spawned_child_receives_forked_parent_context() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -406,7 +406,7 @@ async fn spawned_child_receives_forked_parent_context() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn spawn_agent_requested_model_and_reasoning_override_inherited_settings_without_role()
 -> Result<()> {
     skip_if_no_network!(Ok(()));
@@ -432,7 +432,7 @@ async fn spawn_agent_requested_model_and_reasoning_override_inherited_settings_w
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn spawn_agent_role_overrides_requested_model_and_reasoning_settings() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -474,7 +474,7 @@ async fn spawn_agent_role_overrides_requested_model_and_reasoning_settings() -> 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn spawn_agent_tool_description_mentions_role_locked_settings() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

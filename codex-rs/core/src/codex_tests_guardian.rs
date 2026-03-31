@@ -42,7 +42,7 @@ fn expect_text_output(output: &FunctionToolOutput) -> String {
     function_call_output_content_items_to_text(&output.body).unwrap_or_default()
 }
 
-#[tokio::test]
+#[test]
 async fn guardian_allows_shell_additional_permissions_requests_past_policy_validation() {
     let server = start_mock_server().await;
     let _request_log = mount_sse_once(
@@ -187,7 +187,7 @@ async fn guardian_allows_shell_additional_permissions_requests_past_policy_valid
     assert!(exec_output.output.contains("hi"));
 }
 
-#[tokio::test]
+#[test]
 async fn guardian_allows_unified_exec_additional_permissions_requests_past_policy_validation() {
     let (mut session, mut turn_context_raw) = make_session_and_context().await;
     turn_context_raw
@@ -236,7 +236,7 @@ async fn guardian_allows_unified_exec_additional_permissions_requests_past_polic
     );
 }
 
-#[tokio::test]
+#[test]
 async fn process_compacted_history_preserves_separate_guardian_developer_message() {
     let (session, mut turn_context) = make_session_and_context().await;
     let guardian_policy = crate::guardian::guardian_policy_prompt();
@@ -296,7 +296,7 @@ async fn process_compacted_history_preserves_separate_guardian_developer_message
     assert_eq!(developer_messages.last(), Some(&guardian_policy));
 }
 
-#[tokio::test]
+#[test]
 #[cfg(unix)]
 async fn shell_handler_allows_sticky_turn_permissions_without_inline_request_permissions_feature() {
     let (mut session, turn_context_raw) = make_session_and_context().await;
@@ -375,7 +375,7 @@ async fn shell_handler_allows_sticky_turn_permissions_without_inline_request_per
     }
 }
 
-#[tokio::test]
+#[test]
 async fn guardian_subagent_does_not_inherit_parent_exec_policy_rules() {
     let codex_home = tempdir().expect("create codex home");
     let project_dir = tempdir().expect("create project dir");

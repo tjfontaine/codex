@@ -119,7 +119,7 @@ fn truncates_rollout_from_start_applies_thread_rollback_markers() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn ignores_session_prefix_messages_when_truncating_rollout_from_start() {
     let (session, turn_context) = make_session_and_context().await;
     let mut items = session.build_initial_context(&turn_context).await;

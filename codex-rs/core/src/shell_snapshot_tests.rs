@@ -185,7 +185,7 @@ fn bash_snapshot_preserves_multiline_exports() -> Result<()> {
 }
 
 #[cfg(unix)]
-#[tokio::test]
+#[test]
 async fn try_new_creates_and_deletes_snapshot_file() -> Result<()> {
     let dir = tempdir()?;
     let shell = Shell {
@@ -209,7 +209,7 @@ async fn try_new_creates_and_deletes_snapshot_file() -> Result<()> {
 }
 
 #[cfg(unix)]
-#[tokio::test]
+#[test]
 async fn try_new_uses_distinct_generation_paths() -> Result<()> {
     let dir = tempdir()?;
     let session_id = ThreadId::new();
@@ -245,7 +245,7 @@ async fn try_new_uses_distinct_generation_paths() -> Result<()> {
 }
 
 #[cfg(unix)]
-#[tokio::test]
+#[test]
 async fn snapshot_shell_does_not_inherit_stdin() -> Result<()> {
     let _stdin_guard = BlockingStdinPipe::install()?;
 
@@ -290,7 +290,7 @@ async fn snapshot_shell_does_not_inherit_stdin() -> Result<()> {
 }
 
 #[cfg(target_os = "linux")]
-#[tokio::test]
+#[test]
 async fn timed_out_snapshot_shell_is_terminated() -> Result<()> {
     use std::process::Stdio;
     use tokio::time::Duration as TokioDuration;
@@ -342,7 +342,7 @@ async fn timed_out_snapshot_shell_is_terminated() -> Result<()> {
 }
 
 #[cfg(target_os = "macos")]
-#[tokio::test]
+#[test]
 async fn macos_zsh_snapshot_includes_sections() -> Result<()> {
     let snapshot = get_snapshot(ShellType::Zsh).await?;
     assert_posix_snapshot_sections(&snapshot);
@@ -350,7 +350,7 @@ async fn macos_zsh_snapshot_includes_sections() -> Result<()> {
 }
 
 #[cfg(target_os = "linux")]
-#[tokio::test]
+#[test]
 async fn linux_bash_snapshot_includes_sections() -> Result<()> {
     let snapshot = get_snapshot(ShellType::Bash).await?;
     assert_posix_snapshot_sections(&snapshot);
@@ -358,7 +358,7 @@ async fn linux_bash_snapshot_includes_sections() -> Result<()> {
 }
 
 #[cfg(target_os = "linux")]
-#[tokio::test]
+#[test]
 async fn linux_sh_snapshot_includes_sections() -> Result<()> {
     let snapshot = get_snapshot(ShellType::Sh).await?;
     assert_posix_snapshot_sections(&snapshot);
@@ -367,7 +367,7 @@ async fn linux_sh_snapshot_includes_sections() -> Result<()> {
 
 #[cfg(target_os = "windows")]
 #[ignore]
-#[tokio::test]
+#[test]
 async fn windows_powershell_snapshot_includes_sections() -> Result<()> {
     let snapshot = get_snapshot(ShellType::PowerShell).await?;
     assert!(snapshot.contains("# Snapshot file"));
@@ -388,7 +388,7 @@ async fn write_rollout_stub(codex_home: &Path, session_id: ThreadId) -> Result<P
     Ok(path)
 }
 
-#[tokio::test]
+#[test]
 async fn cleanup_stale_snapshots_removes_orphans_and_keeps_live() -> Result<()> {
     let dir = tempdir()?;
     let codex_home = dir.path();
@@ -415,7 +415,7 @@ async fn cleanup_stale_snapshots_removes_orphans_and_keeps_live() -> Result<()> 
 }
 
 #[cfg(unix)]
-#[tokio::test]
+#[test]
 async fn cleanup_stale_snapshots_removes_stale_rollouts() -> Result<()> {
     let dir = tempdir()?;
     let codex_home = dir.path();
@@ -436,7 +436,7 @@ async fn cleanup_stale_snapshots_removes_stale_rollouts() -> Result<()> {
 }
 
 #[cfg(unix)]
-#[tokio::test]
+#[test]
 async fn cleanup_stale_snapshots_skips_active_session() -> Result<()> {
     let dir = tempdir()?;
     let codex_home = dir.path();

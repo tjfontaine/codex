@@ -240,7 +240,7 @@ async fn run_code_mode_turn_with_rmcp(
 }
 
 #[cfg_attr(windows, ignore = "no exec_command on Windows")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_can_return_exec_command_output() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -283,7 +283,7 @@ text(JSON.stringify(await tools.exec_command({ cmd: "printf code_mode_exec_marke
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_only_restricts_prompt_tools() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -314,7 +314,7 @@ async fn code_mode_only_restricts_prompt_tools() -> Result<()> {
 }
 
 #[cfg_attr(windows, ignore = "no exec_command on Windows")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_only_can_call_nested_tools() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -363,7 +363,7 @@ text(output.output);
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_update_plan_nested_tool_result_is_empty_object() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -396,7 +396,7 @@ text(JSON.stringify(result));
 }
 
 #[cfg_attr(windows, ignore = "flaky on windows")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_nested_tool_calls_can_run_in_parallel() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -488,7 +488,7 @@ text(JSON.stringify(results));
 }
 
 #[cfg_attr(windows, ignore = "no exec_command on Windows")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_can_truncate_final_result_with_configured_budget() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -528,7 +528,7 @@ Total\ output\ lines:\ 1\n
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_returns_accumulated_output_when_script_fails() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -572,7 +572,7 @@ Error:\ boom\n
 }
 
 #[cfg_attr(windows, ignore = "no exec_command on Windows")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_exec_surfaces_handler_errors_as_exceptions() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -612,7 +612,7 @@ try {
 }
 
 #[cfg_attr(windows, ignore = "no exec_command on Windows")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_can_yield_and_resume_with_wait() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -758,7 +758,7 @@ text("phase 3");
 }
 
 #[cfg_attr(windows, ignore = "no exec_command on Windows")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_yield_timeout_works_for_busy_loop() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -852,7 +852,7 @@ while (true) {}
 }
 
 #[cfg_attr(windows, ignore = "no exec_command on Windows")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_can_run_multiple_yielded_sessions() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1020,7 +1020,7 @@ text("session b done");
 }
 
 #[cfg_attr(windows, ignore = "no exec_command on Windows")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_wait_can_terminate_and_continue() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1146,7 +1146,7 @@ text("after terminate");
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_wait_returns_error_for_unknown_session() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1207,7 +1207,7 @@ async fn code_mode_wait_returns_error_for_unknown_session() -> Result<()> {
 }
 
 #[cfg_attr(windows, ignore = "no exec_command on Windows")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_wait_terminate_returns_completed_session_if_it_finished_after_yield_control()
 -> Result<()> {
     skip_if_no_network!(Ok(()));
@@ -1403,7 +1403,7 @@ text("session b done");
 }
 
 #[cfg_attr(windows, ignore = "no exec_command on Windows")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_background_keeps_running_on_later_turn_without_wait() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1496,7 +1496,7 @@ text("after yield");
 }
 
 #[cfg_attr(windows, ignore = "no exec_command on Windows")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_wait_uses_its_own_max_tokens_budget() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1594,7 +1594,7 @@ Total\ output\ lines:\ 1\n
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_can_output_serialized_text_via_global_helper() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1625,7 +1625,7 @@ text({ json: true });
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_notify_injects_additional_exec_tool_output_into_active_context() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1663,7 +1663,7 @@ text("done");
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_exit_stops_script_immediately() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1702,7 +1702,7 @@ text("after");
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_surfaces_text_stringify_errors() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1743,7 +1743,7 @@ text(circular);
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_can_output_images_via_global_helper() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1793,7 +1793,7 @@ image("data:image/png;base64,AAA");
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_can_use_view_image_result_with_image_helper() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1877,7 +1877,7 @@ image(out);
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_can_apply_patch_via_nested_tool() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1917,7 +1917,7 @@ async fn code_mode_can_apply_patch_via_nested_tool() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_can_print_structured_mcp_tool_result_fields() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1955,7 +1955,7 @@ contentLength=0"
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_exposes_mcp_tools_on_global_tools_object() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1996,7 +1996,7 @@ contentLength=0"
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_exposes_namespaced_mcp_tools_on_global_tools_object() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -2032,7 +2032,7 @@ text(JSON.stringify({
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_exposes_normalized_illegal_mcp_tool_names() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -2061,7 +2061,7 @@ text(`echo=${result.structuredContent.echo}`);
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_lists_global_scope_items() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -2172,7 +2172,7 @@ text(JSON.stringify(Object.getOwnPropertyNames(globalThis).sort()));
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_exports_all_tools_metadata_for_builtin_tools() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -2208,7 +2208,7 @@ text(JSON.stringify(tool));
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_exports_all_tools_metadata_for_namespaced_mcp_tools() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -2246,7 +2246,7 @@ text(JSON.stringify(tool));
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_can_call_hidden_dynamic_tools() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -2392,7 +2392,7 @@ text(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_can_print_content_only_mcp_tool_result_fields() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -2435,7 +2435,7 @@ isError=false"
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_can_print_error_mcp_tool_result_fields() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -2474,7 +2474,7 @@ structuredContent=null"
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn code_mode_can_store_and_load_values_across_turns() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

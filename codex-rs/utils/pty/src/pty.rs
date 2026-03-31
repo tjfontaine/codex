@@ -180,7 +180,7 @@ async fn spawn_process_portable(
                 }
                 Err(ref e) if e.kind() == ErrorKind::Interrupted => continue,
                 Err(ref e) if e.kind() == ErrorKind::WouldBlock => {
-                    std::thread::sleep(Duration::from_millis(5));
+                    tokio::thread_spawn::sleep(Duration::from_millis(5));
                     continue;
                 }
                 Err(_) => break,
@@ -339,7 +339,7 @@ async fn spawn_process_preserving_fds(
                 }
                 Err(ref e) if e.kind() == ErrorKind::Interrupted => continue,
                 Err(ref e) if e.kind() == ErrorKind::WouldBlock => {
-                    std::thread::sleep(Duration::from_millis(5));
+                    tokio::thread_spawn::sleep(Duration::from_millis(5));
                     continue;
                 }
                 Err(_) => break,

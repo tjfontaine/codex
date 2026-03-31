@@ -607,7 +607,7 @@ mod tests {
             })
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn evaluate_host_policy_emits_domain_event_for_decider_allow_override() {
         let state = network_proxy_state_for_policy(NetworkProxySettings::default());
         let calls = Arc::new(AtomicUsize::new(0));
@@ -674,7 +674,7 @@ mod tests {
         );
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn evaluate_host_policy_emits_domain_event_for_baseline_deny() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["example.com".to_string()],
@@ -717,7 +717,7 @@ mod tests {
         assert_eq!(event.field("client.address"), Some("127.0.0.1:1234"));
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn evaluate_host_policy_emits_domain_event_for_decider_ask() {
         let state = network_proxy_state_for_policy(NetworkProxySettings::default());
         let decider: Arc<dyn NetworkPolicyDecider> =
@@ -758,7 +758,7 @@ mod tests {
         assert_eq!(event.field("network.policy.override"), Some("false"));
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn evaluate_host_policy_emits_metadata_fields() {
         let metadata = NetworkProxyAuditMetadata {
             conversation_id: Some("conversation-1".to_string()),
@@ -800,7 +800,7 @@ mod tests {
         assert_eq!(event.field("slug"), Some("gpt-5.3-codex"));
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn emit_block_decision_audit_event_emits_non_domain_event() {
         let state = network_proxy_state_for_policy(NetworkProxySettings::default());
 
@@ -848,7 +848,7 @@ mod tests {
         );
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn evaluate_host_policy_still_denies_not_allowed_local_without_decider_override() {
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["example.com".to_string()],

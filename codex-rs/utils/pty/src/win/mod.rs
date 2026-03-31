@@ -165,7 +165,7 @@ impl std::future::Future for WinChild {
             Ok(None) => {
                 let proc = self.proc.lock().unwrap().try_clone()?;
                 let waker = cx.waker().clone();
-                std::thread::spawn(move || {
+                tokio::thread_spawn::spawn(move || {
                     unsafe {
                         WaitForSingleObject(proc.as_raw_handle() as _, INFINITE);
                     }

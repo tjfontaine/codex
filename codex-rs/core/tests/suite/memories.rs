@@ -26,7 +26,7 @@ use tempfile::TempDir;
 use tokio::time::Duration;
 use tokio::time::Instant;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn memories_startup_phase2_tracks_added_and_removed_inputs_across_runs() -> Result<()> {
     let server = start_mock_server().await;
     let home = Arc::new(TempDir::new()?);
@@ -159,7 +159,7 @@ async fn memories_startup_phase2_tracks_added_and_removed_inputs_across_runs() -
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn web_search_pollution_moves_selected_thread_into_removed_phase2_inputs() -> Result<()> {
     let server = start_mock_server().await;
     let home = Arc::new(TempDir::new()?);

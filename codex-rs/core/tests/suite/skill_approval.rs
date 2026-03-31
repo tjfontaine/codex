@@ -156,7 +156,7 @@ fn output_shows_sandbox_denial(output: &str) -> bool {
 /// Focus on the approval payload: the skill should prompt before execution and
 /// only advertise the permissions declared in its metadata.
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn shell_zsh_fork_prompts_for_skill_script_execution() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -276,7 +276,7 @@ permissions:
 }
 
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn shell_zsh_fork_skill_script_reject_policy_with_sandbox_approval_false_still_prompts()
 -> Result<()> {
     skip_if_no_network!(Ok(()));
@@ -370,7 +370,7 @@ permissions:
 }
 
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn shell_zsh_fork_skill_script_reject_policy_with_sandbox_approval_true_still_prompts()
 -> Result<()> {
     skip_if_no_network!(Ok(()));
@@ -465,7 +465,7 @@ permissions:
 }
 
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn shell_zsh_fork_skill_script_reject_policy_with_skill_approval_true_skips_prompt()
 -> Result<()> {
     skip_if_no_network!(Ok(()));
@@ -543,7 +543,7 @@ permissions:
 
 /// Permissionless skills should inherit the turn sandbox without prompting.
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn shell_zsh_fork_skill_without_permissions_inherits_turn_sandbox() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -672,7 +672,7 @@ async fn shell_zsh_fork_skill_without_permissions_inherits_turn_sandbox() -> Res
 /// Empty skill permissions should behave like no skill override and inherit the
 /// turn sandbox without prompting.
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn shell_zsh_fork_skill_with_empty_permissions_inherits_turn_sandbox() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -797,7 +797,7 @@ async fn shell_zsh_fork_skill_with_empty_permissions_inherits_turn_sandbox() -> 
 /// The validation to focus on is: writes to the skill-approved folder succeed,
 /// and writes to an unrelated folder fail, both before and after cached approval.
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn shell_zsh_fork_skill_session_approval_enforces_skill_permissions() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -975,7 +975,7 @@ async fn shell_zsh_fork_skill_session_approval_enforces_skill_permissions() -> R
 /// This stays narrow on purpose: the important check is that `WorkspaceWrite`
 /// continues to deny writes outside the workspace even under `zsh-fork`.
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn shell_zsh_fork_still_enforces_workspace_write_sandbox() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

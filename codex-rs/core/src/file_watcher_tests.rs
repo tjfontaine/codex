@@ -159,14 +159,14 @@ fn unregister_holds_state_lock_until_unwatch_finishes() {
 
     let unregister_watcher = Arc::clone(&watcher);
     let unregister_root = root.clone();
-    let unregister_thread = std::thread::spawn(move || {
+    let unregister_thread = tokio::thread_spawn::spawn(move || {
         unregister_watcher.unregister_roots(&[unregister_root]);
     });
 
     let state_lock_observed = (0..100).any(|_| {
         let locked = watcher.state.try_write().is_err();
         if !locked {
-            std::thread::sleep(Duration::from_millis(10));
+            tokio::thread_spawn::sleep(Duration::from_millis(10));
         }
         locked
     });
@@ -174,7 +174,7 @@ fn unregister_holds_state_lock_until_unwatch_finishes() {
 
     let register_watcher = Arc::clone(&watcher);
     let register_root = root.clone();
-    let register_thread = std::thread::spawn(move || {
+    let register_thread = tokio::thread_spawn::spawn(move || {
         register_watcher.register_skills_root(register_root);
     });
 
@@ -195,7 +195,7 @@ fn unregister_holds_state_lock_until_unwatch_finishes() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn spawn_event_loop_flushes_pending_changes_on_shutdown() {
     let watcher = FileWatcher::noop();
     let root = path("/tmp/skills");

@@ -186,7 +186,7 @@ async fn wait_for_streamable_http_server(
     }
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+#[test]
 async fn streamable_http_404_session_expiry_recovers_and_retries_once() -> anyhow::Result<()> {
     let (_server, base_url) = spawn_streamable_http_server().await?;
     let client = create_client(&base_url).await?;
@@ -202,7 +202,7 @@ async fn streamable_http_404_session_expiry_recovers_and_retries_once() -> anyho
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+#[test]
 async fn streamable_http_401_does_not_trigger_recovery() -> anyhow::Result<()> {
     let (_server, base_url) = spawn_streamable_http_server().await?;
     let client = create_client(&base_url).await?;
@@ -223,7 +223,7 @@ async fn streamable_http_401_does_not_trigger_recovery() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+#[test]
 async fn streamable_http_404_recovery_only_retries_once() -> anyhow::Result<()> {
     let (_server, base_url) = spawn_streamable_http_server().await?;
     let client = create_client(&base_url).await?;
@@ -247,7 +247,7 @@ async fn streamable_http_404_recovery_only_retries_once() -> anyhow::Result<()> 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+#[test]
 async fn streamable_http_non_session_failure_does_not_trigger_recovery() -> anyhow::Result<()> {
     let (_server, base_url) = spawn_streamable_http_server().await?;
     let client = create_client(&base_url).await?;

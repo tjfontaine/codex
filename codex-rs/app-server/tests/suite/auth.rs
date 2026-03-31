@@ -92,7 +92,7 @@ async fn login_with_api_key_via_request(mcp: &mut McpProcess, api_key: &str) -> 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn get_auth_status_no_auth() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(codex_home.path())?;
@@ -118,7 +118,7 @@ async fn get_auth_status_no_auth() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn get_auth_status_with_api_key() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(codex_home.path())?;
@@ -146,7 +146,7 @@ async fn get_auth_status_with_api_key() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn get_auth_status_with_api_key_when_auth_not_required() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml_custom_provider(codex_home.path(), false)?;
@@ -179,7 +179,7 @@ async fn get_auth_status_with_api_key_when_auth_not_required() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn get_auth_status_with_api_key_no_include_token() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(codex_home.path())?;
@@ -207,7 +207,7 @@ async fn get_auth_status_with_api_key_no_include_token() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn login_api_key_rejected_when_forced_chatgpt() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml_forced_login(codex_home.path(), "chatgpt")?;

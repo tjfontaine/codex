@@ -752,7 +752,7 @@ async fn run_exec_session(args: ExecRunArgs) -> anyhow::Result<()> {
             Some(event)
         } else {
             tokio::select! {
-                maybe_interrupt = interrupt_rx.recv(), if interrupt_channel_open => {
+                maybe_interrupt = interrupt_rx.recv() => {
                     if maybe_interrupt.is_none() {
                         interrupt_channel_open = false;
                         continue;
@@ -1846,7 +1846,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn thread_start_params_include_review_policy_when_review_policy_is_manual_only() {
         let codex_home = tempdir().expect("create temp codex home");
         let cwd = tempdir().expect("create temp cwd");
@@ -1865,7 +1865,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn thread_start_params_include_review_policy_when_auto_review_is_enabled() {
         let codex_home = tempdir().expect("create temp codex home");
         let cwd = tempdir().expect("create temp cwd");

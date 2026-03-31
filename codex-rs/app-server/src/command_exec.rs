@@ -497,7 +497,7 @@ async fn run_command(params: RunCommandParams) {
 
     let exit_code = loop {
         tokio::select! {
-            control = control_rx.recv(), if control_open => {
+            control = control_rx.recv() => {
                 match control {
                     Some(CommandControlRequest { control, response_tx }) => {
                         let result = match control {
@@ -527,7 +527,7 @@ async fn run_command(params: RunCommandParams) {
                     }
                 }
             }
-            _ = &mut expiration, if !timed_out => {
+            _ = &mut expiration => {
                 timed_out = true;
                 session.request_terminate();
             }
@@ -746,7 +746,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn windows_sandbox_streaming_exec_is_rejected() {
         let (tx, _rx) = mpsc::channel(1);
         let manager = CommandExecManager::default();
@@ -777,7 +777,7 @@ mod tests {
     }
 
     #[cfg(not(target_os = "windows"))]
-    #[tokio::test]
+    #[test]
     async fn windows_sandbox_non_streaming_exec_uses_execution_path() {
         let (tx, mut rx) = mpsc::channel(1);
         let manager = CommandExecManager::default();
@@ -822,7 +822,7 @@ mod tests {
     }
 
     #[cfg(not(target_os = "windows"))]
-    #[tokio::test]
+    #[test]
     async fn cancellation_expiration_keeps_process_alive_until_terminated() {
         let (tx, mut rx) = mpsc::channel(4);
         let manager = CommandExecManager::default();
@@ -908,7 +908,7 @@ mod tests {
         // replying, so shell startup noise is allowed here.
     }
 
-    #[tokio::test]
+    #[test]
     async fn windows_sandbox_process_ids_reject_write_requests() {
         let manager = CommandExecManager::default();
         let request_id = ConnectionRequestId {
@@ -944,7 +944,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn windows_sandbox_process_ids_reject_terminate_requests() {
         let manager = CommandExecManager::default();
         let request_id = ConnectionRequestId {
@@ -978,7 +978,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn dropped_control_request_is_reported_as_not_running() {
         let manager = CommandExecManager::default();
         let request_id = ConnectionRequestId {

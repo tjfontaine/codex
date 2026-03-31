@@ -590,7 +590,7 @@ fn kill_listeners_on_same_port(listen: &str) -> Result<()> {
         }
     }
 
-    thread::sleep(Duration::from_millis(300));
+    tokio::thread_spawn::sleep(Duration::from_millis(300));
 
     let output = Command::new("lsof")
         .arg("-nP")
@@ -1474,7 +1474,7 @@ impl CodexClient {
                             )
                         });
                     }
-                    thread::sleep(Duration::from_millis(50));
+                    tokio::thread_spawn::sleep(Duration::from_millis(50));
                 }
             }
         };
@@ -2188,7 +2188,7 @@ impl Drop for CodexClient {
                 break;
             }
 
-            thread::sleep(APP_SERVER_GRACEFUL_SHUTDOWN_POLL_INTERVAL);
+            tokio::thread_spawn::sleep(APP_SERVER_GRACEFUL_SHUTDOWN_POLL_INTERVAL);
         }
 
         let _ = child.kill();

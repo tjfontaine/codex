@@ -43,7 +43,7 @@ const AUTO_COMPACT_LIMIT: i64 = 1_000;
 const COMPACT_PROMPT: &str = "Summarize the conversation.";
 const INVALID_REQUEST_ERROR_CODE: i64 = -32600;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn auto_compaction_local_emits_started_and_completed_items() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -102,7 +102,7 @@ async fn auto_compaction_local_emits_started_and_completed_items() -> Result<()>
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn auto_compaction_remote_emits_started_and_completed_items() -> Result<()> {
     skip_if_no_network!(Ok(()));
     const REMOTE_AUTO_COMPACT_LIMIT: i64 = 200_000;
@@ -190,7 +190,7 @@ async fn auto_compaction_remote_emits_started_and_completed_items() -> Result<()
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn thread_compact_start_triggers_compaction_and_returns_empty_response() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -246,7 +246,7 @@ async fn thread_compact_start_triggers_compaction_and_returns_empty_response() -
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn thread_compact_start_rejects_invalid_thread_id() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -282,7 +282,7 @@ async fn thread_compact_start_rejects_invalid_thread_id() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn thread_compact_start_rejects_unknown_thread_id() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

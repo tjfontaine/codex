@@ -53,7 +53,7 @@ use wiremock::matchers::path;
 
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn plugin_install_rejects_relative_marketplace_paths() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mut mcp = McpProcess::new(codex_home.path()).await?;
@@ -80,7 +80,7 @@ async fn plugin_install_rejects_relative_marketplace_paths() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_install_returns_invalid_request_for_missing_marketplace_file() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mut mcp = McpProcess::new(codex_home.path()).await?;
@@ -108,7 +108,7 @@ async fn plugin_install_returns_invalid_request_for_missing_marketplace_file() -
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_install_returns_invalid_request_for_not_available_plugin() -> Result<()> {
     let codex_home = TempDir::new()?;
     let repo_root = TempDir::new()?;
@@ -146,7 +146,7 @@ async fn plugin_install_returns_invalid_request_for_not_available_plugin() -> Re
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_install_returns_invalid_request_for_disallowed_product_plugin() -> Result<()> {
     let codex_home = TempDir::new()?;
     let repo_root = TempDir::new()?;
@@ -196,7 +196,7 @@ async fn plugin_install_returns_invalid_request_for_disallowed_product_plugin() 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_install_force_remote_sync_enables_remote_plugin_before_local_install() -> Result<()>
 {
     let server = MockServer::start().await;
@@ -266,7 +266,7 @@ async fn plugin_install_force_remote_sync_enables_remote_plugin_before_local_ins
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_install_tracks_analytics_event() -> Result<()> {
     let analytics_server = start_analytics_events_server().await?;
     let codex_home = TempDir::new()?;
@@ -347,7 +347,7 @@ async fn plugin_install_tracks_analytics_event() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_install_returns_apps_needing_auth() -> Result<()> {
     let connectors = vec![
         AppInfo {
@@ -445,7 +445,7 @@ async fn plugin_install_returns_apps_needing_auth() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_install_filters_disallowed_apps_needing_auth() -> Result<()> {
     let connectors = vec![AppInfo {
         id: "alpha".to_string(),
@@ -529,7 +529,7 @@ async fn plugin_install_filters_disallowed_apps_needing_auth() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_install_makes_bundled_mcp_servers_available_to_followup_requests() -> Result<()> {
     let codex_home = TempDir::new()?;
     std::fs::write(

@@ -44,7 +44,7 @@ async fn initialized_handler() -> Arc<ExecServerHandler> {
     handler
 }
 
-#[tokio::test]
+#[test]
 async fn duplicate_process_ids_allow_only_one_successful_start() {
     let handler = initialized_handler().await;
     let first_handler = Arc::clone(&handler);
@@ -72,7 +72,7 @@ async fn duplicate_process_ids_allow_only_one_successful_start() {
     handler.shutdown().await;
 }
 
-#[tokio::test]
+#[test]
 async fn terminate_reports_false_after_process_exit() {
     let handler = initialized_handler().await;
     handler

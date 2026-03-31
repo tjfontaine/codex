@@ -1,11 +1,9 @@
-#[cfg(unix)]
-use std::os::unix::process::ExitStatusExt;
 
 use std::collections::HashMap;
 use std::io;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::ExitStatus;
+use tokio::process::ExitStatus;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -1083,18 +1081,8 @@ async fn read_output<R: AsyncRead + Unpin + Send + 'static>(
     })
 }
 
-#[cfg(unix)]
 fn synthetic_exit_status(code: i32) -> ExitStatus {
-    use std::os::unix::process::ExitStatusExt;
-    std::process::ExitStatus::from_raw(code)
-}
-
-#[cfg(windows)]
-fn synthetic_exit_status(code: i32) -> ExitStatus {
-    use std::os::windows::process::ExitStatusExt;
-    // On Windows the raw status is a u32. Use a direct cast to avoid
-    // panicking on negative i32 values produced by prior narrowing casts.
-    std::process::ExitStatus::from_raw(code as u32)
+    ExitStatus::from_raw(code)
 }
 
 #[cfg(test)]

@@ -7,7 +7,7 @@ use core_test_support::test_codex::test_codex;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 #[ignore = "disabled until we enable list_dir tool"]
 async fn list_dir_tool_returns_entries() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
@@ -41,7 +41,7 @@ async fn list_dir_tool_returns_entries() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 #[ignore = "disabled until we enable list_dir tool"]
 async fn list_dir_tool_depth_one_omits_children() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
@@ -78,7 +78,7 @@ async fn list_dir_tool_depth_one_omits_children() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 #[ignore = "disabled until we enable list_dir tool"]
 async fn list_dir_tool_depth_two_includes_children_only() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
@@ -122,7 +122,7 @@ async fn list_dir_tool_depth_two_includes_children_only() -> anyhow::Result<()> 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 #[ignore = "disabled until we enable list_dir tool"]
 async fn list_dir_tool_depth_three_includes_grandchildren() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));

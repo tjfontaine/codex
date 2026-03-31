@@ -39,12 +39,7 @@ fn find_codex_home_from_env(codex_home_env: Option<&str>) -> std::io::Result<Pat
                     format!("CODEX_HOME points to {val:?}, but that path is not a directory"),
                 ))
             } else {
-                path.canonicalize().map_err(|err| {
-                    std::io::Error::new(
-                        err.kind(),
-                        format!("failed to canonicalize CODEX_HOME {val:?}: {err}"),
-                    )
-                })
+                Ok(path)
             }
         }
         None => {

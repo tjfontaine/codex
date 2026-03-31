@@ -33,7 +33,7 @@ use super::connection_handling_websocket::send_initialize_request;
 use super::connection_handling_websocket::send_request;
 use super::connection_handling_websocket::spawn_websocket_server;
 
-#[tokio::test]
+#[test]
 async fn command_exec_without_streams_can_be_terminated() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;
@@ -82,7 +82,7 @@ async fn command_exec_without_streams_can_be_terminated() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn command_exec_without_process_id_keeps_buffered_compatibility() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;
@@ -128,7 +128,7 @@ async fn command_exec_without_process_id_keeps_buffered_compatibility() -> Resul
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn command_exec_env_overrides_merge_with_server_environment_and_support_unset() -> Result<()>
 {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
@@ -186,7 +186,7 @@ async fn command_exec_env_overrides_merge_with_server_environment_and_support_un
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn command_exec_rejects_disable_timeout_with_timeout_ms() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;
@@ -223,7 +223,7 @@ async fn command_exec_rejects_disable_timeout_with_timeout_ms() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn command_exec_rejects_disable_output_cap_with_output_bytes_cap() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;
@@ -260,7 +260,7 @@ async fn command_exec_rejects_disable_output_cap_with_output_bytes_cap() -> Resu
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn command_exec_rejects_negative_timeout_ms() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;
@@ -297,7 +297,7 @@ async fn command_exec_rejects_negative_timeout_ms() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn command_exec_without_process_id_rejects_streaming() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;
@@ -334,7 +334,7 @@ async fn command_exec_without_process_id_rejects_streaming() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn command_exec_non_streaming_respects_output_cap() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;
@@ -380,7 +380,7 @@ async fn command_exec_non_streaming_respects_output_cap() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn command_exec_streaming_does_not_buffer_output() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;
@@ -440,7 +440,7 @@ async fn command_exec_streaming_does_not_buffer_output() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn command_exec_pipe_streams_output_and_accepts_write() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;
@@ -531,7 +531,7 @@ async fn command_exec_pipe_streams_output_and_accepts_write() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn command_exec_tty_implies_streaming_and_reports_pty_output() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;
@@ -609,7 +609,7 @@ async fn command_exec_tty_implies_streaming_and_reports_pty_output() -> Result<(
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn command_exec_tty_supports_initial_size_and_resize() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;
@@ -704,7 +704,7 @@ async fn command_exec_tty_supports_initial_size_and_resize() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process()
 -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;

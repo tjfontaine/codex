@@ -12,10 +12,8 @@ use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
 use strum_macros::Display;
-use ts_rs::TS;
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema, TS)]
-#[ts(type = "string")]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct GitSha(pub String);
 
 impl GitSha {
@@ -25,7 +23,7 @@ impl GitSha {
 }
 
 /// Authentication mode for OpenAI-backed providers.
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Display, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Display, JsonSchema)]
 #[serde(rename_all = "lowercase")]
 pub enum AuthMode {
     /// OpenAI API key provided by the caller and stored by Codex.
@@ -37,7 +35,6 @@ pub enum AuthMode {
     /// ChatGPT auth tokens are supplied by an external host app and are only
     /// stored in memory. Token refresh must be handled by the external host app.
     #[serde(rename = "chatgptAuthTokens")]
-    #[ts(rename = "chatgptAuthTokens")]
     #[strum(serialize = "chatgptAuthTokens")]
     ChatgptAuthTokens,
 }
@@ -82,644 +79,21 @@ macro_rules! experimental_type_entry {
 /// client can send to the server. Each variant has associated `params` and
 /// `response` types. Also generates a `export_client_responses()` function to
 /// export all response types to TypeScript.
-macro_rules! client_request_definitions {
-    (
-        $(
-            $(#[experimental($reason:expr)])?
-            $(#[doc = $variant_doc:literal])*
-            $variant:ident $(=> $wire:literal)? {
-                params: $(#[$params_meta:meta])* $params:ty,
-                $(inspect_params: $inspect_params:tt,)?
-                response: $response:ty,
-            }
-        ),* $(,)?
-    ) => {
-        /// Request from the client to the server.
-        #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
-        #[serde(tag = "method", rename_all = "camelCase")]
-        pub enum ClientRequest {
-            $(
-                $(#[doc = $variant_doc])*
-                $(#[serde(rename = $wire)] #[ts(rename = $wire)])?
-                $variant {
-                    #[serde(rename = "id")]
-                    request_id: RequestId,
-                    $(#[$params_meta])*
-                    params: $params,
-                },
-            )*
-        }
+macro_rules! client_request_definitions { ($ ($ (# [experimental ($ reason : expr)]) ? $ (# [doc = $ variant_doc : literal]) * $ variant : ident $ (=> $ wire : literal) ? { params : $ (# [$ params_meta : meta]) * $ params : ty , $ (inspect_params : $ inspect_params : tt ,) ? response : $ response : ty , }) ,* $ (,) ?) => { # [doc = " Request from the client to the server."] # [derive (Serialize , Deserialize , Debug , Clone , PartialEq , JsonSchema)] # [serde (tag = "method" , rename_all = "camelCase")] pub enum ClientRequest { $ ($ (# [doc = $ variant_doc]) * $ (# [serde (rename = $ wire)]) ? $ variant { # [serde (rename = "id")] request_id : RequestId , $ (# [$ params_meta]) * params : $ params , } ,) * } impl ClientRequest { pub fn id (& self) -> & RequestId { match self { $ (Self ::$ variant { request_id , .. } => request_id ,) * } } pub fn method (& self) -> String { serde_json :: to_value (self) . ok () . and_then (| value | { value . get ("method") . and_then (serde_json :: Value :: as_str) . map (str :: to_owned) }) . unwrap_or_else (|| "<unknown>" . to_string ()) } } impl crate :: experimental_api :: ExperimentalApi for ClientRequest { fn experimental_reason (& self) -> Option <&'static str > { match self { $ (Self ::$ variant { params : _params , .. } => { experimental_reason_expr ! (variant $ variant , $ (# [experimental ($ reason)]) ? _params $ (, $ inspect_params) ?) }) * } } } pub (crate) const EXPERIMENTAL_CLIENT_METHODS : & [& str] = & [$ (experimental_method_entry ! ($ (# [experimental ($ reason)]) ? $ (=> $ wire) ?) ,) *] ; pub (crate) const EXPERIMENTAL_CLIENT_METHOD_PARAM_TYPES : & [& str] = & [$ (experimental_type_entry ! ($ (# [experimental ($ reason)]) ? $ params) ,) *] ; pub (crate) const EXPERIMENTAL_CLIENT_METHOD_RESPONSE_TYPES : & [& str] = & [$ (experimental_type_entry ! ($ (# [experimental ($ reason)]) ? $ response) ,) *] ; # [allow (clippy :: vec_init_then_push)] pub fn export_client_response_schemas (out_dir : &:: std :: path :: Path ,) -> :: anyhow :: Result < Vec < GeneratedSchema >> { let mut schemas = Vec :: new () ; $ (schemas . push (write_json_schema ::<$ response > (out_dir , stringify ! ($ response)) ?) ;) * Ok (schemas) } # [allow (clippy :: vec_init_then_push)] pub fn export_client_param_schemas (out_dir : &:: std :: path :: Path ,) -> :: anyhow :: Result < Vec < GeneratedSchema >> { let mut schemas = Vec :: new () ; $ (schemas . push (write_json_schema ::<$ params > (out_dir , stringify ! ($ params)) ?) ;) * Ok (schemas) } } ; }
 
-        impl ClientRequest {
-            pub fn id(&self) -> &RequestId {
-                match self {
-                    $(Self::$variant { request_id, .. } => request_id,)*
-                }
-            }
-
-            pub fn method(&self) -> String {
-                serde_json::to_value(self)
-                    .ok()
-                    .and_then(|value| {
-                        value
-                            .get("method")
-                            .and_then(serde_json::Value::as_str)
-                            .map(str::to_owned)
-                    })
-                    .unwrap_or_else(|| "<unknown>".to_string())
-            }
-        }
-
-        impl crate::experimental_api::ExperimentalApi for ClientRequest {
-            fn experimental_reason(&self) -> Option<&'static str> {
-                match self {
-                    $(
-                        Self::$variant { params: _params, .. } => {
-                            experimental_reason_expr!(
-                                variant $variant,
-                                $(#[experimental($reason)])?
-                                _params
-                                $(, $inspect_params)?
-                            )
-                        }
-                    )*
-                }
-            }
-        }
-
-        pub(crate) const EXPERIMENTAL_CLIENT_METHODS: &[&str] = &[
-            $(
-                experimental_method_entry!($(#[experimental($reason)])? $(=> $wire)?),
-            )*
-        ];
-        pub(crate) const EXPERIMENTAL_CLIENT_METHOD_PARAM_TYPES: &[&str] = &[
-            $(
-                experimental_type_entry!($(#[experimental($reason)])? $params),
-            )*
-        ];
-        pub(crate) const EXPERIMENTAL_CLIENT_METHOD_RESPONSE_TYPES: &[&str] = &[
-            $(
-                experimental_type_entry!($(#[experimental($reason)])? $response),
-            )*
-        ];
-
-        pub fn export_client_responses(
-            out_dir: &::std::path::Path,
-        ) -> ::std::result::Result<(), ::ts_rs::ExportError> {
-            $(
-                <$response as ::ts_rs::TS>::export_all_to(out_dir)?;
-            )*
-            Ok(())
-        }
-
-        pub(crate) fn visit_client_response_types(v: &mut impl ::ts_rs::TypeVisitor) {
-            $(
-                v.visit::<$response>();
-            )*
-        }
-
-        #[allow(clippy::vec_init_then_push)]
-        pub fn export_client_response_schemas(
-            out_dir: &::std::path::Path,
-        ) -> ::anyhow::Result<Vec<GeneratedSchema>> {
-            let mut schemas = Vec::new();
-            $(
-                schemas.push(write_json_schema::<$response>(out_dir, stringify!($response))?);
-            )*
-            Ok(schemas)
-        }
-
-        #[allow(clippy::vec_init_then_push)]
-        pub fn export_client_param_schemas(
-            out_dir: &::std::path::Path,
-        ) -> ::anyhow::Result<Vec<GeneratedSchema>> {
-            let mut schemas = Vec::new();
-            $(
-                schemas.push(write_json_schema::<$params>(out_dir, stringify!($params))?);
-            )*
-            Ok(schemas)
-        }
-    };
-}
-
-client_request_definitions! {
-    Initialize {
-        params: v1::InitializeParams,
-        response: v1::InitializeResponse,
-    },
-
-    /// NEW APIs
-    // Thread lifecycle
-    // Uses `inspect_params` because only some fields are experimental.
-    ThreadStart => "thread/start" {
-        params: v2::ThreadStartParams,
-        inspect_params: true,
-        response: v2::ThreadStartResponse,
-    },
-    ThreadResume => "thread/resume" {
-        params: v2::ThreadResumeParams,
-        inspect_params: true,
-        response: v2::ThreadResumeResponse,
-    },
-    ThreadFork => "thread/fork" {
-        params: v2::ThreadForkParams,
-        inspect_params: true,
-        response: v2::ThreadForkResponse,
-    },
-    ThreadArchive => "thread/archive" {
-        params: v2::ThreadArchiveParams,
-        response: v2::ThreadArchiveResponse,
-    },
-    ThreadUnsubscribe => "thread/unsubscribe" {
-        params: v2::ThreadUnsubscribeParams,
-        response: v2::ThreadUnsubscribeResponse,
-    },
-    #[experimental("thread/increment_elicitation")]
-    /// Increment the thread-local out-of-band elicitation counter.
-    ///
-    /// This is used by external helpers to pause timeout accounting while a user
-    /// approval or other elicitation is pending outside the app-server request flow.
-    ThreadIncrementElicitation => "thread/increment_elicitation" {
-        params: v2::ThreadIncrementElicitationParams,
-        response: v2::ThreadIncrementElicitationResponse,
-    },
-    #[experimental("thread/decrement_elicitation")]
-    /// Decrement the thread-local out-of-band elicitation counter.
-    ///
-    /// When the count reaches zero, timeout accounting resumes for the thread.
-    ThreadDecrementElicitation => "thread/decrement_elicitation" {
-        params: v2::ThreadDecrementElicitationParams,
-        response: v2::ThreadDecrementElicitationResponse,
-    },
-    ThreadSetName => "thread/name/set" {
-        params: v2::ThreadSetNameParams,
-        response: v2::ThreadSetNameResponse,
-    },
-    ThreadMetadataUpdate => "thread/metadata/update" {
-        params: v2::ThreadMetadataUpdateParams,
-        response: v2::ThreadMetadataUpdateResponse,
-    },
-    ThreadUnarchive => "thread/unarchive" {
-        params: v2::ThreadUnarchiveParams,
-        response: v2::ThreadUnarchiveResponse,
-    },
-    ThreadCompactStart => "thread/compact/start" {
-        params: v2::ThreadCompactStartParams,
-        response: v2::ThreadCompactStartResponse,
-    },
-    ThreadShellCommand => "thread/shellCommand" {
-        params: v2::ThreadShellCommandParams,
-        response: v2::ThreadShellCommandResponse,
-    },
-    #[experimental("thread/backgroundTerminals/clean")]
-    ThreadBackgroundTerminalsClean => "thread/backgroundTerminals/clean" {
-        params: v2::ThreadBackgroundTerminalsCleanParams,
-        response: v2::ThreadBackgroundTerminalsCleanResponse,
-    },
-    ThreadRollback => "thread/rollback" {
-        params: v2::ThreadRollbackParams,
-        response: v2::ThreadRollbackResponse,
-    },
-    ThreadList => "thread/list" {
-        params: v2::ThreadListParams,
-        response: v2::ThreadListResponse,
-    },
-    ThreadLoadedList => "thread/loaded/list" {
-        params: v2::ThreadLoadedListParams,
-        response: v2::ThreadLoadedListResponse,
-    },
-    ThreadRead => "thread/read" {
-        params: v2::ThreadReadParams,
-        response: v2::ThreadReadResponse,
-    },
-    SkillsList => "skills/list" {
-        params: v2::SkillsListParams,
-        response: v2::SkillsListResponse,
-    },
-    PluginList => "plugin/list" {
-        params: v2::PluginListParams,
-        response: v2::PluginListResponse,
-    },
-    PluginRead => "plugin/read" {
-        params: v2::PluginReadParams,
-        response: v2::PluginReadResponse,
-    },
-    AppsList => "app/list" {
-        params: v2::AppsListParams,
-        response: v2::AppsListResponse,
-    },
-    FsReadFile => "fs/readFile" {
-        params: v2::FsReadFileParams,
-        response: v2::FsReadFileResponse,
-    },
-    FsWriteFile => "fs/writeFile" {
-        params: v2::FsWriteFileParams,
-        response: v2::FsWriteFileResponse,
-    },
-    FsCreateDirectory => "fs/createDirectory" {
-        params: v2::FsCreateDirectoryParams,
-        response: v2::FsCreateDirectoryResponse,
-    },
-    FsGetMetadata => "fs/getMetadata" {
-        params: v2::FsGetMetadataParams,
-        response: v2::FsGetMetadataResponse,
-    },
-    FsReadDirectory => "fs/readDirectory" {
-        params: v2::FsReadDirectoryParams,
-        response: v2::FsReadDirectoryResponse,
-    },
-    FsRemove => "fs/remove" {
-        params: v2::FsRemoveParams,
-        response: v2::FsRemoveResponse,
-    },
-    FsCopy => "fs/copy" {
-        params: v2::FsCopyParams,
-        response: v2::FsCopyResponse,
-    },
-    SkillsConfigWrite => "skills/config/write" {
-        params: v2::SkillsConfigWriteParams,
-        response: v2::SkillsConfigWriteResponse,
-    },
-    PluginInstall => "plugin/install" {
-        params: v2::PluginInstallParams,
-        response: v2::PluginInstallResponse,
-    },
-    PluginUninstall => "plugin/uninstall" {
-        params: v2::PluginUninstallParams,
-        response: v2::PluginUninstallResponse,
-    },
-    TurnStart => "turn/start" {
-        params: v2::TurnStartParams,
-        inspect_params: true,
-        response: v2::TurnStartResponse,
-    },
-    TurnSteer => "turn/steer" {
-        params: v2::TurnSteerParams,
-        response: v2::TurnSteerResponse,
-    },
-    TurnInterrupt => "turn/interrupt" {
-        params: v2::TurnInterruptParams,
-        response: v2::TurnInterruptResponse,
-    },
-    #[experimental("thread/realtime/start")]
-    ThreadRealtimeStart => "thread/realtime/start" {
-        params: v2::ThreadRealtimeStartParams,
-        response: v2::ThreadRealtimeStartResponse,
-    },
-    #[experimental("thread/realtime/appendAudio")]
-    ThreadRealtimeAppendAudio => "thread/realtime/appendAudio" {
-        params: v2::ThreadRealtimeAppendAudioParams,
-        response: v2::ThreadRealtimeAppendAudioResponse,
-    },
-    #[experimental("thread/realtime/appendText")]
-    ThreadRealtimeAppendText => "thread/realtime/appendText" {
-        params: v2::ThreadRealtimeAppendTextParams,
-        response: v2::ThreadRealtimeAppendTextResponse,
-    },
-    #[experimental("thread/realtime/stop")]
-    ThreadRealtimeStop => "thread/realtime/stop" {
-        params: v2::ThreadRealtimeStopParams,
-        response: v2::ThreadRealtimeStopResponse,
-    },
-    ReviewStart => "review/start" {
-        params: v2::ReviewStartParams,
-        response: v2::ReviewStartResponse,
-    },
-
-    ModelList => "model/list" {
-        params: v2::ModelListParams,
-        response: v2::ModelListResponse,
-    },
-    ExperimentalFeatureList => "experimentalFeature/list" {
-        params: v2::ExperimentalFeatureListParams,
-        response: v2::ExperimentalFeatureListResponse,
-    },
-    #[experimental("collaborationMode/list")]
-    /// Lists collaboration mode presets.
-    CollaborationModeList => "collaborationMode/list" {
-        params: v2::CollaborationModeListParams,
-        response: v2::CollaborationModeListResponse,
-    },
-    #[experimental("mock/experimentalMethod")]
-    /// Test-only method used to validate experimental gating.
-    MockExperimentalMethod => "mock/experimentalMethod" {
-        params: v2::MockExperimentalMethodParams,
-        response: v2::MockExperimentalMethodResponse,
-    },
-
-    McpServerOauthLogin => "mcpServer/oauth/login" {
-        params: v2::McpServerOauthLoginParams,
-        response: v2::McpServerOauthLoginResponse,
-    },
-
-    McpServerRefresh => "config/mcpServer/reload" {
-        params: #[ts(type = "undefined")] #[serde(skip_serializing_if = "Option::is_none")] Option<()>,
-        response: v2::McpServerRefreshResponse,
-    },
-
-    McpServerStatusList => "mcpServerStatus/list" {
-        params: v2::ListMcpServerStatusParams,
-        response: v2::ListMcpServerStatusResponse,
-    },
-
-    WindowsSandboxSetupStart => "windowsSandbox/setupStart" {
-        params: v2::WindowsSandboxSetupStartParams,
-        response: v2::WindowsSandboxSetupStartResponse,
-    },
-
-    LoginAccount => "account/login/start" {
-        params: v2::LoginAccountParams,
-        inspect_params: true,
-        response: v2::LoginAccountResponse,
-    },
-
-    CancelLoginAccount => "account/login/cancel" {
-        params: v2::CancelLoginAccountParams,
-        response: v2::CancelLoginAccountResponse,
-    },
-
-    LogoutAccount => "account/logout" {
-        params: #[ts(type = "undefined")] #[serde(skip_serializing_if = "Option::is_none")] Option<()>,
-        response: v2::LogoutAccountResponse,
-    },
-
-    GetAccountRateLimits => "account/rateLimits/read" {
-        params: #[ts(type = "undefined")] #[serde(skip_serializing_if = "Option::is_none")] Option<()>,
-        response: v2::GetAccountRateLimitsResponse,
-    },
-
-    FeedbackUpload => "feedback/upload" {
-        params: v2::FeedbackUploadParams,
-        response: v2::FeedbackUploadResponse,
-    },
-
-    /// Execute a standalone command (argv vector) under the server's sandbox.
-    OneOffCommandExec => "command/exec" {
-        params: v2::CommandExecParams,
-        response: v2::CommandExecResponse,
-    },
-    /// Write stdin bytes to a running `command/exec` session or close stdin.
-    CommandExecWrite => "command/exec/write" {
-        params: v2::CommandExecWriteParams,
-        response: v2::CommandExecWriteResponse,
-    },
-    /// Terminate a running `command/exec` session by client-supplied `processId`.
-    CommandExecTerminate => "command/exec/terminate" {
-        params: v2::CommandExecTerminateParams,
-        response: v2::CommandExecTerminateResponse,
-    },
-    /// Resize a running PTY-backed `command/exec` session by client-supplied `processId`.
-    CommandExecResize => "command/exec/resize" {
-        params: v2::CommandExecResizeParams,
-        response: v2::CommandExecResizeResponse,
-    },
-
-    ConfigRead => "config/read" {
-        params: v2::ConfigReadParams,
-        response: v2::ConfigReadResponse,
-    },
-    ExternalAgentConfigDetect => "externalAgentConfig/detect" {
-        params: v2::ExternalAgentConfigDetectParams,
-        response: v2::ExternalAgentConfigDetectResponse,
-    },
-    ExternalAgentConfigImport => "externalAgentConfig/import" {
-        params: v2::ExternalAgentConfigImportParams,
-        response: v2::ExternalAgentConfigImportResponse,
-    },
-    ConfigValueWrite => "config/value/write" {
-        params: v2::ConfigValueWriteParams,
-        response: v2::ConfigWriteResponse,
-    },
-    ConfigBatchWrite => "config/batchWrite" {
-        params: v2::ConfigBatchWriteParams,
-        response: v2::ConfigWriteResponse,
-    },
-
-    ConfigRequirementsRead => "configRequirements/read" {
-        params: #[ts(type = "undefined")] #[serde(skip_serializing_if = "Option::is_none")] Option<()>,
-        response: v2::ConfigRequirementsReadResponse,
-    },
-
-    GetAccount => "account/read" {
-        params: v2::GetAccountParams,
-        response: v2::GetAccountResponse,
-    },
-
-    /// DEPRECATED APIs below
-    GetConversationSummary {
-        params: v1::GetConversationSummaryParams,
-        response: v1::GetConversationSummaryResponse,
-    },
-    GitDiffToRemote {
-        params: v1::GitDiffToRemoteParams,
-        response: v1::GitDiffToRemoteResponse,
-    },
-    /// DEPRECATED in favor of GetAccount
-    GetAuthStatus {
-        params: v1::GetAuthStatusParams,
-        response: v1::GetAuthStatusResponse,
-    },
-    FuzzyFileSearch {
-        params: FuzzyFileSearchParams,
-        response: FuzzyFileSearchResponse,
-    },
-    #[experimental("fuzzyFileSearch/sessionStart")]
-    FuzzyFileSearchSessionStart => "fuzzyFileSearch/sessionStart" {
-        params: FuzzyFileSearchSessionStartParams,
-        response: FuzzyFileSearchSessionStartResponse,
-    },
-    #[experimental("fuzzyFileSearch/sessionUpdate")]
-    FuzzyFileSearchSessionUpdate => "fuzzyFileSearch/sessionUpdate" {
-        params: FuzzyFileSearchSessionUpdateParams,
-        response: FuzzyFileSearchSessionUpdateResponse,
-    },
-    #[experimental("fuzzyFileSearch/sessionStop")]
-    FuzzyFileSearchSessionStop => "fuzzyFileSearch/sessionStop" {
-        params: FuzzyFileSearchSessionStopParams,
-        response: FuzzyFileSearchSessionStopResponse,
-    },
-}
+client_request_definitions! { Initialize { params : v1 :: InitializeParams , response : v1 :: InitializeResponse , } , # [doc = " NEW APIs"] ThreadStart => "thread/start" { params : v2 :: ThreadStartParams , inspect_params : true , response : v2 :: ThreadStartResponse , } , ThreadResume => "thread/resume" { params : v2 :: ThreadResumeParams , inspect_params : true , response : v2 :: ThreadResumeResponse , } , ThreadFork => "thread/fork" { params : v2 :: ThreadForkParams , inspect_params : true , response : v2 :: ThreadForkResponse , } , ThreadArchive => "thread/archive" { params : v2 :: ThreadArchiveParams , response : v2 :: ThreadArchiveResponse , } , ThreadUnsubscribe => "thread/unsubscribe" { params : v2 :: ThreadUnsubscribeParams , response : v2 :: ThreadUnsubscribeResponse , } , # [experimental ("thread/increment_elicitation")] # [doc = " Increment the thread-local out-of-band elicitation counter."] # [doc = ""] # [doc = " This is used by external helpers to pause timeout accounting while a user"] # [doc = " approval or other elicitation is pending outside the app-server request flow."] ThreadIncrementElicitation => "thread/increment_elicitation" { params : v2 :: ThreadIncrementElicitationParams , response : v2 :: ThreadIncrementElicitationResponse , } , # [experimental ("thread/decrement_elicitation")] # [doc = " Decrement the thread-local out-of-band elicitation counter."] # [doc = ""] # [doc = " When the count reaches zero, timeout accounting resumes for the thread."] ThreadDecrementElicitation => "thread/decrement_elicitation" { params : v2 :: ThreadDecrementElicitationParams , response : v2 :: ThreadDecrementElicitationResponse , } , ThreadSetName => "thread/name/set" { params : v2 :: ThreadSetNameParams , response : v2 :: ThreadSetNameResponse , } , ThreadMetadataUpdate => "thread/metadata/update" { params : v2 :: ThreadMetadataUpdateParams , response : v2 :: ThreadMetadataUpdateResponse , } , ThreadUnarchive => "thread/unarchive" { params : v2 :: ThreadUnarchiveParams , response : v2 :: ThreadUnarchiveResponse , } , ThreadCompactStart => "thread/compact/start" { params : v2 :: ThreadCompactStartParams , response : v2 :: ThreadCompactStartResponse , } , ThreadShellCommand => "thread/shellCommand" { params : v2 :: ThreadShellCommandParams , response : v2 :: ThreadShellCommandResponse , } , # [experimental ("thread/backgroundTerminals/clean")] ThreadBackgroundTerminalsClean => "thread/backgroundTerminals/clean" { params : v2 :: ThreadBackgroundTerminalsCleanParams , response : v2 :: ThreadBackgroundTerminalsCleanResponse , } , ThreadRollback => "thread/rollback" { params : v2 :: ThreadRollbackParams , response : v2 :: ThreadRollbackResponse , } , ThreadList => "thread/list" { params : v2 :: ThreadListParams , response : v2 :: ThreadListResponse , } , ThreadLoadedList => "thread/loaded/list" { params : v2 :: ThreadLoadedListParams , response : v2 :: ThreadLoadedListResponse , } , ThreadRead => "thread/read" { params : v2 :: ThreadReadParams , response : v2 :: ThreadReadResponse , } , SkillsList => "skills/list" { params : v2 :: SkillsListParams , response : v2 :: SkillsListResponse , } , PluginList => "plugin/list" { params : v2 :: PluginListParams , response : v2 :: PluginListResponse , } , PluginRead => "plugin/read" { params : v2 :: PluginReadParams , response : v2 :: PluginReadResponse , } , AppsList => "app/list" { params : v2 :: AppsListParams , response : v2 :: AppsListResponse , } , FsReadFile => "fs/readFile" { params : v2 :: FsReadFileParams , response : v2 :: FsReadFileResponse , } , FsWriteFile => "fs/writeFile" { params : v2 :: FsWriteFileParams , response : v2 :: FsWriteFileResponse , } , FsCreateDirectory => "fs/createDirectory" { params : v2 :: FsCreateDirectoryParams , response : v2 :: FsCreateDirectoryResponse , } , FsGetMetadata => "fs/getMetadata" { params : v2 :: FsGetMetadataParams , response : v2 :: FsGetMetadataResponse , } , FsReadDirectory => "fs/readDirectory" { params : v2 :: FsReadDirectoryParams , response : v2 :: FsReadDirectoryResponse , } , FsRemove => "fs/remove" { params : v2 :: FsRemoveParams , response : v2 :: FsRemoveResponse , } , FsCopy => "fs/copy" { params : v2 :: FsCopyParams , response : v2 :: FsCopyResponse , } , SkillsConfigWrite => "skills/config/write" { params : v2 :: SkillsConfigWriteParams , response : v2 :: SkillsConfigWriteResponse , } , PluginInstall => "plugin/install" { params : v2 :: PluginInstallParams , response : v2 :: PluginInstallResponse , } , PluginUninstall => "plugin/uninstall" { params : v2 :: PluginUninstallParams , response : v2 :: PluginUninstallResponse , } , TurnStart => "turn/start" { params : v2 :: TurnStartParams , inspect_params : true , response : v2 :: TurnStartResponse , } , TurnSteer => "turn/steer" { params : v2 :: TurnSteerParams , response : v2 :: TurnSteerResponse , } , TurnInterrupt => "turn/interrupt" { params : v2 :: TurnInterruptParams , response : v2 :: TurnInterruptResponse , } , # [experimental ("thread/realtime/start")] ThreadRealtimeStart => "thread/realtime/start" { params : v2 :: ThreadRealtimeStartParams , response : v2 :: ThreadRealtimeStartResponse , } , # [experimental ("thread/realtime/appendAudio")] ThreadRealtimeAppendAudio => "thread/realtime/appendAudio" { params : v2 :: ThreadRealtimeAppendAudioParams , response : v2 :: ThreadRealtimeAppendAudioResponse , } , # [experimental ("thread/realtime/appendText")] ThreadRealtimeAppendText => "thread/realtime/appendText" { params : v2 :: ThreadRealtimeAppendTextParams , response : v2 :: ThreadRealtimeAppendTextResponse , } , # [experimental ("thread/realtime/stop")] ThreadRealtimeStop => "thread/realtime/stop" { params : v2 :: ThreadRealtimeStopParams , response : v2 :: ThreadRealtimeStopResponse , } , ReviewStart => "review/start" { params : v2 :: ReviewStartParams , response : v2 :: ReviewStartResponse , } , ModelList => "model/list" { params : v2 :: ModelListParams , response : v2 :: ModelListResponse , } , ExperimentalFeatureList => "experimentalFeature/list" { params : v2 :: ExperimentalFeatureListParams , response : v2 :: ExperimentalFeatureListResponse , } , # [experimental ("collaborationMode/list")] # [doc = " Lists collaboration mode presets."] CollaborationModeList => "collaborationMode/list" { params : v2 :: CollaborationModeListParams , response : v2 :: CollaborationModeListResponse , } , # [experimental ("mock/experimentalMethod")] # [doc = " Test-only method used to validate experimental gating."] MockExperimentalMethod => "mock/experimentalMethod" { params : v2 :: MockExperimentalMethodParams , response : v2 :: MockExperimentalMethodResponse , } , McpServerOauthLogin => "mcpServer/oauth/login" { params : v2 :: McpServerOauthLoginParams , response : v2 :: McpServerOauthLoginResponse , } , McpServerRefresh => "config/mcpServer/reload" { params : # [serde (skip_serializing_if = "Option::is_none")] Option < () >, response : v2 :: McpServerRefreshResponse , } , McpServerStatusList => "mcpServerStatus/list" { params : v2 :: ListMcpServerStatusParams , response : v2 :: ListMcpServerStatusResponse , } , WindowsSandboxSetupStart => "windowsSandbox/setupStart" { params : v2 :: WindowsSandboxSetupStartParams , response : v2 :: WindowsSandboxSetupStartResponse , } , LoginAccount => "account/login/start" { params : v2 :: LoginAccountParams , inspect_params : true , response : v2 :: LoginAccountResponse , } , CancelLoginAccount => "account/login/cancel" { params : v2 :: CancelLoginAccountParams , response : v2 :: CancelLoginAccountResponse , } , LogoutAccount => "account/logout" { params : # [serde (skip_serializing_if = "Option::is_none")] Option < () >, response : v2 :: LogoutAccountResponse , } , GetAccountRateLimits => "account/rateLimits/read" { params : # [serde (skip_serializing_if = "Option::is_none")] Option < () >, response : v2 :: GetAccountRateLimitsResponse , } , FeedbackUpload => "feedback/upload" { params : v2 :: FeedbackUploadParams , response : v2 :: FeedbackUploadResponse , } , # [doc = " Execute a standalone command (argv vector) under the server's sandbox."] OneOffCommandExec => "command/exec" { params : v2 :: CommandExecParams , response : v2 :: CommandExecResponse , } , # [doc = " Write stdin bytes to a running `command/exec` session or close stdin."] CommandExecWrite => "command/exec/write" { params : v2 :: CommandExecWriteParams , response : v2 :: CommandExecWriteResponse , } , # [doc = " Terminate a running `command/exec` session by client-supplied `processId`."] CommandExecTerminate => "command/exec/terminate" { params : v2 :: CommandExecTerminateParams , response : v2 :: CommandExecTerminateResponse , } , # [doc = " Resize a running PTY-backed `command/exec` session by client-supplied `processId`."] CommandExecResize => "command/exec/resize" { params : v2 :: CommandExecResizeParams , response : v2 :: CommandExecResizeResponse , } , ConfigRead => "config/read" { params : v2 :: ConfigReadParams , response : v2 :: ConfigReadResponse , } , ExternalAgentConfigDetect => "externalAgentConfig/detect" { params : v2 :: ExternalAgentConfigDetectParams , response : v2 :: ExternalAgentConfigDetectResponse , } , ExternalAgentConfigImport => "externalAgentConfig/import" { params : v2 :: ExternalAgentConfigImportParams , response : v2 :: ExternalAgentConfigImportResponse , } , ConfigValueWrite => "config/value/write" { params : v2 :: ConfigValueWriteParams , response : v2 :: ConfigWriteResponse , } , ConfigBatchWrite => "config/batchWrite" { params : v2 :: ConfigBatchWriteParams , response : v2 :: ConfigWriteResponse , } , ConfigRequirementsRead => "configRequirements/read" { params : # [serde (skip_serializing_if = "Option::is_none")] Option < () >, response : v2 :: ConfigRequirementsReadResponse , } , GetAccount => "account/read" { params : v2 :: GetAccountParams , response : v2 :: GetAccountResponse , } , # [doc = " DEPRECATED APIs below"] GetConversationSummary { params : v1 :: GetConversationSummaryParams , response : v1 :: GetConversationSummaryResponse , } , GitDiffToRemote { params : v1 :: GitDiffToRemoteParams , response : v1 :: GitDiffToRemoteResponse , } , # [doc = " DEPRECATED in favor of GetAccount"] GetAuthStatus { params : v1 :: GetAuthStatusParams , response : v1 :: GetAuthStatusResponse , } , FuzzyFileSearch { params : FuzzyFileSearchParams , response : FuzzyFileSearchResponse , } , # [experimental ("fuzzyFileSearch/sessionStart")] FuzzyFileSearchSessionStart => "fuzzyFileSearch/sessionStart" { params : FuzzyFileSearchSessionStartParams , response : FuzzyFileSearchSessionStartResponse , } , # [experimental ("fuzzyFileSearch/sessionUpdate")] FuzzyFileSearchSessionUpdate => "fuzzyFileSearch/sessionUpdate" { params : FuzzyFileSearchSessionUpdateParams , response : FuzzyFileSearchSessionUpdateResponse , } , # [experimental ("fuzzyFileSearch/sessionStop")] FuzzyFileSearchSessionStop => "fuzzyFileSearch/sessionStop" { params : FuzzyFileSearchSessionStopParams , response : FuzzyFileSearchSessionStopResponse , } , }
 
 /// Generates an `enum ServerRequest` where each variant is a request that the
 /// server can send to the client along with the corresponding params and
 /// response types. It also generates helper types used by the app/server
 /// infrastructure (payload enum, request constructor, and export helpers).
-macro_rules! server_request_definitions {
-    (
-        $(
-            $(#[$variant_meta:meta])*
-            $variant:ident $(=> $wire:literal)? {
-                params: $params:ty,
-                response: $response:ty,
-            }
-        ),* $(,)?
-    ) => {
-        /// Request initiated from the server and sent to the client.
-        #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
-        #[allow(clippy::large_enum_variant)]
-        #[serde(tag = "method", rename_all = "camelCase")]
-        pub enum ServerRequest {
-            $(
-                $(#[$variant_meta])*
-                $(#[serde(rename = $wire)] #[ts(rename = $wire)])?
-                $variant {
-                    #[serde(rename = "id")]
-                    request_id: RequestId,
-                    params: $params,
-                },
-            )*
-        }
-
-        impl ServerRequest {
-            pub fn id(&self) -> &RequestId {
-                match self {
-                    $(Self::$variant { request_id, .. } => request_id,)*
-                }
-            }
-        }
-
-        #[derive(Debug, Clone, PartialEq, JsonSchema)]
-        #[allow(clippy::large_enum_variant)]
-        pub enum ServerRequestPayload {
-            $( $variant($params), )*
-        }
-
-        impl ServerRequestPayload {
-            pub fn request_with_id(self, request_id: RequestId) -> ServerRequest {
-                match self {
-                    $(Self::$variant(params) => ServerRequest::$variant { request_id, params },)*
-                }
-            }
-        }
-
-        pub fn export_server_responses(
-            out_dir: &::std::path::Path,
-        ) -> ::std::result::Result<(), ::ts_rs::ExportError> {
-            $(
-                <$response as ::ts_rs::TS>::export_all_to(out_dir)?;
-            )*
-            Ok(())
-        }
-
-        pub(crate) fn visit_server_response_types(v: &mut impl ::ts_rs::TypeVisitor) {
-            $(
-                v.visit::<$response>();
-            )*
-        }
-
-        #[allow(clippy::vec_init_then_push)]
-        pub fn export_server_response_schemas(
-            out_dir: &Path,
-        ) -> ::anyhow::Result<Vec<GeneratedSchema>> {
-            let mut schemas = Vec::new();
-            $(
-                schemas.push(crate::export::write_json_schema::<$response>(
-                    out_dir,
-                    concat!(stringify!($variant), "Response"),
-                )?);
-            )*
-            Ok(schemas)
-        }
-
-        #[allow(clippy::vec_init_then_push)]
-        pub fn export_server_param_schemas(
-            out_dir: &Path,
-        ) -> ::anyhow::Result<Vec<GeneratedSchema>> {
-            let mut schemas = Vec::new();
-            $(
-                schemas.push(crate::export::write_json_schema::<$params>(
-                    out_dir,
-                    concat!(stringify!($variant), "Params"),
-                )?);
-            )*
-            Ok(schemas)
-        }
-    };
-}
+macro_rules! server_request_definitions { ($ ($ (# [$ variant_meta : meta]) * $ variant : ident $ (=> $ wire : literal) ? { params : $ params : ty , response : $ response : ty , }) ,* $ (,) ?) => { # [doc = " Request initiated from the server and sent to the client."] # [derive (Serialize , Deserialize , Debug , Clone , PartialEq , JsonSchema)] # [allow (clippy :: large_enum_variant)] # [serde (tag = "method" , rename_all = "camelCase")] pub enum ServerRequest { $ ($ (# [$ variant_meta]) * $ (# [serde (rename = $ wire)]) ? $ variant { # [serde (rename = "id")] request_id : RequestId , params : $ params , } ,) * } impl ServerRequest { pub fn id (& self) -> & RequestId { match self { $ (Self ::$ variant { request_id , .. } => request_id ,) * } } } # [derive (Debug , Clone , PartialEq , JsonSchema)] # [allow (clippy :: large_enum_variant)] pub enum ServerRequestPayload { $ ($ variant ($ params) ,) * } impl ServerRequestPayload { pub fn request_with_id (self , request_id : RequestId) -> ServerRequest { match self { $ (Self ::$ variant (params) => ServerRequest ::$ variant { request_id , params } ,) * } } } # [allow (clippy :: vec_init_then_push)] pub fn export_server_response_schemas (out_dir : & Path ,) -> :: anyhow :: Result < Vec < GeneratedSchema >> { let mut schemas = Vec :: new () ; $ (schemas . push (crate :: export :: write_json_schema ::<$ response > (out_dir , concat ! (stringify ! ($ variant) , "Response") ,) ?) ;) * Ok (schemas) } # [allow (clippy :: vec_init_then_push)] pub fn export_server_param_schemas (out_dir : & Path ,) -> :: anyhow :: Result < Vec < GeneratedSchema >> { let mut schemas = Vec :: new () ; $ (schemas . push (crate :: export :: write_json_schema ::<$ params > (out_dir , concat ! (stringify ! ($ variant) , "Params") ,) ?) ;) * Ok (schemas) } } ; }
 
 /// Generates `ServerNotification` enum and helpers, including a JSON Schema
 /// exporter for each notification.
-macro_rules! server_notification_definitions {
-    (
-        $(
-            $(#[$variant_meta:meta])*
-            $variant:ident $(=> $wire:literal)? ( $payload:ty )
-        ),* $(,)?
-    ) => {
-        /// Notification sent from the server to the client.
-        #[derive(
-            Serialize,
-            Deserialize,
-            Debug,
-            Clone,
-            JsonSchema,
-            TS,
-            Display,
-            ExperimentalApi,
-        )]
-        #[serde(tag = "method", content = "params", rename_all = "camelCase")]
-        #[strum(serialize_all = "camelCase")]
-        pub enum ServerNotification {
-            $(
-                $(#[$variant_meta])*
-                $(#[serde(rename = $wire)] #[ts(rename = $wire)] #[strum(serialize = $wire)])?
-                $variant($payload),
-            )*
-        }
-
-        impl ServerNotification {
-            pub fn to_params(self) -> Result<serde_json::Value, serde_json::Error> {
-                match self {
-                    $(Self::$variant(params) => serde_json::to_value(params),)*
-                }
-            }
-        }
-
-        impl TryFrom<JSONRPCNotification> for ServerNotification {
-            type Error = serde_json::Error;
-
-            fn try_from(value: JSONRPCNotification) -> Result<Self, serde_json::Error> {
-                serde_json::from_value(serde_json::to_value(value)?)
-            }
-        }
-
-        #[allow(clippy::vec_init_then_push)]
-        pub fn export_server_notification_schemas(
-            out_dir: &::std::path::Path,
-        ) -> ::anyhow::Result<Vec<GeneratedSchema>> {
-            let mut schemas = Vec::new();
-            $(schemas.push(crate::export::write_json_schema::<$payload>(out_dir, stringify!($payload))?);)*
-            Ok(schemas)
-        }
-    };
-}
+macro_rules! server_notification_definitions { ($ ($ (# [$ variant_meta : meta]) * $ variant : ident $ (=> $ wire : literal) ? ($ payload : ty)) ,* $ (,) ?) => { # [doc = " Notification sent from the server to the client."] # [derive (Serialize , Deserialize , Debug , Clone , JsonSchema , Display , ExperimentalApi ,)] # [serde (tag = "method" , content = "params" , rename_all = "camelCase")] # [strum (serialize_all = "camelCase")] pub enum ServerNotification { $ ($ (# [$ variant_meta]) * $ (# [serde (rename = $ wire)] # [strum (serialize = $ wire)]) ? $ variant ($ payload) ,) * } impl ServerNotification { pub fn to_params (self) -> Result < serde_json :: Value , serde_json :: Error > { match self { $ (Self ::$ variant (params) => serde_json :: to_value (params) ,) * } } } impl TryFrom < JSONRPCNotification > for ServerNotification { type Error = serde_json :: Error ; fn try_from (value : JSONRPCNotification) -> Result < Self , serde_json :: Error > { serde_json :: from_value (serde_json :: to_value (value) ?) } } # [allow (clippy :: vec_init_then_push)] pub fn export_server_notification_schemas (out_dir : &:: std :: path :: Path ,) -> :: anyhow :: Result < Vec < GeneratedSchema >> { let mut schemas = Vec :: new () ; $ (schemas . push (crate :: export :: write_json_schema ::<$ payload > (out_dir , stringify ! ($ payload)) ?) ;) * Ok (schemas) } } ; }
 /// Notifications sent from the client to the server.
-macro_rules! client_notification_definitions {
-    (
-        $(
-            $(#[$variant_meta:meta])*
-            $variant:ident $( ( $payload:ty ) )?
-        ),* $(,)?
-    ) => {
-        #[derive(Serialize, Deserialize, Debug, Clone, JsonSchema, TS, Display)]
-        #[serde(tag = "method", content = "params", rename_all = "camelCase")]
-        #[strum(serialize_all = "camelCase")]
-        pub enum ClientNotification {
-            $(
-                $(#[$variant_meta])*
-                $variant $( ( $payload ) )?,
-            )*
-        }
-
-        pub fn export_client_notification_schemas(
-            _out_dir: &::std::path::Path,
-        ) -> ::anyhow::Result<Vec<GeneratedSchema>> {
-            let schemas = Vec::new();
-            $( $(schemas.push(crate::export::write_json_schema::<$payload>(_out_dir, stringify!($payload))?);)? )*
-            Ok(schemas)
-        }
-    };
-}
+macro_rules! client_notification_definitions { ($ ($ (# [$ variant_meta : meta]) * $ variant : ident $ (($ payload : ty)) ?) ,* $ (,) ?) => { # [derive (Serialize , Deserialize , Debug , Clone , JsonSchema , Display)] # [serde (tag = "method" , content = "params" , rename_all = "camelCase")] # [strum (serialize_all = "camelCase")] pub enum ClientNotification { $ ($ (# [$ variant_meta]) * $ variant $ (($ payload)) ?,) * } pub fn export_client_notification_schemas (_out_dir : &:: std :: path :: Path ,) -> :: anyhow :: Result < Vec < GeneratedSchema >> { let schemas = Vec :: new () ; $ ($ (schemas . push (crate :: export :: write_json_schema ::<$ payload > (_out_dir , stringify ! ($ payload)) ?) ;) ?) * Ok (schemas) } } ; }
 
 impl TryFrom<JSONRPCRequest> for ServerRequest {
     type Error = serde_json::Error;
@@ -789,9 +163,8 @@ server_request_definitions! {
     },
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase")]
 pub struct FuzzyFileSearchParams {
     pub query: String,
     pub roots: Vec<String>,
@@ -800,7 +173,7 @@ pub struct FuzzyFileSearchParams {
 }
 
 /// Superset of [`codex_file_search::FileMatch`]
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 pub struct FuzzyFileSearchResult {
     pub root: String,
     pub path: String,
@@ -810,138 +183,62 @@ pub struct FuzzyFileSearchResult {
     pub indices: Option<Vec<u32>>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase")]
 pub enum FuzzyFileSearchMatchType {
     File,
     Directory,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 pub struct FuzzyFileSearchResponse {
     pub files: Vec<FuzzyFileSearchResult>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase")]
 pub struct FuzzyFileSearchSessionStartParams {
     pub session_id: String,
     pub roots: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, Default)]
 pub struct FuzzyFileSearchSessionStartResponse {}
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase")]
 pub struct FuzzyFileSearchSessionUpdateParams {
     pub session_id: String,
     pub query: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, Default)]
 pub struct FuzzyFileSearchSessionUpdateResponse {}
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase")]
 pub struct FuzzyFileSearchSessionStopParams {
     pub session_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, Default)]
 pub struct FuzzyFileSearchSessionStopResponse {}
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase")]
 pub struct FuzzyFileSearchSessionUpdatedNotification {
     pub session_id: String,
     pub query: String,
     pub files: Vec<FuzzyFileSearchResult>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase")]
 pub struct FuzzyFileSearchSessionCompletedNotification {
     pub session_id: String,
 }
 
-server_notification_definitions! {
-    /// NEW NOTIFICATIONS
-    Error => "error" (v2::ErrorNotification),
-    ThreadStarted => "thread/started" (v2::ThreadStartedNotification),
-    ThreadStatusChanged => "thread/status/changed" (v2::ThreadStatusChangedNotification),
-    ThreadArchived => "thread/archived" (v2::ThreadArchivedNotification),
-    ThreadUnarchived => "thread/unarchived" (v2::ThreadUnarchivedNotification),
-    ThreadClosed => "thread/closed" (v2::ThreadClosedNotification),
-    SkillsChanged => "skills/changed" (v2::SkillsChangedNotification),
-    ThreadNameUpdated => "thread/name/updated" (v2::ThreadNameUpdatedNotification),
-    ThreadTokenUsageUpdated => "thread/tokenUsage/updated" (v2::ThreadTokenUsageUpdatedNotification),
-    TurnStarted => "turn/started" (v2::TurnStartedNotification),
-    HookStarted => "hook/started" (v2::HookStartedNotification),
-    TurnCompleted => "turn/completed" (v2::TurnCompletedNotification),
-    HookCompleted => "hook/completed" (v2::HookCompletedNotification),
-    TurnDiffUpdated => "turn/diff/updated" (v2::TurnDiffUpdatedNotification),
-    TurnPlanUpdated => "turn/plan/updated" (v2::TurnPlanUpdatedNotification),
-    ItemStarted => "item/started" (v2::ItemStartedNotification),
-    ItemGuardianApprovalReviewStarted => "item/autoApprovalReview/started" (v2::ItemGuardianApprovalReviewStartedNotification),
-    ItemGuardianApprovalReviewCompleted => "item/autoApprovalReview/completed" (v2::ItemGuardianApprovalReviewCompletedNotification),
-    ItemCompleted => "item/completed" (v2::ItemCompletedNotification),
-    /// This event is internal-only. Used by Codex Cloud.
-    RawResponseItemCompleted => "rawResponseItem/completed" (v2::RawResponseItemCompletedNotification),
-    AgentMessageDelta => "item/agentMessage/delta" (v2::AgentMessageDeltaNotification),
-    /// EXPERIMENTAL - proposed plan streaming deltas for plan items.
-    PlanDelta => "item/plan/delta" (v2::PlanDeltaNotification),
-    /// Stream base64-encoded stdout/stderr chunks for a running `command/exec` session.
-    CommandExecOutputDelta => "command/exec/outputDelta" (v2::CommandExecOutputDeltaNotification),
-    CommandExecutionOutputDelta => "item/commandExecution/outputDelta" (v2::CommandExecutionOutputDeltaNotification),
-    TerminalInteraction => "item/commandExecution/terminalInteraction" (v2::TerminalInteractionNotification),
-    FileChangeOutputDelta => "item/fileChange/outputDelta" (v2::FileChangeOutputDeltaNotification),
-    ServerRequestResolved => "serverRequest/resolved" (v2::ServerRequestResolvedNotification),
-    McpToolCallProgress => "item/mcpToolCall/progress" (v2::McpToolCallProgressNotification),
-    McpServerOauthLoginCompleted => "mcpServer/oauthLogin/completed" (v2::McpServerOauthLoginCompletedNotification),
-    McpServerStatusUpdated => "mcpServer/startupStatus/updated" (v2::McpServerStatusUpdatedNotification),
-    AccountUpdated => "account/updated" (v2::AccountUpdatedNotification),
-    AccountRateLimitsUpdated => "account/rateLimits/updated" (v2::AccountRateLimitsUpdatedNotification),
-    AppListUpdated => "app/list/updated" (v2::AppListUpdatedNotification),
-    ReasoningSummaryTextDelta => "item/reasoning/summaryTextDelta" (v2::ReasoningSummaryTextDeltaNotification),
-    ReasoningSummaryPartAdded => "item/reasoning/summaryPartAdded" (v2::ReasoningSummaryPartAddedNotification),
-    ReasoningTextDelta => "item/reasoning/textDelta" (v2::ReasoningTextDeltaNotification),
-    /// Deprecated: Use `ContextCompaction` item type instead.
-    ContextCompacted => "thread/compacted" (v2::ContextCompactedNotification),
-    ModelRerouted => "model/rerouted" (v2::ModelReroutedNotification),
-    DeprecationNotice => "deprecationNotice" (v2::DeprecationNoticeNotification),
-    ConfigWarning => "configWarning" (v2::ConfigWarningNotification),
-    FuzzyFileSearchSessionUpdated => "fuzzyFileSearch/sessionUpdated" (FuzzyFileSearchSessionUpdatedNotification),
-    FuzzyFileSearchSessionCompleted => "fuzzyFileSearch/sessionCompleted" (FuzzyFileSearchSessionCompletedNotification),
-    #[experimental("thread/realtime/started")]
-    ThreadRealtimeStarted => "thread/realtime/started" (v2::ThreadRealtimeStartedNotification),
-    #[experimental("thread/realtime/itemAdded")]
-    ThreadRealtimeItemAdded => "thread/realtime/itemAdded" (v2::ThreadRealtimeItemAddedNotification),
-    #[experimental("thread/realtime/transcriptUpdated")]
-    ThreadRealtimeTranscriptUpdated => "thread/realtime/transcriptUpdated" (v2::ThreadRealtimeTranscriptUpdatedNotification),
-    #[experimental("thread/realtime/outputAudio/delta")]
-    ThreadRealtimeOutputAudioDelta => "thread/realtime/outputAudio/delta" (v2::ThreadRealtimeOutputAudioDeltaNotification),
-    #[experimental("thread/realtime/error")]
-    ThreadRealtimeError => "thread/realtime/error" (v2::ThreadRealtimeErrorNotification),
-    #[experimental("thread/realtime/closed")]
-    ThreadRealtimeClosed => "thread/realtime/closed" (v2::ThreadRealtimeClosedNotification),
-
-    /// Notifies the user of world-writable directories on Windows, which cannot be protected by the sandbox.
-    WindowsWorldWritableWarning => "windows/worldWritableWarning" (v2::WindowsWorldWritableWarningNotification),
-    WindowsSandboxSetupCompleted => "windowsSandbox/setupCompleted" (v2::WindowsSandboxSetupCompletedNotification),
-
-    #[serde(rename = "account/login/completed")]
-    #[ts(rename = "account/login/completed")]
-    #[strum(serialize = "account/login/completed")]
-    AccountLoginCompleted(v2::AccountLoginCompletedNotification),
-
-}
+server_notification_definitions! { # [doc = " NEW NOTIFICATIONS"] Error => "error" (v2 :: ErrorNotification) , ThreadStarted => "thread/started" (v2 :: ThreadStartedNotification) , ThreadStatusChanged => "thread/status/changed" (v2 :: ThreadStatusChangedNotification) , ThreadArchived => "thread/archived" (v2 :: ThreadArchivedNotification) , ThreadUnarchived => "thread/unarchived" (v2 :: ThreadUnarchivedNotification) , ThreadClosed => "thread/closed" (v2 :: ThreadClosedNotification) , SkillsChanged => "skills/changed" (v2 :: SkillsChangedNotification) , ThreadNameUpdated => "thread/name/updated" (v2 :: ThreadNameUpdatedNotification) , ThreadTokenUsageUpdated => "thread/tokenUsage/updated" (v2 :: ThreadTokenUsageUpdatedNotification) , TurnStarted => "turn/started" (v2 :: TurnStartedNotification) , HookStarted => "hook/started" (v2 :: HookStartedNotification) , TurnCompleted => "turn/completed" (v2 :: TurnCompletedNotification) , HookCompleted => "hook/completed" (v2 :: HookCompletedNotification) , TurnDiffUpdated => "turn/diff/updated" (v2 :: TurnDiffUpdatedNotification) , TurnPlanUpdated => "turn/plan/updated" (v2 :: TurnPlanUpdatedNotification) , ItemStarted => "item/started" (v2 :: ItemStartedNotification) , ItemGuardianApprovalReviewStarted => "item/autoApprovalReview/started" (v2 :: ItemGuardianApprovalReviewStartedNotification) , ItemGuardianApprovalReviewCompleted => "item/autoApprovalReview/completed" (v2 :: ItemGuardianApprovalReviewCompletedNotification) , ItemCompleted => "item/completed" (v2 :: ItemCompletedNotification) , # [doc = " This event is internal-only. Used by Codex Cloud."] RawResponseItemCompleted => "rawResponseItem/completed" (v2 :: RawResponseItemCompletedNotification) , AgentMessageDelta => "item/agentMessage/delta" (v2 :: AgentMessageDeltaNotification) , # [doc = " EXPERIMENTAL - proposed plan streaming deltas for plan items."] PlanDelta => "item/plan/delta" (v2 :: PlanDeltaNotification) , # [doc = " Stream base64-encoded stdout/stderr chunks for a running `command/exec` session."] CommandExecOutputDelta => "command/exec/outputDelta" (v2 :: CommandExecOutputDeltaNotification) , CommandExecutionOutputDelta => "item/commandExecution/outputDelta" (v2 :: CommandExecutionOutputDeltaNotification) , TerminalInteraction => "item/commandExecution/terminalInteraction" (v2 :: TerminalInteractionNotification) , FileChangeOutputDelta => "item/fileChange/outputDelta" (v2 :: FileChangeOutputDeltaNotification) , ServerRequestResolved => "serverRequest/resolved" (v2 :: ServerRequestResolvedNotification) , McpToolCallProgress => "item/mcpToolCall/progress" (v2 :: McpToolCallProgressNotification) , McpServerOauthLoginCompleted => "mcpServer/oauthLogin/completed" (v2 :: McpServerOauthLoginCompletedNotification) , McpServerStatusUpdated => "mcpServer/startupStatus/updated" (v2 :: McpServerStatusUpdatedNotification) , AccountUpdated => "account/updated" (v2 :: AccountUpdatedNotification) , AccountRateLimitsUpdated => "account/rateLimits/updated" (v2 :: AccountRateLimitsUpdatedNotification) , AppListUpdated => "app/list/updated" (v2 :: AppListUpdatedNotification) , ReasoningSummaryTextDelta => "item/reasoning/summaryTextDelta" (v2 :: ReasoningSummaryTextDeltaNotification) , ReasoningSummaryPartAdded => "item/reasoning/summaryPartAdded" (v2 :: ReasoningSummaryPartAddedNotification) , ReasoningTextDelta => "item/reasoning/textDelta" (v2 :: ReasoningTextDeltaNotification) , # [doc = " Deprecated: Use `ContextCompaction` item type instead."] ContextCompacted => "thread/compacted" (v2 :: ContextCompactedNotification) , ModelRerouted => "model/rerouted" (v2 :: ModelReroutedNotification) , DeprecationNotice => "deprecationNotice" (v2 :: DeprecationNoticeNotification) , ConfigWarning => "configWarning" (v2 :: ConfigWarningNotification) , FuzzyFileSearchSessionUpdated => "fuzzyFileSearch/sessionUpdated" (FuzzyFileSearchSessionUpdatedNotification) , FuzzyFileSearchSessionCompleted => "fuzzyFileSearch/sessionCompleted" (FuzzyFileSearchSessionCompletedNotification) , # [experimental ("thread/realtime/started")] ThreadRealtimeStarted => "thread/realtime/started" (v2 :: ThreadRealtimeStartedNotification) , # [experimental ("thread/realtime/itemAdded")] ThreadRealtimeItemAdded => "thread/realtime/itemAdded" (v2 :: ThreadRealtimeItemAddedNotification) , # [experimental ("thread/realtime/transcriptUpdated")] ThreadRealtimeTranscriptUpdated => "thread/realtime/transcriptUpdated" (v2 :: ThreadRealtimeTranscriptUpdatedNotification) , # [experimental ("thread/realtime/outputAudio/delta")] ThreadRealtimeOutputAudioDelta => "thread/realtime/outputAudio/delta" (v2 :: ThreadRealtimeOutputAudioDeltaNotification) , # [experimental ("thread/realtime/error")] ThreadRealtimeError => "thread/realtime/error" (v2 :: ThreadRealtimeErrorNotification) , # [experimental ("thread/realtime/closed")] ThreadRealtimeClosed => "thread/realtime/closed" (v2 :: ThreadRealtimeClosedNotification) , # [doc = " Notifies the user of world-writable directories on Windows, which cannot be protected by the sandbox."] WindowsWorldWritableWarning => "windows/worldWritableWarning" (v2 :: WindowsWorldWritableWarningNotification) , WindowsSandboxSetupCompleted => "windowsSandbox/setupCompleted" (v2 :: WindowsSandboxSetupCompletedNotification) , # [serde (rename = "account/login/completed")] # [strum (serialize = "account/login/completed")] AccountLoginCompleted (v2 :: AccountLoginCompletedNotification) , }
 
 client_notification_definitions! {
     Initialized,

@@ -478,7 +478,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn debug_sandbox_honors_active_permission_profiles() -> anyhow::Result<()> {
         let codex_home = TempDir::new()?;
         let sandbox_paths = TempDir::new()?;
@@ -529,7 +529,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn debug_sandbox_rejects_full_auto_for_permission_profiles() -> anyhow::Result<()> {
         let codex_home = TempDir::new()?;
         let sandbox_paths = TempDir::new()?;

@@ -45,7 +45,7 @@ use tokio::time::timeout;
 
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn plugin_read_returns_plugin_details_with_bundle_contents() -> Result<()> {
     let codex_home = TempDir::new()?;
     let repo_root = TempDir::new()?;
@@ -257,7 +257,7 @@ enabled = true
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_read_returns_app_needs_auth() -> Result<()> {
     let connectors = vec![
         AppInfo {
@@ -348,7 +348,7 @@ async fn plugin_read_returns_app_needs_auth() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_read_accepts_legacy_string_default_prompt() -> Result<()> {
     let codex_home = TempDir::new()?;
     let repo_root = TempDir::new()?;
@@ -413,7 +413,7 @@ async fn plugin_read_accepts_legacy_string_default_prompt() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_read_returns_invalid_request_when_plugin_is_missing() -> Result<()> {
     let codex_home = TempDir::new()?;
     let repo_root = TempDir::new()?;
@@ -463,7 +463,7 @@ async fn plugin_read_returns_invalid_request_when_plugin_is_missing() -> Result<
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_read_returns_invalid_request_when_plugin_manifest_is_missing() -> Result<()> {
     let codex_home = TempDir::new()?;
     let repo_root = TempDir::new()?;

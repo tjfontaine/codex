@@ -10,7 +10,7 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 use tempfile::tempdir;
 
-#[tokio::test]
+#[test]
 async fn list_tool_suggest_discoverable_plugins_returns_uninstalled_curated_plugins() {
     let codex_home = tempdir().expect("tempdir should succeed");
     let curated_root = crate::plugins::curated_plugins_repo_path(codex_home.path());
@@ -39,7 +39,7 @@ async fn list_tool_suggest_discoverable_plugins_returns_uninstalled_curated_plug
     );
 }
 
-#[tokio::test]
+#[test]
 async fn list_tool_suggest_discoverable_plugins_returns_empty_when_plugins_feature_disabled() {
     let codex_home = tempdir().expect("tempdir should succeed");
     let curated_root = crate::plugins::curated_plugins_repo_path(codex_home.path());
@@ -55,7 +55,7 @@ async fn list_tool_suggest_discoverable_plugins_returns_empty_when_plugins_featu
     assert_eq!(discoverable_plugins, Vec::<DiscoverablePluginInfo>::new());
 }
 
-#[tokio::test]
+#[test]
 async fn list_tool_suggest_discoverable_plugins_normalizes_description() {
     let codex_home = tempdir().expect("tempdir should succeed");
     let curated_root = crate::plugins::curated_plugins_repo_path(codex_home.path());
@@ -89,7 +89,7 @@ async fn list_tool_suggest_discoverable_plugins_normalizes_description() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn list_tool_suggest_discoverable_plugins_omits_installed_curated_plugins() {
     let codex_home = tempdir().expect("tempdir should succeed");
     let curated_root = crate::plugins::curated_plugins_repo_path(codex_home.path());
@@ -118,7 +118,7 @@ async fn list_tool_suggest_discoverable_plugins_omits_installed_curated_plugins(
     assert_eq!(discoverable_plugins, Vec::<DiscoverablePluginInfo>::new());
 }
 
-#[tokio::test]
+#[test]
 async fn list_tool_suggest_discoverable_plugins_includes_configured_plugin_ids() {
     let codex_home = tempdir().expect("tempdir should succeed");
     let curated_root = crate::plugins::curated_plugins_repo_path(codex_home.path());

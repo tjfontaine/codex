@@ -1,8 +1,10 @@
+//! Stub — realtime websocket types for wasip2.
+#![allow(dead_code, unused_variables, unused_imports)]
+pub mod protocol;
 pub mod methods;
 mod methods_common;
 mod methods_v1;
 mod methods_v2;
-pub mod protocol;
 mod protocol_common;
 mod protocol_v1;
 mod protocol_v2;

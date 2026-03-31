@@ -133,31 +133,13 @@ pub async fn append_entry(text: &str, conversation_id: &ThreadId, config: &Confi
     let history_max_bytes = config.history.max_bytes;
 
     // Perform a blocking write under an advisory write lock using std::fs.
+    // [codex-codemod] File::try_lock not supported in WASI — write directly (no contention in single-threaded WASM)
     tokio::task::spawn_blocking(move || -> Result<()> {
-        // Retry a few times to avoid indefinite blocking when contended.
-        for _ in 0..MAX_RETRIES {
-            match history_file.try_lock() {
-                Ok(()) => {
-                    // While holding the exclusive lock, write the full line.
-                    // We do not open the file with `append(true)` on Windows, so ensure the
-                    // cursor is positioned at the end before writing.
-                    history_file.seek(SeekFrom::End(0))?;
-                    history_file.write_all(line.as_bytes())?;
-                    history_file.flush()?;
-                    enforce_history_limit(&mut history_file, history_max_bytes)?;
-                    return Ok(());
-                }
-                Err(std::fs::TryLockError::WouldBlock) => {
-                    std::thread::sleep(RETRY_SLEEP);
-                }
-                Err(e) => return Err(e.into()),
-            }
-        }
-
-        Err(std::io::Error::new(
-            std::io::ErrorKind::WouldBlock,
-            "could not acquire exclusive lock on history file after multiple attempts",
-        ))
+        history_file.seek(SeekFrom::End(0))?;
+        history_file.write_all(line.as_bytes())?;
+        history_file.flush()?;
+        enforce_history_limit(&mut history_file, history_max_bytes)?;
+        Ok(())
     })
     .await??;
 
@@ -300,6 +282,12 @@ async fn ensure_owner_only_permissions(_file: &File) -> Result<()> {
     Ok(())
 }
 
+
+#[cfg(not(any(unix, windows)))]
+async fn ensure_owner_only_permissions(_file: &File) -> Result<()> {
+    Ok(())
+}
+
 async fn history_metadata_for_file(path: &Path) -> (u64, usize) {
     let log_id = match fs::metadata(path).await {
         Ok(metadata) => history_log_id(&metadata).unwrap_or(0),
@@ -355,47 +343,30 @@ fn lookup_history_entry(path: &Path, log_id: u64, offset: usize) -> Option<Histo
         return None;
     }
 
-    // Open & lock file for reading using a shared lock.
-    // Retry a few times to avoid indefinite blocking.
-    for _ in 0..MAX_RETRIES {
-        let lock_result = file.try_lock_shared();
+    // [codex-codemod] File::try_lock_shared not supported in WASI — read directly
+    {
+        let reader = BufReader::new(&file);
+        for (idx, line_res) in reader.lines().enumerate() {
+            let line = match line_res {
+                Ok(l) => l,
+                Err(e) => {
+                    tracing::warn!(error = %e, "failed to read line from history file");
+                    return None;
+                }
+            };
 
-        match lock_result {
-            Ok(()) => {
-                let reader = BufReader::new(&file);
-                for (idx, line_res) in reader.lines().enumerate() {
-                    let line = match line_res {
-                        Ok(l) => l,
-                        Err(e) => {
-                            tracing::warn!(error = %e, "failed to read line from history file");
-                            return None;
-                        }
-                    };
-
-                    if idx == offset {
-                        match serde_json::from_str::<HistoryEntry>(&line) {
-                            Ok(entry) => return Some(entry),
-                            Err(e) => {
-                                tracing::warn!(error = %e, "failed to parse history entry");
-                                return None;
-                            }
-                        }
+            if idx == offset {
+                match serde_json::from_str::<HistoryEntry>(&line) {
+                    Ok(entry) => return Some(entry),
+                    Err(e) => {
+                        tracing::warn!(error = %e, "failed to parse history entry");
+                        return None;
                     }
                 }
-                // Not found at requested offset.
-                return None;
-            }
-            Err(std::fs::TryLockError::WouldBlock) => {
-                std::thread::sleep(RETRY_SLEEP);
-            }
-            Err(e) => {
-                tracing::warn!(error = %e, "failed to acquire shared lock on history file");
-                return None;
             }
         }
+        return None;
     }
-
-    None
 }
 
 #[cfg(unix)]

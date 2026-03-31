@@ -10,16 +10,13 @@ use serde::Deserialize;
 use serde::Serialize;
 use strum_macros::Display;
 use tracing::error;
-use ts_rs::TS;
 
 use crate::protocol::NetworkAccess;
 use crate::protocol::ReadOnlyAccess;
 use crate::protocol::SandboxPolicy;
 use crate::protocol::WritableRoot;
 
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, Default, JsonSchema, TS,
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, Default, JsonSchema)]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
 pub enum NetworkSandboxPolicy {
@@ -39,20 +36,7 @@ impl NetworkSandboxPolicy {
 /// When two equally specific entries target the same path, we compare these by
 /// conflict precedence rather than by capability breadth: `none` beats
 /// `write`, and `write` beats `read`.
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Serialize,
-    Deserialize,
-    Display,
-    JsonSchema,
-    TS,
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Display, JsonSchema)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum FileSystemAccessMode {
@@ -71,16 +55,14 @@ impl FileSystemAccessMode {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema, TS)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "snake_case")]
-#[ts(tag = "kind")]
 pub enum FileSystemSpecialPath {
     Root,
     Minimal,
     CurrentWorkingDirectory,
     ProjectRoots {
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        #[ts(optional)]
         subpath: Option<PathBuf>,
     },
     Tmpdir,
@@ -96,7 +78,6 @@ pub enum FileSystemSpecialPath {
     Unknown {
         path: String,
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        #[ts(optional)]
         subpath: Option<PathBuf>,
     },
 }
@@ -114,15 +95,13 @@ impl FileSystemSpecialPath {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema, TS)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct FileSystemSandboxEntry {
     pub path: FileSystemPath,
     pub access: FileSystemAccessMode,
 }
 
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, Default, JsonSchema, TS,
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, Default, JsonSchema)]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
 pub enum FileSystemSandboxKind {
@@ -132,7 +111,7 @@ pub enum FileSystemSandboxKind {
     ExternalSandbox,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema, TS)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct FileSystemSandboxPolicy {
     pub kind: FileSystemSandboxKind,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -155,9 +134,8 @@ struct FileSystemSemanticSignature {
     unreadable_roots: Vec<AbsolutePathBuf>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema, TS)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "type", rename_all = "snake_case")]
-#[ts(tag = "type")]
 pub enum FileSystemPath {
     Path { path: AbsolutePathBuf },
     Special { value: FileSystemSpecialPath },

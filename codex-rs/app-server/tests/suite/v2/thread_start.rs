@@ -36,7 +36,7 @@ use wiremock::matchers::path;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn thread_start_creates_thread_and_emits_started() -> Result<()> {
     // Provide a mock server and config so model wiring is valid.
     let server = create_mock_responses_server_repeating_assistant("Done").await;
@@ -153,7 +153,7 @@ async fn thread_start_creates_thread_and_emits_started() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_respects_project_config_from_cwd() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -194,7 +194,7 @@ model_reasoning_effort = "high"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_accepts_flex_service_tier() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -222,7 +222,7 @@ async fn thread_start_accepts_flex_service_tier() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_accepts_metrics_service_name() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -250,7 +250,7 @@ async fn thread_start_accepts_metrics_service_name() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_ephemeral_remains_pathless() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -295,7 +295,7 @@ async fn thread_start_ephemeral_remains_pathless() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_fails_when_required_mcp_server_fails_to_initialize() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -331,7 +331,7 @@ async fn thread_start_fails_when_required_mcp_server_fails_to_initialize() -> Re
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_emits_mcp_server_status_updated_notifications() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -428,7 +428,7 @@ async fn thread_start_emits_mcp_server_status_updated_notifications() -> Result<
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_surfaces_cloud_requirements_load_errors() -> Result<()> {
     let server = MockServer::start().await;
     Mock::given(method("GET"))

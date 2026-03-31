@@ -232,7 +232,7 @@ pub fn combine_output_receivers(
 
         loop {
             tokio::select! {
-                stdout = stdout_rx.recv(), if stdout_open => match stdout {
+                stdout = stdout_rx.recv() => match stdout {
                     Some(chunk) => {
                         let _ = combined_tx.send(chunk);
                     }
@@ -240,7 +240,7 @@ pub fn combine_output_receivers(
                         stdout_open = false;
                     }
                 },
-                stderr = stderr_rx.recv(), if stderr_open => match stderr {
+                stderr = stderr_rx.recv() => match stderr {
                     Some(chunk) => {
                         let _ = combined_tx.send(chunk);
                     }
@@ -248,7 +248,7 @@ pub fn combine_output_receivers(
                         stderr_open = false;
                     }
                 },
-                else => break,
+                _ = async {} => break,
             }
         }
     });

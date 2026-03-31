@@ -1,5 +1,26 @@
 use dirs::home_dir;
-use path_absolutize::Absolutize;
+/// Simple absolutize replacement for WASM (path-absolutize doesn't compile for wasm32)
+trait Absolutize {
+    fn absolutize(&self) -> std::io::Result<std::borrow::Cow<'_, Path>>;
+    fn absolutize_from(&self, base: &Path) -> std::io::Result<std::borrow::Cow<'_, Path>>;
+}
+impl Absolutize for Path {
+    fn absolutize(&self) -> std::io::Result<std::borrow::Cow<'_, Path>> {
+        if self.is_absolute() {
+            Ok(std::borrow::Cow::Borrowed(self))
+        } else {
+            let cwd = std::env::current_dir()?;
+            Ok(std::borrow::Cow::Owned(cwd.join(self)))
+        }
+    }
+    fn absolutize_from(&self, base: &Path) -> std::io::Result<std::borrow::Cow<'_, Path>> {
+        if self.is_absolute() {
+            Ok(std::borrow::Cow::Borrowed(self))
+        } else {
+            Ok(std::borrow::Cow::Owned(base.join(self)))
+        }
+    }
+}
 use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Deserializer;
@@ -9,7 +30,6 @@ use std::cell::RefCell;
 use std::path::Display;
 use std::path::Path;
 use std::path::PathBuf;
-use ts_rs::TS;
 
 /// A path that is guaranteed to be absolute and normalized (though it is not
 /// guaranteed to be canonicalized or exist on the filesystem).
@@ -18,7 +38,7 @@ use ts_rs::TS;
 /// using [AbsolutePathBufGuard::new]. If no base path is set, the
 /// deserialization will fail unless the path being deserialized is already
 /// absolute.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, JsonSchema, TS)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, JsonSchema)]
 pub struct AbsolutePathBuf(PathBuf);
 
 impl AbsolutePathBuf {

@@ -748,6 +748,7 @@ impl ThreadManagerState {
         &self,
         config: Config,
         initial_history: InitialHistory,
+        // diag-trace injected below
         auth_manager: Arc<AuthManager>,
         agent_control: AgentControl,
         session_source: SessionSource,
@@ -759,6 +760,7 @@ impl ThreadManagerState {
         parent_trace: Option<W3cTraceContext>,
         user_shell_override: Option<crate::shell::Shell>,
     ) -> CodexResult<NewThread> {
+        console_log::console_log!("[diag-trace] thread_manager.rs: spawn_thread_with_source ENTERED");
         let watch_registration = self
             .file_watcher
             .register_config(&config, self.skills_manager.as_ref());
@@ -784,6 +786,7 @@ impl ThreadManagerState {
             parent_trace,
         })
         .await?;
+        console_log::console_log!("[diag-trace] thread_manager.rs: Codex::spawn DONE, calling finalize_thread_spawn");
         self.finalize_thread_spawn(codex, thread_id, watch_registration)
             .await
     }
@@ -794,7 +797,9 @@ impl ThreadManagerState {
         thread_id: ThreadId,
         watch_registration: crate::file_watcher::WatchRegistration,
     ) -> CodexResult<NewThread> {
+        console_log::console_log!("[diag-trace] thread_manager.rs: finalize_thread_spawn waiting for next_event (SessionConfigured)");
         let event = codex.next_event().await?;
+        console_log::console_log!("[diag-trace] thread_manager.rs: finalize_thread_spawn GOT event");
         let session_configured = match event {
             Event {
                 id,

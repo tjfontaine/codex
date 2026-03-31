@@ -81,7 +81,7 @@ async fn assert_exec_process_starts_and_exits(use_remote: bool) -> Result<()> {
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn exec_process_starts_and_exits(use_remote: bool) -> Result<()> {
     assert_exec_process_starts_and_exits(use_remote).await
 }

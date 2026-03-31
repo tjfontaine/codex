@@ -133,7 +133,7 @@ where
     }
 }
 
-#[tokio::test]
+#[test]
 async fn get_model_info_tracks_fallback_usage() {
     let codex_home = tempdir().expect("temp dir");
     let config = ConfigBuilder::default()
@@ -167,7 +167,7 @@ async fn get_model_info_tracks_fallback_usage() {
     assert_eq!(unknown.slug, "model-that-does-not-exist");
 }
 
-#[tokio::test]
+#[test]
 async fn get_model_info_uses_custom_catalog() {
     let codex_home = tempdir().expect("temp dir");
     let config = ConfigBuilder::default()
@@ -200,7 +200,7 @@ async fn get_model_info_uses_custom_catalog() {
     assert!(!model_info.used_fallback_model_metadata);
 }
 
-#[tokio::test]
+#[test]
 async fn get_model_info_matches_namespaced_suffix() {
     let codex_home = tempdir().expect("temp dir");
     let config = ConfigBuilder::default()
@@ -228,7 +228,7 @@ async fn get_model_info_matches_namespaced_suffix() {
     assert!(!model_info.used_fallback_model_metadata);
 }
 
-#[tokio::test]
+#[test]
 async fn get_model_info_rejects_multi_segment_namespace_suffix_matching() {
     let codex_home = tempdir().expect("temp dir");
     let config = ConfigBuilder::default()
@@ -258,7 +258,7 @@ async fn get_model_info_rejects_multi_segment_namespace_suffix_matching() {
     assert!(model_info.used_fallback_model_metadata);
 }
 
-#[tokio::test]
+#[test]
 async fn refresh_available_models_sorts_by_priority() {
     let server = MockServer::start().await;
     let remote_models = vec![
@@ -310,7 +310,7 @@ async fn refresh_available_models_sorts_by_priority() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn refresh_available_models_uses_cache_when_fresh() {
     let server = MockServer::start().await;
     let remote_models = vec![remote_model("cached", "Cached", 5)];
@@ -351,7 +351,7 @@ async fn refresh_available_models_uses_cache_when_fresh() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn refresh_available_models_refetches_when_cache_stale() {
     let server = MockServer::start().await;
     let initial_models = vec![remote_model("stale", "Stale", 1)];
@@ -414,7 +414,7 @@ async fn refresh_available_models_refetches_when_cache_stale() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn refresh_available_models_refetches_when_version_mismatch() {
     let server = MockServer::start().await;
     let initial_models = vec![remote_model("old", "Old", 1)];
@@ -477,7 +477,7 @@ async fn refresh_available_models_refetches_when_version_mismatch() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn refresh_available_models_drops_removed_remote_models() {
     let server = MockServer::start().await;
     let initial_models = vec![remote_model("remote-old", "Remote Old", 1)];
@@ -543,7 +543,7 @@ async fn refresh_available_models_drops_removed_remote_models() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn refresh_available_models_skips_network_without_chatgpt_auth() {
     let server = MockServer::start().await;
     let dynamic_slug = "dynamic-model-only-for-test-noauth";

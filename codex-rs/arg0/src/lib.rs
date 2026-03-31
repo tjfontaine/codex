@@ -1,3 +1,4 @@
+#![allow(dead_code, unused_variables)]
 use std::fs::File;
 use std::future::Future;
 use std::path::Path;
@@ -79,10 +80,12 @@ pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
         }
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
     if exe_name == LINUX_SANDBOX_ARG0 {
         // Safety: [`run_main`] never returns.
         codex_linux_sandbox::run_main();
-    } else if exe_name == APPLY_PATCH_ARG0 || exe_name == MISSPELLED_APPLY_PATCH_ARG0 {
+    }
+    if exe_name == APPLY_PATCH_ARG0 || exe_name == MISSPELLED_APPLY_PATCH_ARG0 {
         codex_apply_patch::main();
     }
 
@@ -179,6 +182,7 @@ where
 fn build_runtime() -> anyhow::Result<tokio::runtime::Runtime> {
     let mut builder = tokio::runtime::Builder::new_multi_thread();
     builder.enable_all();
+    #[cfg(not(target_arch = "wasm32"))]
     builder.thread_stack_size(TOKIO_WORKER_STACK_SIZE_BYTES);
     Ok(builder.build()?)
 }
@@ -303,7 +307,7 @@ pub fn prepend_path_entry_for_codex_aliases() -> std::io::Result<Arg0PathEntryGu
         }
     }
 
-    #[cfg(unix)]
+    #[cfg(any(unix, target_arch = "wasm32"))]
     const PATH_SEPARATOR: &str = ":";
 
     #[cfg(windows)]

@@ -533,15 +533,10 @@ fn estimate_original_image_bytes(image_url: &str) -> Option<i64> {
                 return None;
             }
         };
-        let dynamic = match image::load_from_memory(&bytes) {
-            Ok(dynamic) => dynamic,
-            Err(error) => {
-                tracing::trace!("failed to decode original-detail image bytes: {error}");
-                return None;
-            }
-        };
-        let width = i64::from(dynamic.width());
-        let height = i64::from(dynamic.height());
+        // image crate not available in WASM — skip image dimension estimation
+        let _ = &bytes;
+        let width: i64 = 1024;
+        let height: i64 = 1024;
         let patch_size = i64::from(ORIGINAL_IMAGE_PATCH_SIZE);
         let patches_wide = width.saturating_add(patch_size.saturating_sub(1)) / patch_size;
         let patches_high = height.saturating_add(patch_size.saturating_sub(1)) / patch_size;

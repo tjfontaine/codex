@@ -42,7 +42,7 @@ fn write_config(codex_home: &TempDir, contents: &str) -> Result<()> {
     )?)
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn config_read_returns_effective_and_layers() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_config(
@@ -88,7 +88,7 @@ sandbox_mode = "workspace-write"
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn config_read_includes_tools() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_config(
@@ -170,7 +170,7 @@ view_image = false
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn config_read_includes_nested_web_search_tool_config() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_config(
@@ -218,7 +218,7 @@ location = { country = "US", city = "New York", timezone = "America/New_York" }
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn config_read_ignores_bool_web_search_tool_config() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_config(
@@ -250,7 +250,7 @@ web_search = true
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn config_read_includes_apps() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_config(
@@ -333,7 +333,7 @@ default_tools_approval_mode = "prompt"
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn config_read_includes_project_layers_for_cwd() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_config(&codex_home, r#"model = "gpt-user""#)?;
@@ -379,7 +379,7 @@ model_reasoning_effort = "high"
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn config_read_includes_system_layer_and_overrides() -> Result<()> {
     let codex_home = TempDir::new()?;
     let user_dir = test_path_buf_with_windows("/user", Some(r"C:\Users\user"));
@@ -503,7 +503,7 @@ writable_roots = [{}]
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn config_value_write_replaces_value() -> Result<()> {
     let temp_dir = TempDir::new()?;
     let codex_home = temp_dir.path().canonicalize()?;
@@ -569,7 +569,7 @@ model = "gpt-old"
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn config_value_write_rejects_version_conflict() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_config(
@@ -608,7 +608,7 @@ model = "gpt-old"
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn config_batch_write_applies_multiple_edits() -> Result<()> {
     let tmp_dir = TempDir::new()?;
     let codex_home = tmp_dir.path().canonicalize()?;

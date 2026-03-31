@@ -40,7 +40,7 @@ plugins = true
     )
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_list_skips_invalid_marketplace_file() -> Result<()> {
     let codex_home = TempDir::new()?;
     let repo_root = TempDir::new()?;
@@ -90,7 +90,7 @@ async fn plugin_list_skips_invalid_marketplace_file() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_list_rejects_relative_cwds() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mut mcp = McpProcess::new(codex_home.path()).await?;
@@ -116,7 +116,7 @@ async fn plugin_list_rejects_relative_cwds() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_list_accepts_omitted_cwds() -> Result<()> {
     let codex_home = TempDir::new()?;
     std::fs::create_dir_all(codex_home.path().join(".agents/plugins"))?;
@@ -163,7 +163,7 @@ async fn plugin_list_accepts_omitted_cwds() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_list_includes_install_and_enabled_state_from_config() -> Result<()> {
     let codex_home = TempDir::new()?;
     let repo_root = TempDir::new()?;
@@ -296,7 +296,7 @@ enabled = false
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_list_uses_home_config_for_enabled_state() -> Result<()> {
     let codex_home = TempDir::new()?;
     std::fs::create_dir_all(codex_home.path().join(".agents/plugins"))?;
@@ -400,7 +400,7 @@ enabled = false
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_list_returns_plugin_interface_with_absolute_asset_paths() -> Result<()> {
     let codex_home = TempDir::new()?;
     let repo_root = TempDir::new()?;
@@ -534,7 +534,7 @@ async fn plugin_list_returns_plugin_interface_with_absolute_asset_paths() -> Res
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_list_accepts_legacy_string_default_prompt() -> Result<()> {
     let codex_home = TempDir::new()?;
     let repo_root = TempDir::new()?;
@@ -601,7 +601,7 @@ async fn plugin_list_accepts_legacy_string_default_prompt() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_list_force_remote_sync_returns_remote_sync_error_on_fail_open() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_plugin_sync_config(codex_home.path(), "https://chatgpt.com/backend-api/")?;
@@ -647,7 +647,7 @@ async fn plugin_list_force_remote_sync_returns_remote_sync_error_on_fail_open() 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_list_force_remote_sync_reconciles_curated_plugin_state() -> Result<()> {
     let codex_home = TempDir::new()?;
     let server = MockServer::start().await;
@@ -758,7 +758,7 @@ async fn plugin_list_force_remote_sync_reconciles_curated_plugin_state() -> Resu
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn app_server_startup_remote_plugin_sync_runs_once() -> Result<()> {
     let codex_home = TempDir::new()?;
     let server = MockServer::start().await;
@@ -844,7 +844,7 @@ async fn app_server_startup_remote_plugin_sync_runs_once() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_list_fetches_featured_plugin_ids_without_chatgpt_auth() -> Result<()> {
     let codex_home = TempDir::new()?;
     let server = MockServer::start().await;
@@ -883,7 +883,7 @@ async fn plugin_list_fetches_featured_plugin_ids_without_chatgpt_auth() -> Resul
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_list_uses_warmed_featured_plugin_ids_cache_on_first_request() -> Result<()> {
     let codex_home = TempDir::new()?;
     let server = MockServer::start().await;

@@ -1,43 +1,24 @@
 [package]
 name = "codex-network-proxy"
 edition = "2024"
-version = { workspace = true }
-license.workspace = true
+version = "0.0.0"
+license = "Apache-2.0"
 
 [lib]
 name = "codex_network_proxy"
 path = "src/lib.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-anyhow = { workspace = true }
-async-trait = { workspace = true }
-clap = { workspace = true, features = ["derive"] }
-chrono = { workspace = true }
-codex-utils-absolute-path = { workspace = true }
-codex-utils-home-dir = { workspace = true }
-codex-utils-rustls-provider = { workspace = true }
-globset = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-thiserror = { workspace = true }
-time = { workspace = true }
-tokio = { workspace = true, features = ["full"] }
-tracing = { workspace = true }
-url = { workspace = true }
-rama-core = { version = "=0.3.0-alpha.4" }
-rama-http = { version = "=0.3.0-alpha.4" }
-rama-http-backend = { version = "=0.3.0-alpha.4", features = ["tls"] }
-rama-net = { version = "=0.3.0-alpha.4", features = ["http", "tls"] }
-rama-socks5 = { version = "=0.3.0-alpha.4" }
-rama-tcp = { version = "=0.3.0-alpha.4", features = ["http"] }
-rama-tls-rustls = { version = "=0.3.0-alpha.4", features = ["http"] }
+anyhow = { version = "1" }
+async-trait = { version = "0.1.89" }
+codex-utils-absolute-path = { path = "../utils/absolute-path" }
+codex-utils-home-dir = { path = "../utils/home-dir" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+thiserror = { version = "2.0.17" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
+tracing = { version = "0.1.44" }
 
 [dev-dependencies]
-pretty_assertions = { workspace = true }
-tempfile = { workspace = true }
-
-[target.'cfg(target_family = "unix")'.dependencies]
-rama-unix = { version = "=0.3.0-alpha.4" }
+pretty_assertions = { version = "1.4.1" }
+tempfile = { version = "3.23.0" }

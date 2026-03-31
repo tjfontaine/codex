@@ -2162,7 +2162,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn branch_override_is_used_when_provided() {
         let git_ref = resolve_git_ref_with_git_info(
             Some(&"feature/override".to_string()),
@@ -2173,7 +2173,7 @@ mod tests {
         assert_eq!(git_ref, "feature/override");
     }
 
-    #[tokio::test]
+    #[test]
     async fn trims_override_whitespace() {
         let git_ref = resolve_git_ref_with_git_info(
             Some(&"  feature/spaces  ".to_string()),
@@ -2184,7 +2184,7 @@ mod tests {
         assert_eq!(git_ref, "feature/spaces");
     }
 
-    #[tokio::test]
+    #[test]
     async fn prefers_current_branch_when_available() {
         let git_ref = resolve_git_ref_with_git_info(
             None,
@@ -2198,7 +2198,7 @@ mod tests {
         assert_eq!(git_ref, "feature/current");
     }
 
-    #[tokio::test]
+    #[test]
     async fn falls_back_to_current_branch_when_default_is_missing() {
         let git_ref = resolve_git_ref_with_git_info(
             None,
@@ -2209,7 +2209,7 @@ mod tests {
         assert_eq!(git_ref, "develop");
     }
 
-    #[tokio::test]
+    #[test]
     async fn falls_back_to_main_when_no_git_info_is_available() {
         let git_ref = resolve_git_ref_with_git_info(None, &StubGitInfo::new(None, None)).await;
 
@@ -2318,7 +2318,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn collect_attempt_diffs_includes_sibling_attempts() {
         let backend = MockClient;
         let task_id = parse_task_id("https://chatgpt.com/codex/tasks/T-1000").expect("id");

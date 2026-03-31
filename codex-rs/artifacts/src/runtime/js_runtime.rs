@@ -3,7 +3,7 @@ use crate::runtime::default_cached_runtime_root;
 use crate::runtime::load_cached_runtime;
 use std::path::Path;
 use std::path::PathBuf;
-use which::which;
+fn which(name: &str) -> Result<std::path::PathBuf, ()> { std::process::Command::new("which").arg(name).output().ok() .and_then(|o| if o.status.success() { String::from_utf8(o.stdout).ok().map(|s| std::path::PathBuf::from(s.trim())) } else { None }).ok_or(()) }
 
 const CODEX_APP_PRODUCT_NAMES: [&str; 6] = [
     "Codex",

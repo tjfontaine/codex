@@ -16,7 +16,7 @@ use std::time::Duration;
 
 const WS_V2_BETA_HEADER_VALUE: &str = "responses_websockets=2026-02-06";
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn websocket_test_codex_shell_chain() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -69,7 +69,7 @@ async fn websocket_test_codex_shell_chain() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn websocket_first_turn_uses_startup_prewarm_and_create() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -113,7 +113,7 @@ async fn websocket_first_turn_uses_startup_prewarm_and_create() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn websocket_first_turn_handles_handshake_delay_with_startup_prewarm() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -163,7 +163,7 @@ async fn websocket_first_turn_handles_handshake_delay_with_startup_prewarm() -> 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn websocket_v2_test_codex_shell_chain() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -251,7 +251,7 @@ async fn websocket_v2_test_codex_shell_chain() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -303,7 +303,7 @@ async fn websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm() 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -355,7 +355,7 @@ async fn websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm() -> Resu
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn websocket_v2_next_turn_uses_updated_service_tier() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

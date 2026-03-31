@@ -80,7 +80,7 @@ async fn wait_for_responses_request_count_to_stabilize(
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_unsubscribe_unloads_thread_and_emits_thread_closed_notification() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -135,7 +135,7 @@ async fn thread_unsubscribe_unloads_thread_and_emits_thread_closed_notification(
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_unsubscribe_during_turn_interrupts_turn_and_emits_thread_closed() -> Result<()> {
     #[cfg(target_os = "windows")]
     let shell_command = vec![
@@ -227,7 +227,7 @@ async fn thread_unsubscribe_during_turn_interrupts_turn_and_emits_thread_closed(
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_unsubscribe_clears_cached_status_before_resume() -> Result<()> {
     let server = responses::start_mock_server().await;
     let _response_mock = responses::mount_sse_once(
@@ -314,7 +314,7 @@ async fn thread_unsubscribe_clears_cached_status_before_resume() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_unsubscribe_reports_not_loaded_after_thread_is_unloaded() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;

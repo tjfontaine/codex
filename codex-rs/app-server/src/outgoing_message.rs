@@ -836,7 +836,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn send_response_routes_to_target_connection() {
         let (tx, mut rx) = mpsc::channel::<OutgoingEnvelope>(4);
         let outgoing = OutgoingMessageSender::new(tx);
@@ -870,7 +870,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn send_response_clears_registered_request_context() {
         let (tx, _rx) = mpsc::channel::<OutgoingEnvelope>(4);
         let outgoing = OutgoingMessageSender::new(tx);
@@ -895,7 +895,7 @@ mod tests {
         assert_eq!(outgoing.request_context_count().await, 0);
     }
 
-    #[tokio::test]
+    #[test]
     async fn send_error_routes_to_target_connection() {
         let (tx, mut rx) = mpsc::channel::<OutgoingEnvelope>(4);
         let outgoing = OutgoingMessageSender::new(tx);
@@ -932,7 +932,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn connection_closed_clears_registered_request_contexts() {
         let (tx, _rx) = mpsc::channel::<OutgoingEnvelope>(4);
         let outgoing = OutgoingMessageSender::new(tx);
@@ -966,7 +966,7 @@ mod tests {
         assert_eq!(outgoing.request_context_count().await, 1);
     }
 
-    #[tokio::test]
+    #[test]
     async fn notify_client_error_forwards_error_to_waiter() {
         let (tx, _rx) = mpsc::channel::<OutgoingEnvelope>(4);
         let outgoing = OutgoingMessageSender::new(tx);
@@ -1000,7 +1000,7 @@ mod tests {
         assert_eq!(result, Err(error));
     }
 
-    #[tokio::test]
+    #[test]
     async fn pending_requests_for_thread_returns_thread_requests_in_request_id_order() {
         let (tx, _rx) = mpsc::channel::<OutgoingEnvelope>(8);
         let outgoing = Arc::new(OutgoingMessageSender::new(tx));
@@ -1057,7 +1057,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn cancel_requests_for_thread_cancels_all_thread_requests() {
         let (tx, _rx) = mpsc::channel::<OutgoingEnvelope>(8);
         let outgoing = Arc::new(OutgoingMessageSender::new(tx));

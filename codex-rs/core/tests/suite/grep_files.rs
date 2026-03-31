@@ -29,7 +29,7 @@ macro_rules! skip_if_ripgrep_missing {
     }};
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn grep_files_tool_collects_matches() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_ripgrep_missing!(Ok(()));
@@ -87,7 +87,7 @@ async fn grep_files_tool_collects_matches() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn grep_files_tool_reports_empty_results() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_ripgrep_missing!(Ok(()));

@@ -13,7 +13,7 @@ fn detects_user_shell_command_text_variants() {
     assert!(!USER_SHELL_COMMAND_FRAGMENT.matches_text("echo hi"));
 }
 
-#[tokio::test]
+#[test]
 async fn formats_basic_record() {
     let exec_output = ExecToolCallOutput {
         exit_code: 0,
@@ -37,7 +37,7 @@ async fn formats_basic_record() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn uses_aggregated_output_over_streams() {
     let exec_output = ExecToolCallOutput {
         exit_code: 42,

@@ -76,9 +76,8 @@ impl ReqwestTransport {
                 let (compressed, content_encoding) = match compression {
                     RequestCompression::None => unreachable!("guarded by compression != None"),
                     RequestCompression::Zstd => (
-                        zstd::stream::encode_all(std::io::Cursor::new(json), 3)
-                            .map_err(|err| TransportError::Build(err.to_string()))?,
-                        http::HeaderValue::from_static("zstd"),
+                        json,
+                        http::HeaderValue::from_static("identity"),
                     ),
                 };
                 let post_compression_bytes = compressed.len();

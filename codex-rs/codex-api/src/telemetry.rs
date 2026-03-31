@@ -11,8 +11,16 @@ use std::future::Future;
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::time::Instant;
-use tokio_tungstenite::tungstenite::Error;
-use tokio_tungstenite::tungstenite::Message;
+/// Stub for tungstenite Error (websocket deps stripped for WASM)
+#[derive(Debug)]
+pub struct Error;
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "ws error") }
+}
+impl std::error::Error for Error {}
+/// Stub for tungstenite Message (websocket deps stripped for WASM)
+#[derive(Debug)]
+pub enum Message { Text(String), Binary(Vec<u8>) }
 
 /// Generic telemetry.
 pub trait SseTelemetry: Send + Sync {

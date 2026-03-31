@@ -392,7 +392,7 @@ impl Drop for McpProcess {
         while start.elapsed() < timeout {
             match self.process.try_wait() {
                 Ok(Some(_)) => return,
-                Ok(None) => std::thread::sleep(std::time::Duration::from_millis(10)),
+                Ok(None) => tokio::thread_spawn::sleep(std::time::Duration::from_millis(10)),
                 Err(_) => return,
             }
         }

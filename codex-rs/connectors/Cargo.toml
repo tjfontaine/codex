@@ -1,18 +1,15 @@
 [package]
 name = "codex-connectors"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
-
-[lints]
-workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [dependencies]
-anyhow = { workspace = true }
-codex-app-server-protocol = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-urlencoding = { workspace = true }
+anyhow = { version = "1" }
+codex-app-server-protocol = { path = "../app-server-protocol" }
+serde = { version = "1", features = ["derive"] }
+urlencoding = { version = "2.1" }
 
 [dev-dependencies]
-pretty_assertions = { workspace = true }
-tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+pretty_assertions = { version = "1.4.1" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }

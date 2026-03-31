@@ -553,7 +553,6 @@ pub async fn run_main_with_transport(
         let mut outbound_connections = HashMap::<ConnectionId, OutboundConnectionState>::new();
         loop {
             tokio::select! {
-                    biased;
                     event = outbound_control_rx.recv() => {
                         let Some(event) = event else {
                             break;
@@ -655,14 +654,14 @@ pub async fn run_main_with_transport(
                 }
 
                 tokio::select! {
-                    shutdown_signal_result = shutdown_signal(), if graceful_signal_restart_enabled && !shutdown_state.forced() => {
+                    shutdown_signal_result = shutdown_signal() => {
                         if let Err(err) = shutdown_signal_result {
                             warn!("failed to listen for shutdown signal during graceful restart drain: {err}");
                         }
                         let running_turn_count = *running_turn_count_rx.borrow();
                         shutdown_state.on_signal(connections.len(), running_turn_count);
                     }
-                    changed = running_turn_count_rx.changed(), if graceful_signal_restart_enabled && shutdown_state.requested() => {
+                    changed = running_turn_count_rx.changed() => {
                         if changed.is_err() {
                             warn!("running-turn watcher closed during graceful restart drain");
                         }
@@ -799,7 +798,7 @@ pub async fn run_main_with_transport(
                             }
                         }
                     }
-                    created = thread_created_rx.recv(), if listen_for_threads => {
+                    created = thread_created_rx.recv() => {
                         match created {
                             Ok(thread_id) => {
                                 let initialized_connection_ids: Vec<ConnectionId> = connections

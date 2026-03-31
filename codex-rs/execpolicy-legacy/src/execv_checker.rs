@@ -13,7 +13,18 @@ use crate::MatchedExec;
 use crate::Policy;
 use crate::Result;
 use crate::ValidExec;
-use path_absolutize::*;
+trait Absolutize {
+    fn absolutize(&self) -> std::io::Result<std::borrow::Cow<'_, std::path::Path>>;
+    fn absolutize_from<P: AsRef<std::path::Path>>(&self, base: P) -> std::io::Result<std::borrow::Cow<'_, std::path::Path>>;
+}
+impl Absolutize for std::path::PathBuf {
+    fn absolutize(&self) -> std::io::Result<std::borrow::Cow<'_, std::path::Path>> {
+        if self.is_absolute() { Ok(std::borrow::Cow::Borrowed(self)) } else { Ok(std::borrow::Cow::Owned(std::env::current_dir()?.join(self))) }
+    }
+    fn absolutize_from<P: AsRef<std::path::Path>>(&self, base: P) -> std::io::Result<std::borrow::Cow<'_, std::path::Path>> {
+        if self.is_absolute() { Ok(std::borrow::Cow::Borrowed(self)) } else { Ok(std::borrow::Cow::Owned(base.as_ref().join(self))) }
+    }
+}
 
 macro_rules! check_file_in_folders {
     ($file:expr, $folders:expr, $error:ident) => {

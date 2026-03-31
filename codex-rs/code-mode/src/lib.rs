@@ -1,3 +1,4 @@
+#![allow(unreachable_code, unused_variables, unused_mut, dead_code, unused_imports, unused_assignments)]
 mod description;
 mod response;
 mod runtime;

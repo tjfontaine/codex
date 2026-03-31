@@ -1689,7 +1689,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn latest_session_lookup_params_keep_local_filters_for_embedded_sessions()
     -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
@@ -1703,7 +1703,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn latest_session_lookup_params_omit_local_filters_for_remote_sessions()
     -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
@@ -1717,7 +1717,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn read_session_cwd_returns_none_without_sqlite_or_rollout_path() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -1728,7 +1728,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     #[serial]
     async fn windows_shows_trust_prompt_without_sandbox() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
@@ -1744,7 +1744,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn embedded_app_server_supports_thread_start_rpc() -> color_eyre::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -1765,7 +1765,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn embedded_app_server_start_failure_is_returned() -> color_eyre::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -1791,7 +1791,7 @@ mod tests {
         );
         Ok(())
     }
-    #[tokio::test]
+    #[test]
     #[serial]
     async fn windows_shows_trust_prompt_with_sandbox() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
@@ -1813,7 +1813,7 @@ mod tests {
         }
         Ok(())
     }
-    #[tokio::test]
+    #[test]
     async fn untrusted_project_skips_trust_prompt() -> std::io::Result<()> {
         use codex_protocol::config_types::TrustLevel;
         let temp_dir = TempDir::new()?;
@@ -1859,7 +1859,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn read_session_cwd_prefers_latest_turn_context() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -1893,7 +1893,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn should_prompt_when_meta_matches_current_but_latest_turn_differs() -> std::io::Result<()>
     {
         let temp_dir = TempDir::new()?;
@@ -1936,7 +1936,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn config_rebuild_changes_trust_defaults_with_cwd() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let codex_home = temp_dir.path().to_path_buf();
@@ -2000,7 +2000,7 @@ trust_level = "untrusted"
     /// pure validation core of `set_theme_override`) must be called with
     /// the *final* config's theme, and its warning must land in the
     /// final config's `startup_warnings`.
-    #[tokio::test]
+    #[test]
     async fn theme_warning_uses_final_config() -> std::io::Result<()> {
         use crate::render::highlight::validate_theme_name;
 
@@ -2032,7 +2032,7 @@ trust_level = "untrusted"
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn read_session_cwd_falls_back_to_session_meta() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -2064,7 +2064,7 @@ trust_level = "untrusted"
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn read_session_cwd_prefers_sqlite_when_thread_id_present() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let mut config = build_config(&temp_dir).await?;

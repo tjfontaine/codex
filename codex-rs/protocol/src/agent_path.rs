@@ -4,14 +4,10 @@ use serde::Serialize;
 use std::fmt;
 use std::ops::Deref;
 use std::str::FromStr;
-use ts_rs::TS;
 
-#[derive(
-    Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema, TS,
-)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema)]
 #[serde(try_from = "String", into = "String")]
 #[schemars(with = "String")]
-#[ts(type = "string")]
 pub struct AgentPath(String);
 
 impl AgentPath {

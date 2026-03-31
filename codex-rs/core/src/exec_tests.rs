@@ -91,7 +91,7 @@ fn sandbox_detection_ignores_network_policy_text_with_zero_exit_code() {
     ));
 }
 
-#[tokio::test]
+#[test]
 async fn read_output_limits_retained_bytes_for_shell_capture() {
     let (mut writer, reader) = tokio::io::duplex(1024);
     let bytes = vec![b'a'; EXEC_OUTPUT_MAX_BYTES.saturating_add(128 * 1024)];
@@ -184,7 +184,7 @@ fn aggregate_output_keeps_stdout_then_stderr_when_under_cap() {
     assert_eq!(aggregated.truncated_after_lines, None);
 }
 
-#[tokio::test]
+#[test]
 async fn read_output_retains_all_bytes_for_full_buffer_capture() {
     let (mut writer, reader) = tokio::io::duplex(1024);
     let bytes = vec![b'a'; EXEC_OUTPUT_MAX_BYTES.saturating_add(128 * 1024)];
@@ -233,7 +233,7 @@ fn full_buffer_capture_policy_disables_caps_and_exec_expiration() {
     assert!(!ExecCapturePolicy::FullBuffer.uses_expiration());
 }
 
-#[tokio::test]
+#[test]
 async fn exec_full_buffer_capture_ignores_expiration() -> Result<()> {
     #[cfg(windows)]
     let command = vec![
@@ -281,7 +281,7 @@ async fn exec_full_buffer_capture_ignores_expiration() -> Result<()> {
 }
 
 #[cfg(unix)]
-#[tokio::test]
+#[test]
 async fn exec_full_buffer_capture_keeps_io_drain_timeout_when_descendant_holds_pipe_open()
 -> Result<()> {
     let output = tokio::time::timeout(
@@ -320,7 +320,7 @@ async fn exec_full_buffer_capture_keeps_io_drain_timeout_when_descendant_holds_p
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn process_exec_tool_call_preserves_full_buffer_capture_policy() -> Result<()> {
     let byte_count = EXEC_OUTPUT_MAX_BYTES.saturating_add(128 * 1024);
     #[cfg(windows)]
@@ -564,7 +564,7 @@ fn sandbox_detection_flags_sigsys_exit_code() {
 }
 
 #[cfg(unix)]
-#[tokio::test]
+#[test]
 async fn kill_child_process_group_kills_grandchildren_on_timeout() -> Result<()> {
     // On Linux/macOS, /bin/bash is typically present; on FreeBSD/OpenBSD,
     // prefer /bin/sh to avoid NotFound errors.
@@ -632,7 +632,7 @@ async fn kill_child_process_group_kills_grandchildren_on_timeout() -> Result<()>
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn process_exec_tool_call_respects_cancellation_token() -> Result<()> {
     let command = long_running_command();
     let cwd = std::env::current_dir()?;

@@ -39,7 +39,7 @@ pub(super) const DEFAULT_READ_TIMEOUT: Duration = Duration::from_secs(5);
 
 pub(super) type WsClient = WebSocketStream<MaybeTlsStream<tokio::net::TcpStream>>;
 
-#[tokio::test]
+#[test]
 async fn websocket_transport_routes_per_connection_handshake_and_responses() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;
@@ -84,7 +84,7 @@ async fn websocket_transport_routes_per_connection_handshake_and_responses() -> 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn websocket_transport_serves_health_endpoints_on_same_listener() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;
@@ -111,7 +111,7 @@ async fn websocket_transport_serves_health_endpoints_on_same_listener() -> Resul
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn websocket_transport_rejects_requests_with_origin_header() -> Result<()> {
     let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;
     let codex_home = TempDir::new()?;

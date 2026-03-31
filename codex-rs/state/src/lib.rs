@@ -1,3 +1,4 @@
+#![allow(unused_variables, unused_mut, unused_imports, dead_code)]
 //! SQLite-backed state for rollout metadata.
 //!
 //! This crate is intentionally small and focused: it extracts rollout metadata

@@ -6,7 +6,7 @@ use core_test_support::load_default_config_for_test;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn offline_model_info_without_tool_output_override() {
     let codex_home = TempDir::new().expect("create temp dir");
     let config = load_default_config_for_test(&codex_home).await;
@@ -28,7 +28,7 @@ async fn offline_model_info_without_tool_output_override() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn offline_model_info_with_tool_output_override() {
     let codex_home = TempDir::new().expect("create temp dir");
     let mut config = load_default_config_for_test(&codex_home).await;

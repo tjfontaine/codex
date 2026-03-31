@@ -388,7 +388,7 @@ mod tests {
         (broker, handle, draw_tx, draw_rx, terminal_focused)
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn key_event_skips_unmapped() {
         let (broker, handle, _draw_tx, draw_rx, terminal_focused) = setup();
         let mut stream = make_stream(broker, draw_rx, terminal_focused);
@@ -408,7 +408,7 @@ mod tests {
         }
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn draw_and_key_events_yield_both() {
         let (broker, handle, draw_tx, draw_rx, terminal_focused) = setup();
         let mut stream = make_stream(broker, draw_rx, terminal_focused);
@@ -438,7 +438,7 @@ mod tests {
         assert!(saw_draw && saw_key, "expected both draw and key events");
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn lagged_draw_maps_to_draw() {
         let (broker, _handle, draw_tx, draw_rx, terminal_focused) = setup();
         let mut stream = make_stream(broker, draw_rx.resubscribe(), terminal_focused);
@@ -451,7 +451,7 @@ mod tests {
         assert!(matches!(first, Some(TuiEvent::Draw)));
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn error_or_eof_ends_stream() {
         let (broker, handle, _draw_tx, draw_rx, terminal_focused) = setup();
         let mut stream = make_stream(broker, draw_rx, terminal_focused);
@@ -462,7 +462,7 @@ mod tests {
         assert!(next.is_none());
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn resume_wakes_paused_stream() {
         let (broker, handle, _draw_tx, draw_rx, terminal_focused) = setup();
         let mut stream = make_stream(broker.clone(), draw_rx, terminal_focused);
@@ -486,7 +486,7 @@ mod tests {
         }
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn resume_wakes_pending_stream() {
         let (broker, handle, _draw_tx, draw_rx, terminal_focused) = setup();
         let mut stream = make_stream(broker.clone(), draw_rx, terminal_focused);

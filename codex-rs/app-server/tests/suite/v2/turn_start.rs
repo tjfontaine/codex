@@ -77,7 +77,7 @@ fn body_contains(req: &wiremock::Request, text: &str) -> bool {
         .is_some_and(|body| body.contains(text))
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_sends_originator_header() -> Result<()> {
     let responses = vec![create_final_assistant_message_sse_response("Done")?];
     let server = create_mock_responses_server_sequence_unchecked(responses).await;
@@ -152,7 +152,7 @@ async fn turn_start_sends_originator_header() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_emits_user_message_item_with_text_elements() -> Result<()> {
     let responses = vec![create_final_assistant_message_sse_response("Done")?];
     let server = create_mock_responses_server_sequence_unchecked(responses).await;
@@ -238,7 +238,7 @@ async fn turn_start_emits_user_message_item_with_text_elements() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_accepts_text_at_limit_with_mention_item() -> Result<()> {
     let responses = vec![create_final_assistant_message_sse_response("Done")?];
     let server = create_mock_responses_server_sequence_unchecked(responses).await;
@@ -300,7 +300,7 @@ async fn turn_start_accepts_text_at_limit_with_mention_item() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_rejects_combined_oversized_text_input() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(
@@ -375,7 +375,7 @@ async fn turn_start_rejects_combined_oversized_text_input() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_emits_notifications_and_accepts_model_override() -> Result<()> {
     // Provide a mock server and config so model wiring is valid.
     // Three Codex turns hit the mock model (session start + two turn/start calls).
@@ -509,7 +509,7 @@ async fn turn_start_emits_notifications_and_accepts_model_override() -> Result<(
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_accepts_collaboration_mode_override_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -591,7 +591,7 @@ async fn turn_start_accepts_collaboration_mode_override_v2() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_uses_thread_feature_overrides_for_collaboration_mode_instructions_v2()
 -> Result<()> {
     skip_if_no_network!(Ok(()));
@@ -676,7 +676,7 @@ async fn turn_start_uses_thread_feature_overrides_for_collaboration_mode_instruc
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_accepts_personality_override_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -752,7 +752,7 @@ async fn turn_start_accepts_personality_override_v2() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_change_personality_mid_thread_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -863,7 +863,7 @@ async fn turn_start_change_personality_mid_thread_v2() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_uses_migrated_pragmatic_personality_without_override_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -953,7 +953,7 @@ async fn turn_start_uses_migrated_pragmatic_personality_without_override_v2() ->
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_accepts_local_image_input() -> Result<()> {
     // Two Codex turns hit the mock model (session start + turn/start).
     let responses = vec![
@@ -1015,7 +1015,7 @@ async fn turn_start_accepts_local_image_input() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_exec_approval_toggle_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1170,7 +1170,7 @@ async fn turn_start_exec_approval_toggle_v2() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_exec_approval_decline_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1314,7 +1314,7 @@ async fn turn_start_exec_approval_decline_v2() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_updates_sandbox_and_cwd_between_turns_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1475,7 +1475,7 @@ async fn turn_start_updates_sandbox_and_cwd_between_turns_v2() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_file_change_approval_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1664,7 +1664,7 @@ async fn turn_start_file_change_approval_v2() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_emits_spawn_agent_item_with_model_metadata_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1858,7 +1858,7 @@ async fn turn_start_emits_spawn_agent_item_with_model_metadata_v2() -> Result<()
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_emits_spawn_agent_item_with_effective_role_model_metadata_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -2041,7 +2041,7 @@ config_file = "./custom-role.toml"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_file_change_approval_accept_for_session_persists_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -2232,7 +2232,7 @@ async fn turn_start_file_change_approval_accept_for_session_persists_v2() -> Res
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_file_change_approval_decline_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -2386,7 +2386,7 @@ async fn turn_start_file_change_approval_decline_v2() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 #[cfg_attr(windows, ignore = "process id reporting differs on Windows")]
 async fn command_execution_notifications_include_process_id() -> Result<()> {
     skip_if_no_network!(Ok(()));

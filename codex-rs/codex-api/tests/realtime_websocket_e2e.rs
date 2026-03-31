@@ -70,7 +70,7 @@ fn test_provider(base_url: String) -> Provider {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn realtime_ws_e2e_session_create_and_event_flow() {
     let (addr, server) = spawn_realtime_ws_server(|mut ws: RealtimeWsStream| async move {
         let first = ws
@@ -195,7 +195,7 @@ async fn realtime_ws_e2e_session_create_and_event_flow() {
     server.await.expect("server task");
 }
 
-#[tokio::test]
+#[test]
 async fn realtime_ws_e2e_send_while_next_event_waits() {
     let (addr, server) = spawn_realtime_ws_server(|mut ws: RealtimeWsStream| async move {
         let first = ws
@@ -280,7 +280,7 @@ async fn realtime_ws_e2e_send_while_next_event_waits() {
     server.await.expect("server task");
 }
 
-#[tokio::test]
+#[test]
 async fn realtime_ws_e2e_disconnected_emitted_once() {
     let (addr, server) = spawn_realtime_ws_server(|mut ws: RealtimeWsStream| async move {
         let first = ws
@@ -322,7 +322,7 @@ async fn realtime_ws_e2e_disconnected_emitted_once() {
     server.await.expect("server task");
 }
 
-#[tokio::test]
+#[test]
 async fn realtime_ws_e2e_ignores_unknown_text_events() {
     let (addr, server) = spawn_realtime_ws_server(|mut ws: RealtimeWsStream| async move {
         let first = ws
@@ -392,7 +392,7 @@ async fn realtime_ws_e2e_ignores_unknown_text_events() {
     server.await.expect("server task");
 }
 
-#[tokio::test]
+#[test]
 async fn realtime_ws_e2e_realtime_v2_parser_emits_handoff_requested() {
     let (addr, server) = spawn_realtime_ws_server(|mut ws: RealtimeWsStream| async move {
         let first = ws

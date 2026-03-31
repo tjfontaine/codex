@@ -390,7 +390,7 @@ fn spawn_proxy_socket_dir_cleanup_worker(
             {
                 break;
             }
-            std::thread::sleep(Duration::from_millis(100));
+            tokio::thread_spawn::sleep(Duration::from_millis(100));
         }
 
         let _ = cleanup_proxy_socket_dir(socket_dir.as_path());
@@ -405,7 +405,7 @@ fn cleanup_proxy_socket_dir(socket_dir: &Path) -> io::Result<()> {
         match std::fs::remove_dir_all(socket_dir) {
             Ok(()) => return Ok(()),
             Err(err) if err.kind() == io::ErrorKind::NotFound => return Ok(()),
-            Err(_) => std::thread::sleep(Duration::from_millis(100)),
+            Err(_) => tokio::thread_spawn::sleep(Duration::from_millis(100)),
         }
     }
 
@@ -462,7 +462,7 @@ fn run_host_bridge(endpoint: SocketAddr, uds_path: &Path, ready_fd: libc::c_int)
 
     loop {
         let (unix_stream, _) = listener.accept()?;
-        std::thread::spawn(move || {
+        tokio::thread_spawn::spawn(move || {
             let tcp_stream = match TcpStream::connect(endpoint) {
                 Ok(stream) => stream,
                 Err(_) => return,
@@ -513,7 +513,7 @@ fn run_local_bridge(uds_path: &Path, ready_fd: libc::c_int) -> io::Result<()> {
     loop {
         let (tcp_stream, _) = listener.accept()?;
         let socket_path = uds_path.clone();
-        std::thread::spawn(move || {
+        tokio::thread_spawn::spawn(move || {
             let unix_stream = match UnixStream::connect(socket_path) {
                 Ok(stream) => stream,
                 Err(_) => return,
@@ -617,7 +617,7 @@ fn set_parent_death_signal() -> io::Result<()> {
 fn proxy_bidirectional(mut tcp_stream: TcpStream, mut unix_stream: UnixStream) -> io::Result<()> {
     let mut tcp_reader = tcp_stream.try_clone()?;
     let mut unix_writer = unix_stream.try_clone()?;
-    let tcp_to_unix = std::thread::spawn(move || std::io::copy(&mut tcp_reader, &mut unix_writer));
+    let tcp_to_unix = tokio::thread_spawn::spawn(move || std::io::copy(&mut tcp_reader, &mut unix_writer));
     let unix_to_tcp = std::io::copy(&mut unix_stream, &mut tcp_stream);
     let tcp_to_unix = tcp_to_unix
         .join()

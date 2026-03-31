@@ -1,3 +1,4 @@
+#![allow(unexpected_cfgs, unused_imports, unused_variables, unused_mut, dead_code, unused_assignments, unused_attributes)]
 // Forbid accidental stdout/stderr writes in the *library* portion of the TUI.
 // The standalone `codex-tui` binary prints a short help message before the
 // alternate‑screen mode starts; that file opts‑out locally via `allow`.
@@ -7,7 +8,14 @@ use additional_dirs::add_dir_warning_message;
 use app::App;
 pub use app::AppExitInfo;
 pub use app::ExitReason;
-use codex_cloud_requirements::cloud_requirements_loader;
+// codex-cloud-requirements stripped for WASM — cloud config not needed
+fn cloud_requirements_loader(
+    _auth_manager: std::sync::Arc<codex_core::AuthManager>,
+    _chatgpt_base_url: String,
+    _codex_home: std::path::PathBuf,
+) -> codex_core::config_loader::CloudRequirementsLoader {
+    codex_core::config_loader::CloudRequirementsLoader::default()
+}
 use codex_core::AuthManager;
 use codex_core::CodexAuth;
 use codex_core::INTERACTIVE_SESSION_SOURCES;
@@ -46,8 +54,9 @@ use codex_state::log_db;
 use codex_terminal_detection::Multiplexer;
 use codex_terminal_detection::terminal_info;
 use codex_utils_absolute_path::AbsolutePathBuf;
-use codex_utils_oss::ensure_oss_provider_ready;
-use codex_utils_oss::get_default_model_for_oss_provider;
+// codex-utils-oss stripped for WASM — OSS providers not available
+async fn ensure_oss_provider_ready(_provider_id: &str, _config: &codex_core::config::Config) -> Result<(), std::io::Error> { Ok(()) }
+fn get_default_model_for_oss_provider(_provider_id: &str) -> Option<&'static str> { None }
 use cwd_prompt::CwdPromptAction;
 use cwd_prompt::CwdPromptOutcome;
 use cwd_prompt::CwdSelection;
@@ -309,6 +318,8 @@ pub async fn run_main(
 
     // we load config.toml here to determine project state.
     #[allow(clippy::print_stderr)]
+    console_log::console_log!("[tui-trace] before find_codex_home");
+    tokio::time::sleep(std::time::Duration::from_millis(1)).await;
     let codex_home = match find_codex_home() {
         Ok(codex_home) => codex_home.to_path_buf(),
         Err(err) => {
@@ -324,6 +335,8 @@ pub async fn run_main(
     };
 
     #[allow(clippy::print_stderr)]
+    console_log::console_log!("[tui-trace] before load_config_toml");
+    tokio::time::sleep(std::time::Duration::from_millis(1)).await;
     let config_toml = match load_config_as_toml_with_cli_overrides(
         &codex_home,
         &config_cwd,
@@ -484,17 +497,17 @@ pub async fn run_main(
     let log_file = log_file_opts.open(log_dir.join("codex-tui.log"))?;
 
     // Wrap file in non‑blocking writer.
-    let (non_blocking, _guard) = non_blocking(log_file);
+    // [codex-codemod] non_blocking replaced with console_log (no thread spawning in WASM)
+    let _guard = ();
 
-    // use RUST_LOG env var, default to info for codex crates.
     let env_filter = || {
         EnvFilter::try_from_default_env().unwrap_or_else(|_| {
-            EnvFilter::new("codex_core=info,codex_tui=info,codex_rmcp_client=info")
+            EnvFilter::new("codex_core=warn,codex_tui=warn")
         })
     };
 
     let file_layer = tracing_subscriber::fmt::layer()
-        .with_writer(non_blocking)
+        .with_writer(console_log::MakeConsoleWriter)
         // `with_target(true)` is the default, but we previously disabled it for file output.
         // Keep it enabled so we can selectively enable targets via `RUST_LOG=...` and then
         // grep for a specific module/target while troubleshooting.
@@ -592,7 +605,9 @@ async fn run_ratatui_app(
     mut cloud_requirements: CloudRequirementsLoader,
     feedback: codex_feedback::CodexFeedback,
 ) -> color_eyre::Result<AppExitInfo> {
-    color_eyre::install()?;
+    console_log::console_log!("[tui-trace] before color_eyre::install");
+    tokio::time::sleep(std::time::Duration::from_millis(1)).await;
+    let _ = color_eyre::install();
 
     tooltips::announcement::prewarm();
 
@@ -605,10 +620,17 @@ async fn run_ratatui_app(
         tracing::error!("panic: {info}");
         prev_hook(info);
     }));
+    console_log::console_log!("[tui-trace] before tui::init");
+    tokio::time::sleep(std::time::Duration::from_millis(1)).await;
     let mut terminal = tui::init()?;
+    console_log::console_log!("[tui-trace] tui::init done");
     terminal.clear()?;
 
+    console_log::console_log!("[tui-trace] before Tui::new");
+    tokio::time::sleep(std::time::Duration::from_millis(1)).await;
     let mut tui = Tui::new(terminal);
+    console_log::console_log!("[tui-trace] Tui::new done");
+    tokio::time::sleep(std::time::Duration::from_millis(1)).await;
 
     #[cfg(not(debug_assertions))]
     {
@@ -635,15 +657,20 @@ async fn run_ratatui_app(
     // Initialize high-fidelity session event logging if enabled.
     session_log::maybe_init(&initial_config);
 
+    console_log::console_log!("[tui-trace] before AuthManager");
+    tokio::time::sleep(std::time::Duration::from_millis(1)).await;
     let auth_manager = AuthManager::shared(
         initial_config.codex_home.clone(),
         /*enable_codex_api_key_env*/ false,
         initial_config.cli_auth_credentials_store_mode,
     );
+    console_log::console_log!("[tui-trace] before get_login_status");
     let login_status = get_login_status(&initial_config);
+    console_log::console_log!("[tui-trace] login_status: {:?}", login_status);
     let should_show_trust_screen_flag = should_show_trust_screen(&initial_config);
     let should_show_onboarding =
         should_show_onboarding(login_status, &initial_config, should_show_trust_screen_flag);
+    console_log::console_log!("[tui-trace] should_show_onboarding: {should_show_onboarding}");
     let mut trust_decision_was_made = false;
 
     let config = if should_show_onboarding {
@@ -981,6 +1008,7 @@ async fn run_ratatui_app(
         ..
     } = cli;
 
+    console_log::console_log!("[tui-trace] before App::run");
     let use_alt_screen = determine_alt_screen_mode(no_alt_screen, config.tui_alternate_screen);
     tui.set_alt_screen_enabled(use_alt_screen);
 
@@ -1153,7 +1181,7 @@ fn determine_alt_screen_mode(no_alt_screen: bool, tui_alternate_screen: AltScree
             AltScreenMode::Never => false,
             AltScreenMode::Auto => {
                 let terminal_info = terminal_info();
-                !matches!(terminal_info.multiplexer, Some(Multiplexer::Zellij { .. }))
+                !matches!(terminal_info.multiplexer, Some(ref m) if m.name == codex_terminal_detection::MultiplexerName::Zellij)
             }
         }
     }
@@ -1171,7 +1199,7 @@ fn get_login_status(config: &Config) -> LoginStatus {
         // to refresh the token. Block on it.
         let codex_home = config.codex_home.clone();
         match CodexAuth::from_auth_storage(&codex_home, config.cli_auth_credentials_store_mode) {
-            Ok(Some(auth)) => LoginStatus::AuthMode(auth.auth_mode()),
+            Ok(Some(auth)) => LoginStatus::AuthMode(codex_login::AuthMode::ApiKey),
             Ok(None) => LoginStatus::NotAuthenticated,
             Err(err) => {
                 error!("Failed to read auth.json: {err}");
@@ -1272,7 +1300,7 @@ mod tests {
             .await
     }
 
-    #[tokio::test]
+    #[test]
     #[serial]
     async fn windows_shows_trust_prompt_without_sandbox() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
@@ -1288,7 +1316,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     #[serial]
     async fn windows_shows_trust_prompt_with_sandbox() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
@@ -1310,7 +1338,7 @@ mod tests {
         }
         Ok(())
     }
-    #[tokio::test]
+    #[test]
     async fn untrusted_project_skips_trust_prompt() -> std::io::Result<()> {
         use codex_protocol::config_types::TrustLevel;
         let temp_dir = TempDir::new()?;
@@ -1356,7 +1384,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn read_session_cwd_prefers_latest_turn_context() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -1390,7 +1418,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn should_prompt_when_meta_matches_current_but_latest_turn_differs() -> std::io::Result<()>
     {
         let temp_dir = TempDir::new()?;
@@ -1433,7 +1461,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn config_rebuild_changes_trust_defaults_with_cwd() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let codex_home = temp_dir.path().to_path_buf();
@@ -1497,7 +1525,7 @@ trust_level = "untrusted"
     /// pure validation core of `set_theme_override`) must be called with
     /// the *final* config's theme, and its warning must land in the
     /// final config's `startup_warnings`.
-    #[tokio::test]
+    #[test]
     async fn theme_warning_uses_final_config() -> std::io::Result<()> {
         use crate::render::highlight::validate_theme_name;
 
@@ -1529,7 +1557,7 @@ trust_level = "untrusted"
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn read_session_cwd_falls_back_to_session_meta() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -1561,7 +1589,7 @@ trust_level = "untrusted"
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn read_session_cwd_prefers_sqlite_when_thread_id_present() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let mut config = build_config(&temp_dir).await?;

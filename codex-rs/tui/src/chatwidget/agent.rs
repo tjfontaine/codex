@@ -39,7 +39,10 @@ pub(crate) fn spawn_agent(
             thread,
             session_configured,
             ..
-        } = match server.start_thread(config).await {
+        } = match {
+            console_log::console_log!("[diag-trace] agent.rs: BEFORE server.start_thread");
+            server.start_thread(config).await
+        } {
             Ok(v) => v,
             Err(err) => {
                 let message = format!("Failed to initialize codex: {err}");
@@ -53,7 +56,9 @@ pub(crate) fn spawn_agent(
                 return;
             }
         };
+        console_log::console_log!("[diag-trace] agent.rs: start_thread DONE, initializing client name");
         initialize_app_server_client_name(thread.as_ref()).await;
+        console_log::console_log!("[diag-trace] agent.rs: client name set, forwarding SessionConfigured to UI");
 
         // Forward the captured `SessionConfigured` event so it can be rendered in the UI.
         let ev = codex_protocol::protocol::Event {
@@ -62,10 +67,14 @@ pub(crate) fn spawn_agent(
             msg: codex_protocol::protocol::EventMsg::SessionConfigured(session_configured),
         };
         app_event_tx_clone.send(AppEvent::CodexEvent(ev));
+        console_log::console_log!("[diag-trace] agent.rs: SessionConfigured SENT to UI");
 
+        console_log::console_log!("[diag-trace] agent.rs: spawning op-forwarding loop");
         let thread_clone = thread.clone();
         tokio::spawn(async move {
+            console_log::console_log!("[diag-trace] agent.rs: op-forwarding loop STARTED, waiting for ops");
             while let Some(op) = codex_op_rx.recv().await {
+                console_log::console_log!("[diag-trace] agent.rs: op-forwarding received op, submitting");
                 let id = thread_clone.submit(op).await;
                 if let Err(e) = id {
                     tracing::error!("failed to submit op: {e}");

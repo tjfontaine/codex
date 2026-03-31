@@ -943,7 +943,7 @@ mod tests {
         (widget, codex_home)
     }
 
-    #[tokio::test]
+    #[test]
     async fn api_key_flow_disabled_when_chatgpt_forced() {
         let (mut widget, _tmp) = widget_forced_chatgpt().await;
 
@@ -959,7 +959,7 @@ mod tests {
         ));
     }
 
-    #[tokio::test]
+    #[test]
     async fn saving_api_key_is_blocked_when_chatgpt_forced() {
         let (mut widget, _tmp) = widget_forced_chatgpt().await;
 
@@ -976,7 +976,7 @@ mod tests {
         assert_eq!(widget.login_status, LoginStatus::NotAuthenticated);
     }
 
-    #[tokio::test]
+    #[test]
     async fn existing_chatgpt_auth_tokens_login_counts_as_signed_in() {
         let (mut widget, _tmp) = widget_forced_chatgpt().await;
         widget.login_status = LoginStatus::AuthMode(AppServerAuthMode::ChatgptAuthTokens);

@@ -24,7 +24,7 @@ const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs
 const REQUESTED_MODEL: &str = "gpt-5.1-codex-max";
 const SERVER_MODEL: &str = "gpt-5.2-codex";
 
-#[tokio::test]
+#[test]
 async fn openai_model_header_mismatch_emits_model_rerouted_notification_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -88,7 +88,7 @@ async fn openai_model_header_mismatch_emits_model_rerouted_notification_v2() -> 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn response_model_field_mismatch_emits_model_rerouted_notification_v2_when_header_matches_requested()
 -> Result<()> {
     skip_if_no_network!(Ok(()));

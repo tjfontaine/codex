@@ -129,7 +129,7 @@ mod tests {
     use chrono::Utc;
     use pretty_assertions::assert_eq;
 
-    #[tokio::test]
+    #[test]
     async fn init_removes_legacy_state_db_files() {
         let codex_home = unique_temp_dir();
         tokio::fs::create_dir_all(&codex_home)
@@ -204,7 +204,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn backfill_state_persists_progress_and_completion() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -257,7 +257,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn backfill_claim_is_singleton_until_stale_and_blocked_when_complete() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())

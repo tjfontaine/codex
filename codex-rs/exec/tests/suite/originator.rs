@@ -8,7 +8,7 @@ use wiremock::matchers::header;
 
 /// Verify that when the server reports an error, `codex-exec` exits with a
 /// non-zero status code so automation can detect failures.
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn send_codex_exec_originator() -> anyhow::Result<()> {
     let test = test_codex_exec();
 
@@ -30,7 +30,7 @@ async fn send_codex_exec_originator() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn supports_originator_override() -> anyhow::Result<()> {
     let test = test_codex_exec();
 
