@@ -1,17 +1,14 @@
 [package]
-edition.workspace = true
-license.workspace = true
+edition = "2024"
+license = "Apache-2.0"
 name = "codex-utils-path"
-version.workspace = true
-
-[lints]
-workspace = true
+version = "0.0.0"
 
 [dependencies]
-codex-utils-absolute-path = { workspace = true }
-dunce = { workspace = true }
-tempfile = { workspace = true }
+codex-utils-absolute-path = { path = "../absolute-path" }
+dunce = { version = "1.0.4" }
+tempfile = { version = "3.23.0" }
 
 [dev-dependencies]
-pretty_assertions = { workspace = true }
-tempfile = { workspace = true }
+pretty_assertions = { version = "1.4.1" }
+tempfile = { version = "3.23.0" }

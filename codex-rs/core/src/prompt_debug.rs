@@ -102,7 +102,7 @@ mod tests {
 
     use super::build_prompt_input;
 
-    #[tokio::test]
+    #[test]
     async fn build_prompt_input_includes_context_and_user_message() {
         let codex_home = tempfile::tempdir().expect("create codex home");
         let cwd = tempfile::tempdir().expect("create cwd");

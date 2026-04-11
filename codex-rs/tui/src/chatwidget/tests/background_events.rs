@@ -1,7 +1,7 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-#[tokio::test]
+#[test]
 async fn background_event_updates_status_header() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 

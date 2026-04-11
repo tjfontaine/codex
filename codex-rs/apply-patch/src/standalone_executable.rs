@@ -3,7 +3,7 @@ use std::io::Write;
 
 pub fn main() -> ! {
     let exit_code = run_main();
-    std::process::exit(exit_code);
+    panic!("process::exit(exit_code) called — cannot exit in WASM");
 }
 
 /// We would prefer to return `std::process::ExitCode`, but its `exit_process()`

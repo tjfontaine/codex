@@ -705,7 +705,7 @@ mod tests {
             .expect("json-rpc line should write");
     }
 
-    #[tokio::test]
+    #[test]
     async fn wake_notifications_do_not_block_other_sessions() {
         let (client_stdin, server_reader) = duplex(1 << 20);
         let (mut server_writer, client_stdout) = duplex(1 << 20);

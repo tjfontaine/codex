@@ -8,7 +8,7 @@ use core_test_support::PathExt;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
-#[tokio::test]
+#[test]
 async fn approval_keys_include_move_destination() {
     let tmp = TempDir::new().expect("tmp");
     let cwd_path = tmp.path();

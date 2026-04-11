@@ -223,7 +223,7 @@ fn accessible_connectors_from_mcp_tools_carries_plugin_display_names() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn refresh_accessible_connectors_cache_from_mcp_tools_writes_latest_installed_apps() {
     let codex_home = tempdir().expect("tempdir should succeed");
     let mut config = ConfigBuilder::default()
@@ -487,7 +487,7 @@ fn requirements_enabled_does_not_override_disabled_connector() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn cloud_requirements_disable_connector_overrides_user_apps_config() {
     let codex_home = tempdir().expect("tempdir should succeed");
     std::fs::write(
@@ -537,7 +537,7 @@ enabled = true
     );
 }
 
-#[tokio::test]
+#[test]
 async fn cloud_requirements_disable_connector_applies_without_user_apps_table() {
     let codex_home = tempdir().expect("tempdir should succeed");
     std::fs::write(codex_home.path().join(CONFIG_TOML_FILE), "").expect("write config");
@@ -580,7 +580,7 @@ async fn cloud_requirements_disable_connector_applies_without_user_apps_table() 
     );
 }
 
-#[tokio::test]
+#[test]
 async fn local_requirements_disable_connector_overrides_user_apps_config() {
     let codex_home = tempdir().expect("tempdir should succeed");
     let config_toml_path =
@@ -633,7 +633,7 @@ enabled = true
     );
 }
 
-#[tokio::test]
+#[test]
 async fn local_requirements_disable_connector_applies_without_user_apps_table() {
     let codex_home = tempdir().expect("tempdir should succeed");
     let mut config = ConfigBuilder::default()
@@ -674,7 +674,7 @@ async fn local_requirements_disable_connector_applies_without_user_apps_table() 
     );
 }
 
-#[tokio::test]
+#[test]
 async fn with_app_enabled_state_preserves_unrelated_disabled_connector() {
     let codex_home = tempdir().expect("tempdir should succeed");
     let mut config = ConfigBuilder::default()
@@ -1015,7 +1015,7 @@ fn first_party_chat_originator_filters_target_and_openai_prefixed_connectors() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn tool_suggest_connector_ids_include_configured_tool_suggest_discoverables() {
     let codex_home = tempdir().expect("tempdir should succeed");
     std::fs::write(

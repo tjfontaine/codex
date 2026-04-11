@@ -208,7 +208,7 @@ fn build_guardian_transcript_keeps_original_numbering() {
     assert!(omission.is_none());
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn build_guardian_prompt_full_mode_preserves_initial_review_format() -> anyhow::Result<()> {
     let (session, turn) = guardian_test_session_and_turn_with_base_url("http://localhost").await;
     seed_guardian_parent_history(&session, &turn).await;
@@ -239,7 +239,7 @@ async fn build_guardian_prompt_full_mode_preserves_initial_review_format() -> an
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn build_guardian_prompt_delta_mode_preserves_original_numbering() -> anyhow::Result<()> {
     let (session, turn) = guardian_test_session_and_turn_with_base_url("http://localhost").await;
     seed_guardian_parent_history(&session, &turn).await;
@@ -302,7 +302,7 @@ async fn build_guardian_prompt_delta_mode_preserves_original_numbering() -> anyh
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn build_guardian_prompt_delta_mode_handles_empty_delta() -> anyhow::Result<()> {
     let (session, turn) = guardian_test_session_and_turn_with_base_url("http://localhost").await;
     seed_guardian_parent_history(&session, &turn).await;
@@ -336,7 +336,7 @@ async fn build_guardian_prompt_delta_mode_handles_empty_delta() -> anyhow::Resul
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn build_guardian_prompt_stale_delta_cursor_falls_back_to_full_prompt() -> anyhow::Result<()>
 {
     let (session, turn) = guardian_test_session_and_turn_with_base_url("http://localhost").await;
@@ -371,7 +371,7 @@ async fn build_guardian_prompt_stale_delta_cursor_falls_back_to_full_prompt() ->
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn build_guardian_prompt_stale_delta_version_falls_back_to_full_prompt() -> anyhow::Result<()>
 {
     let (session, turn) = guardian_test_session_and_turn_with_base_url("http://localhost").await;
@@ -674,7 +674,7 @@ fn guardian_request_turn_id_prefers_network_access_owner_turn() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn cancelled_guardian_review_emits_terminal_abort_without_warning() {
     let (session, turn, rx) = crate::codex::make_session_and_context_with_rx().await;
     let cancel_token = CancellationToken::new();
@@ -718,7 +718,7 @@ async fn cancelled_guardian_review_emits_terminal_abort_without_warning() {
     assert!(warnings.is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn routes_approval_to_guardian_requires_auto_only_review_policy() {
     let (_session, mut turn) = crate::codex::make_session_and_context().await;
     let mut config = (*turn.config).clone();
@@ -834,7 +834,7 @@ fn parse_guardian_assessment_extracts_embedded_json() {
     assert_eq!(parsed.outcome, GuardianAssessmentOutcome::Allow);
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn guardian_review_request_layout_matches_model_visible_request_snapshot()
 -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
@@ -922,7 +922,7 @@ async fn guardian_review_request_layout_matches_model_visible_request_snapshot()
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn build_guardian_prompt_items_includes_parent_session_id() -> anyhow::Result<()> {
     let (session, _) = crate::codex::make_session_and_context().await;
     let prompt = build_guardian_prompt_items(
@@ -960,7 +960,7 @@ async fn build_guardian_prompt_items_includes_parent_session_id() -> anyhow::Res
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn guardian_reuses_prompt_cache_key_and_appends_prior_reviews() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1206,7 +1206,7 @@ async fn guardian_reuses_prompt_cache_key_and_appends_prior_reviews() -> anyhow:
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn guardian_review_surfaces_responses_api_errors_in_rejection_reason() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1313,7 +1313,7 @@ async fn guardian_review_surfaces_responses_api_errors_in_rejection_reason() -> 
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn guardian_parallel_reviews_fork_from_last_committed_trunk_history() -> anyhow::Result<()> {
     let first_assessment = serde_json::json!({
         "risk_level": "low",

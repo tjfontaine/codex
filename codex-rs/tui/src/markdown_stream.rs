@@ -137,7 +137,7 @@ mod tests {
     use super::*;
     use ratatui::style::Color;
 
-    #[tokio::test]
+    #[test]
     async fn no_commit_until_newline() {
         let mut c = super::MarkdownStreamCollector::new(/*width*/ None, &super::test_cwd());
         c.push_delta("Hello, world");
@@ -148,7 +148,7 @@ mod tests {
         assert_eq!(out2.len(), 1, "one completed line after newline");
     }
 
-    #[tokio::test]
+    #[test]
     async fn finalize_commits_partial_line() {
         let mut c = super::MarkdownStreamCollector::new(/*width*/ None, &super::test_cwd());
         c.push_delta("Line without newline");
@@ -156,7 +156,7 @@ mod tests {
         assert_eq!(out.len(), 1);
     }
 
-    #[tokio::test]
+    #[test]
     async fn e2e_stream_blockquote_simple_is_green() {
         let out = super::simulate_stream_markdown_for_tests(&["> Hello\n"], /*finalize*/ true);
         assert_eq!(out.len(), 1);
@@ -169,7 +169,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn e2e_stream_blockquote_nested_is_green() {
         let out = super::simulate_stream_markdown_for_tests(
             &["> Level 1\n>> Level 2\n"],
@@ -195,7 +195,7 @@ mod tests {
         assert_eq!(non_blank[1].style.fg, Some(Color::Green));
     }
 
-    #[tokio::test]
+    #[test]
     async fn e2e_stream_blockquote_with_list_items_is_green() {
         let out = super::simulate_stream_markdown_for_tests(
             &["> - item 1\n> - item 2\n"],
@@ -206,7 +206,7 @@ mod tests {
         assert_eq!(out[1].style.fg, Some(Color::Green));
     }
 
-    #[tokio::test]
+    #[test]
     async fn e2e_stream_nested_mixed_lists_ordered_marker_is_light_blue() {
         let md = [
             "1. First\n",
@@ -237,7 +237,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn e2e_stream_blockquote_wrap_preserves_green_style() {
         let long = "> This is a very long quoted line that should wrap across multiple columns to verify style preservation.";
         let out = super::simulate_stream_markdown_for_tests(&[long, "\n"], /*finalize*/ true);
@@ -274,7 +274,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn heading_starts_on_new_line_when_following_paragraph() {
         // Stream a paragraph line, then a heading on the next line.
         // Expect two distinct rendered lines: "Hello." and "Heading".
@@ -329,7 +329,7 @@ mod tests {
         assert_eq!(line_to_string(&out2[1]), "## Heading");
     }
 
-    #[tokio::test]
+    #[test]
     async fn heading_not_inlined_when_split_across_chunks() {
         // Paragraph without trailing newline, then a chunk that starts with the newline
         // and the heading text, then a final newline. The collector should first commit
@@ -416,7 +416,7 @@ mod tests {
             .collect()
     }
 
-    #[tokio::test]
+    #[test]
     async fn lists_and_fences_commit_without_duplication() {
         // List case
         assert_streamed_equals_full(&["- a\n- ", "b\n- c\n"]).await;
@@ -425,7 +425,7 @@ mod tests {
         assert_streamed_equals_full(&["```", "\nco", "de 1\ncode 2\n", "```\n"]).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn utf8_boundary_safety_and_wide_chars() {
         // Emoji (wide), CJK, control char, digit + combining macron sequences
         let input = "🙂🙂🙂\n汉字漢字\nA\u{0003}0\u{0304}\n";
@@ -460,7 +460,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn e2e_stream_deep_nested_third_level_marker_is_light_blue() {
         let md = "1. First\n   - Second level\n     1. Third level (ordered)\n        - Fourth level (bullet)\n          - Fifth level to test indent consistency\n";
         let streamed = super::simulate_stream_markdown_for_tests(&[md], /*finalize*/ true);
@@ -509,7 +509,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn empty_fenced_block_is_dropped_and_separator_preserved_before_heading() {
         // An empty fenced code block followed by a heading should not render the fence,
         // but should preserve a blank separator line so the heading starts on a new line.
@@ -527,7 +527,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn paragraph_then_empty_fence_then_heading_keeps_heading_on_new_line() {
         let deltas = vec!["Para.\n", "```\n```\n", "## Title\n"]; // empty fence block in one commit
         let streamed = simulate_stream_markdown_for_tests(&deltas, /*finalize*/ true);
@@ -546,7 +546,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn loose_list_with_split_dashes_matches_full_render() {
         // Minimized failing sequence discovered by the helper: two chunks
         // that still reproduce the mismatch.
@@ -572,7 +572,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn loose_vs_tight_list_items_streaming_matches_full() {
         // Deltas extracted from the session log around 2025-08-27T00:33:18.216Z
         let deltas = vec![
@@ -695,7 +695,7 @@ mod tests {
         assert_eq!(streamed_strs, rendered_strs, "full:\n---\n{full}\n---");
     }
 
-    #[tokio::test]
+    #[test]
     async fn fuzz_class_bullet_duplication_variant_1() {
         assert_streamed_equals_full(&[
             "aph.\n- let one\n- bull",
@@ -704,7 +704,7 @@ mod tests {
         .await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn fuzz_class_bullet_duplication_variant_2() {
         assert_streamed_equals_full(&[
             "- e\n  c",
@@ -713,7 +713,7 @@ mod tests {
         .await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn streaming_html_block_then_text_matches_full() {
         assert_streamed_equals_full(&[
             "HTML block:\n",

@@ -33,7 +33,7 @@ use tempfile::TempDir;
 use tokio::time::Duration;
 use tokio::time::timeout;
 
-#[tokio::test]
+#[test]
 async fn thread_name_updated_broadcasts_for_loaded_threads() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -103,7 +103,7 @@ async fn thread_name_updated_broadcasts_for_loaded_threads() -> Result<()> {
     result
 }
 
-#[tokio::test]
+#[test]
 async fn thread_name_updated_broadcasts_for_not_loaded_threads() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;

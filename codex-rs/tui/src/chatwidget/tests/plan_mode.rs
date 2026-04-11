@@ -1,7 +1,7 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-#[tokio::test]
+#[test]
 async fn plan_implementation_popup_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.open_plan_implementation_prompt();
@@ -10,7 +10,7 @@ async fn plan_implementation_popup_snapshot() {
     assert_chatwidget_snapshot!("plan_implementation_popup", popup);
 }
 
-#[tokio::test]
+#[test]
 async fn plan_implementation_popup_no_selected_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.open_plan_implementation_prompt();
@@ -20,7 +20,7 @@ async fn plan_implementation_popup_no_selected_snapshot() {
     assert_chatwidget_snapshot!("plan_implementation_popup_no_selected", popup);
 }
 
-#[tokio::test]
+#[test]
 async fn plan_implementation_popup_yes_emits_submit_message_event() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.open_plan_implementation_prompt();
@@ -39,7 +39,7 @@ async fn plan_implementation_popup_yes_emits_submit_message_event() {
     assert_eq!(collaboration_mode.mode, Some(ModeKind::Default));
 }
 
-#[tokio::test]
+#[test]
 async fn submit_user_message_with_mode_sets_coding_collaboration_mode() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.thread_id = Some(ThreadId::new());
@@ -65,7 +65,7 @@ async fn submit_user_message_with_mode_sets_coding_collaboration_mode() {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn reasoning_selection_in_plan_mode_opens_scope_prompt_event() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
     chat.thread_id = Some(ThreadId::new());
@@ -92,7 +92,7 @@ async fn reasoning_selection_in_plan_mode_opens_scope_prompt_event() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn reasoning_selection_in_plan_mode_without_effort_change_does_not_open_scope_prompt_event() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
     chat.thread_id = Some(ThreadId::new());
@@ -126,7 +126,7 @@ async fn reasoning_selection_in_plan_mode_without_effort_change_does_not_open_sc
     );
 }
 
-#[tokio::test]
+#[test]
 async fn reasoning_selection_in_plan_mode_matching_plan_effort_but_different_global_opens_scope_prompt()
  {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
@@ -157,7 +157,7 @@ async fn reasoning_selection_in_plan_mode_matching_plan_effort_but_different_glo
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plan_mode_reasoning_override_is_marked_current_in_reasoning_popup() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -180,7 +180,7 @@ async fn plan_mode_reasoning_override_is_marked_current_in_reasoning_popup() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn reasoning_selection_in_plan_mode_model_switch_does_not_open_scope_prompt_event() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
     chat.thread_id = Some(ThreadId::new());
@@ -211,7 +211,7 @@ async fn reasoning_selection_in_plan_mode_model_switch_does_not_open_scope_promp
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plan_reasoning_scope_popup_all_modes_persists_global_and_plan_override() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
     chat.open_plan_reasoning_scope_prompt(
@@ -284,7 +284,7 @@ fn user_input_requested_notification_uses_dedicated_type_name() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn open_plan_implementation_prompt_sets_pending_notification() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
     chat.config.tui_notifications.notifications =
@@ -298,7 +298,7 @@ async fn open_plan_implementation_prompt_sets_pending_notification() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn open_plan_reasoning_scope_prompt_sets_pending_notification() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
     chat.config.tui_notifications.notifications =
@@ -315,7 +315,7 @@ async fn open_plan_reasoning_scope_prompt_sets_pending_notification() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn agent_turn_complete_does_not_override_pending_plan_mode_prompt_notification() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
 
@@ -330,7 +330,7 @@ async fn agent_turn_complete_does_not_override_pending_plan_mode_prompt_notifica
     );
 }
 
-#[tokio::test]
+#[test]
 async fn user_input_notification_overrides_pending_agent_turn_complete_notification() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
 
@@ -362,7 +362,7 @@ async fn user_input_notification_overrides_pending_agent_turn_complete_notificat
     );
 }
 
-#[tokio::test]
+#[test]
 async fn handle_request_user_input_sets_pending_notification() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
     chat.config.tui_notifications.notifications =
@@ -393,7 +393,7 @@ async fn handle_request_user_input_sets_pending_notification() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plan_reasoning_scope_popup_mentions_selected_reasoning() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
     chat.set_plan_mode_reasoning_effort(Some(ReasoningEffortConfig::Low));
@@ -410,7 +410,7 @@ async fn plan_reasoning_scope_popup_mentions_selected_reasoning() {
     assert!(popup.contains("user-chosen Plan override (low)"));
 }
 
-#[tokio::test]
+#[test]
 async fn plan_reasoning_scope_popup_mentions_built_in_plan_default_when_no_override() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
     chat.open_plan_reasoning_scope_prompt(
@@ -422,7 +422,7 @@ async fn plan_reasoning_scope_popup_mentions_built_in_plan_default_when_no_overr
     assert!(popup.contains("built-in Plan default (medium)"));
 }
 
-#[tokio::test]
+#[test]
 async fn plan_reasoning_scope_popup_plan_only_does_not_update_all_modes_reasoning() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
     chat.open_plan_reasoning_scope_prompt(
@@ -448,7 +448,7 @@ async fn plan_reasoning_scope_popup_plan_only_does_not_update_all_modes_reasonin
     );
 }
 
-#[tokio::test]
+#[test]
 async fn submit_user_message_with_mode_errors_when_mode_changes_during_running_turn() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.thread_id = Some(ThreadId::new());
@@ -476,7 +476,7 @@ async fn submit_user_message_with_mode_errors_when_mode_changes_during_running_t
     );
 }
 
-#[tokio::test]
+#[test]
 async fn submit_user_message_blocks_when_thread_model_is_unavailable() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -498,7 +498,7 @@ async fn submit_user_message_blocks_when_thread_model_is_unavailable() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn submit_user_message_with_mode_allows_same_mode_during_running_turn() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.thread_id = Some(ThreadId::new());
@@ -528,7 +528,7 @@ async fn submit_user_message_with_mode_allows_same_mode_during_running_turn() {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn submit_user_message_with_mode_submits_when_plan_stream_is_not_active() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.thread_id = Some(ThreadId::new());
@@ -558,7 +558,7 @@ async fn submit_user_message_with_mode_submits_when_plan_stream_is_not_active() 
     }
 }
 
-#[tokio::test]
+#[test]
 async fn plan_implementation_popup_skips_replayed_turn_complete() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -580,7 +580,7 @@ async fn plan_implementation_popup_skips_replayed_turn_complete() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plan_implementation_popup_shows_once_when_replay_precedes_live_turn_complete() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -643,7 +643,7 @@ async fn plan_implementation_popup_shows_once_when_replay_precedes_live_turn_com
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plan_implementation_popup_skips_when_messages_queued() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -662,7 +662,7 @@ async fn plan_implementation_popup_skips_when_messages_queued() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plan_implementation_popup_skips_without_proposed_plan() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -687,7 +687,7 @@ async fn plan_implementation_popup_skips_without_proposed_plan() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plan_implementation_popup_shows_after_proposed_plan_output() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -707,7 +707,7 @@ async fn plan_implementation_popup_shows_after_proposed_plan_output() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plan_implementation_popup_skips_when_steer_follows_proposed_plan() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -748,7 +748,7 @@ async fn plan_implementation_popup_skips_when_steer_follows_proposed_plan() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plan_implementation_popup_shows_after_new_plan_follows_steer() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -793,7 +793,7 @@ async fn plan_implementation_popup_shows_after_new_plan_follows_steer() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plan_implementation_popup_skips_when_rate_limit_prompt_pending() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.has_chatgpt_account = true;
@@ -824,7 +824,7 @@ async fn plan_implementation_popup_skips_when_rate_limit_prompt_pending() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plan_completion_restores_status_indicator_after_streaming_plan_output() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -848,7 +848,7 @@ async fn plan_completion_restores_status_indicator_after_streaming_plan_output()
     assert_eq!(chat.bottom_pane.is_task_running(), true);
 }
 
-#[tokio::test]
+#[test]
 async fn submit_user_message_queues_while_compaction_turn_is_running() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     let thread_id = ThreadId::new();
@@ -927,7 +927,7 @@ async fn submit_user_message_queues_while_compaction_turn_is_running() {
     }
 }
 
-#[tokio::test(flavor = "multi_thread")]
+#[test]
 async fn submit_user_message_emits_structured_plugin_mentions_from_bindings() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     let conversation_id = ThreadId::new();
@@ -995,7 +995,7 @@ async fn submit_user_message_emits_structured_plugin_mentions_from_bindings() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn enter_submits_when_plan_stream_is_not_active() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -1019,7 +1019,7 @@ async fn enter_submits_when_plan_stream_is_not_active() {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn collab_mode_shift_tab_cycles_only_when_idle() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1038,7 +1038,7 @@ async fn collab_mode_shift_tab_cycles_only_when_idle() {
     assert_eq!(chat.active_collaboration_mode_kind(), before);
 }
 
-#[tokio::test]
+#[test]
 async fn mode_switch_surfaces_model_change_notification_when_effective_model_changes() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -1077,7 +1077,7 @@ async fn mode_switch_surfaces_model_change_notification_when_effective_model_cha
     );
 }
 
-#[tokio::test]
+#[test]
 async fn mode_switch_surfaces_reasoning_change_notification_when_model_stays_same() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.3-codex")).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -1098,7 +1098,7 @@ async fn mode_switch_surfaces_reasoning_change_notification_when_model_stays_sam
     );
 }
 
-#[tokio::test]
+#[test]
 async fn collab_slash_command_opens_picker_and_updates_mode() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -1155,7 +1155,7 @@ async fn collab_slash_command_opens_picker_and_updates_mode() {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn plan_slash_command_switches_to_plan_mode() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -1173,7 +1173,7 @@ async fn plan_slash_command_switches_to_plan_mode() {
     assert_eq!(chat.current_collaboration_mode(), &initial);
 }
 
-#[tokio::test]
+#[test]
 async fn plan_slash_command_with_args_submits_prompt_in_plan_mode() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -1220,7 +1220,7 @@ async fn plan_slash_command_with_args_submits_prompt_in_plan_mode() {
     assert_eq!(chat.active_collaboration_mode_kind(), ModeKind::Plan);
 }
 
-#[tokio::test]
+#[test]
 async fn collaboration_modes_defaults_to_code_on_startup() {
     let codex_home = tempdir().expect("tempdir");
     let cfg = ConfigBuilder::default()
@@ -1258,7 +1258,7 @@ async fn collaboration_modes_defaults_to_code_on_startup() {
     assert_eq!(chat.current_model(), resolved_model);
 }
 
-#[tokio::test]
+#[test]
 async fn set_model_updates_active_collaboration_mask() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1")).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -1272,7 +1272,7 @@ async fn set_model_updates_active_collaboration_mask() {
     assert_eq!(chat.active_collaboration_mode_kind(), ModeKind::Plan);
 }
 
-#[tokio::test]
+#[test]
 async fn set_reasoning_effort_updates_active_collaboration_mask() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1")).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -1289,7 +1289,7 @@ async fn set_reasoning_effort_updates_active_collaboration_mask() {
     assert_eq!(chat.active_collaboration_mode_kind(), ModeKind::Plan);
 }
 
-#[tokio::test]
+#[test]
 async fn set_reasoning_effort_does_not_override_active_plan_override() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1")).await;
     chat.set_feature_enabled(Feature::CollaborationModes, /*enabled*/ true);
@@ -1307,7 +1307,7 @@ async fn set_reasoning_effort_does_not_override_active_plan_override() {
     assert_eq!(chat.active_collaboration_mode_kind(), ModeKind::Plan);
 }
 
-#[tokio::test]
+#[test]
 async fn collab_mode_is_sent_after_enabling() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -1332,7 +1332,7 @@ async fn collab_mode_is_sent_after_enabling() {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn collab_mode_applies_default_preset() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -1359,7 +1359,7 @@ async fn collab_mode_applies_default_preset() {
     assert_eq!(chat.current_collaboration_mode().mode, ModeKind::Default);
 }
 
-#[tokio::test]
+#[test]
 async fn user_turn_includes_personality_from_config() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(Some("gpt-5.2-codex")).await;
     chat.set_feature_enabled(Feature::Personality, /*enabled*/ true);
@@ -1379,7 +1379,7 @@ async fn user_turn_includes_personality_from_config() {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn plan_update_renders_history_cell() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     let update = UpdatePlanArgs {

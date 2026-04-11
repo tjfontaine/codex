@@ -1,7 +1,7 @@
 #[cfg(not(unix))]
 fn main() {
     eprintln!("codex-execve-wrapper is only implemented for UNIX");
-    std::process::exit(1);
+    panic!("process::exit(1) called — cannot exit in WASM");
 }
 
 #[cfg(unix)]

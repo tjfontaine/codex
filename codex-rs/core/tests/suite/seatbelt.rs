@@ -71,7 +71,7 @@ impl TestScenario {
 /// Because the user has agreed to this risk, we do not try find all .git
 /// folders in the workspace and block them (though we could change our
 /// position on this in the future).
-#[tokio::test]
+#[test]
 async fn if_parent_of_repo_is_writable_then_dot_git_folder_is_writable() {
     let tmp = TempDir::new().expect("should be able to create temp dir");
     let test_scenario = create_test_scenario(&tmp);
@@ -98,7 +98,7 @@ async fn if_parent_of_repo_is_writable_then_dot_git_folder_is_writable() {
 /// When the writable root is the root of a Git repository (as evidenced by the
 /// presence of a .git folder), then the .git folder should be read-only if
 /// the policy is `WorkspaceWrite`.
-#[tokio::test]
+#[test]
 async fn if_git_repo_is_writable_root_then_dot_git_folder_is_read_only() {
     let tmp = TempDir::new().expect("should be able to create temp dir");
     let test_scenario = create_test_scenario(&tmp);
@@ -124,7 +124,7 @@ async fn if_git_repo_is_writable_root_then_dot_git_folder_is_read_only() {
 
 /// Under DangerFullAccess, all writes should be permitted anywhere on disk,
 /// including inside the .git folder.
-#[tokio::test]
+#[test]
 async fn danger_full_access_allows_all_writes() {
     let tmp = TempDir::new().expect("should be able to create temp dir");
     let test_scenario = create_test_scenario(&tmp);
@@ -143,7 +143,7 @@ async fn danger_full_access_allows_all_writes() {
 }
 
 /// Under ReadOnly, writes should not be permitted anywhere on disk.
-#[tokio::test]
+#[test]
 async fn read_only_forbids_all_writes() {
     let tmp = TempDir::new().expect("should be able to create temp dir");
     let test_scenario = create_test_scenario(&tmp);
@@ -161,7 +161,7 @@ async fn read_only_forbids_all_writes() {
         .await;
 }
 
-#[tokio::test]
+#[test]
 async fn openpty_works_under_seatbelt() {
     if std::env::var(CODEX_SANDBOX_ENV_VAR) == Ok("seatbelt".to_string()) {
         eprintln!("{CODEX_SANDBOX_ENV_VAR} is set to 'seatbelt', skipping test.");
@@ -205,7 +205,7 @@ assert os.read(master, 4) == b"ping""#
     assert!(status.success(), "python exited with {status:?}");
 }
 
-#[tokio::test]
+#[test]
 async fn java_home_finds_runtime_under_seatbelt() {
     if std::env::var(CODEX_SANDBOX_ENV_VAR) == Ok("seatbelt".to_string()) {
         eprintln!("{CODEX_SANDBOX_ENV_VAR} is set to 'seatbelt', skipping test.");

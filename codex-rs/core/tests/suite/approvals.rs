@@ -1655,7 +1655,7 @@ fn scenarios() -> Vec<ScenarioSpec> {
     ]
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn approval_matrix_covers_all_modes() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1785,7 +1785,7 @@ async fn run_scenario(scenario: &ScenarioSpec) -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 #[cfg(unix)]
 async fn approving_apply_patch_for_session_skips_future_prompts_for_same_file() -> Result<()> {
     skip_if_no_network!(Ok(()));
@@ -1903,7 +1903,7 @@ async fn approving_apply_patch_for_session_skips_future_prompts_for_same_file() 
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 #[cfg(unix)]
 async fn approving_execpolicy_amendment_persists_policy_and_skips_future_prompts() -> Result<()> {
     let server = start_mock_server().await;
@@ -2073,7 +2073,7 @@ async fn approving_execpolicy_amendment_persists_policy_and_skips_future_prompts
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn spawned_subagent_execpolicy_amendment_propagates_to_parent_session() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -2255,7 +2255,7 @@ async fn spawned_subagent_execpolicy_amendment_propagates_to_parent_session() ->
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 #[cfg(unix)]
 async fn matched_prefix_rule_runs_unsandboxed_under_zsh_fork() -> Result<()> {
     skip_if_no_network!(Ok(()));
@@ -2335,7 +2335,7 @@ async fn matched_prefix_rule_runs_unsandboxed_under_zsh_fork() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 #[cfg(unix)]
 async fn invalid_requested_prefix_rule_falls_back_for_compound_command() -> Result<()> {
     let server = start_mock_server().await;
@@ -2386,7 +2386,7 @@ async fn invalid_requested_prefix_rule_falls_back_for_compound_command() -> Resu
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 #[cfg(unix)]
 async fn approving_fallback_rule_for_compound_command_works() -> Result<()> {
     let server = start_mock_server().await;
@@ -2500,7 +2500,7 @@ async fn approving_fallback_rule_for_compound_command_works() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn denying_network_policy_amendment_persists_policy_and_skips_future_network_prompt()
 -> Result<()> {
     skip_if_no_network!(Ok(()));
@@ -2804,7 +2804,7 @@ allow_local_binding = true
 }
 
 // todo(dylan) add ScenarioSpec support for rules
-#[tokio::test(flavor = "current_thread")]
+#[test]
 #[cfg(unix)]
 async fn compound_command_with_one_safe_command_still_requires_approval() -> Result<()> {
     skip_if_no_network!(Ok(()));

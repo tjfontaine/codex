@@ -22,7 +22,7 @@ fn start_mock_issuer(chatgpt_account_id: &str) -> (SocketAddr, thread::JoinHandl
     let server = tiny_http::Server::from_listener(listener, None).unwrap();
     let chatgpt_account_id = chatgpt_account_id.to_string();
 
-    let handle = thread::spawn(move || {
+    let handle = tokio::thread_spawn::spawn(move || {
         while let Ok(mut req) = server.recv() {
             let url = req.url().to_string();
             if url.starts_with("/oauth/token") {
@@ -78,7 +78,7 @@ fn start_mock_issuer(chatgpt_account_id: &str) -> (SocketAddr, thread::JoinHandl
     (addr, handle)
 }
 
-#[tokio::test]
+#[test]
 async fn end_to_end_login_flow_persists_auth_json() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -156,7 +156,7 @@ async fn end_to_end_login_flow_persists_auth_json() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn creates_missing_codex_home_dir() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -198,7 +198,7 @@ async fn creates_missing_codex_home_dir() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn forced_chatgpt_workspace_id_mismatch_blocks_login() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -255,7 +255,7 @@ async fn forced_chatgpt_workspace_id_mismatch_blocks_login() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn oauth_access_denied_missing_entitlement_blocks_login_with_clear_error() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -322,7 +322,7 @@ async fn oauth_access_denied_missing_entitlement_blocks_login_with_clear_error()
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn oauth_access_denied_unknown_reason_uses_generic_error_page() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -401,7 +401,7 @@ async fn oauth_access_denied_unknown_reason_uses_generic_error_page() -> Result<
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[test]
 async fn cancels_previous_login_server_when_port_is_in_use() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

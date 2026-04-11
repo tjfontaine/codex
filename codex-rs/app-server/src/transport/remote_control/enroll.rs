@@ -272,7 +272,7 @@ mod tests {
             .expect("state runtime should initialize")
     }
 
-    #[tokio::test]
+    #[test]
     async fn persisted_remote_control_enrollment_round_trips_by_target_and_account() {
         let codex_home = TempDir::new().expect("temp dir should create");
         let state_db = remote_control_state_runtime(&codex_home).await;
@@ -345,7 +345,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn clearing_persisted_remote_control_enrollment_removes_only_matching_entry() {
         let codex_home = TempDir::new().expect("temp dir should create");
         let state_db = remote_control_state_runtime(&codex_home).await;
@@ -418,7 +418,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn enroll_remote_control_server_parse_failure_includes_response_body() {
         let listener = TcpListener::bind("127.0.0.1:0")
             .await

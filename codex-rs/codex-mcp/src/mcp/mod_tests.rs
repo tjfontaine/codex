@@ -177,7 +177,7 @@ fn codex_apps_server_config_uses_legacy_codex_apps_path() {
     assert_eq!(url, "https://chatgpt.com/backend-api/wham/apps");
 }
 
-#[tokio::test]
+#[test]
 async fn effective_mcp_servers_preserve_user_servers_and_add_codex_apps() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let mut config = test_mcp_config(codex_home.path().to_path_buf());

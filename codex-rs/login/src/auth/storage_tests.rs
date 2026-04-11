@@ -9,7 +9,7 @@ use tempfile::tempdir;
 use codex_keyring_store::tests::MockKeyringStore;
 use keyring::Error as KeyringError;
 
-#[tokio::test]
+#[test]
 async fn file_storage_load_returns_auth_dot_json() -> anyhow::Result<()> {
     let codex_home = tempdir()?;
     let storage = FileAuthStorage::new(codex_home.path().to_path_buf());
@@ -29,7 +29,7 @@ async fn file_storage_load_returns_auth_dot_json() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn file_storage_save_persists_auth_dot_json() -> anyhow::Result<()> {
     let codex_home = tempdir()?;
     let storage = FileAuthStorage::new(codex_home.path().to_path_buf());

@@ -1,7 +1,7 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-#[tokio::test]
+#[test]
 async fn collab_spawn_end_shows_requested_model_and_effort() {
     let (mut chat, mut rx, _ops) = make_chatwidget_manual(/*model_override*/ None).await;
     let sender_thread_id = ThreadId::new();
@@ -45,7 +45,7 @@ async fn collab_spawn_end_shows_requested_model_and_effort() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn live_app_server_user_message_item_completed_does_not_duplicate_rendered_prompt() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -81,7 +81,7 @@ async fn live_app_server_user_message_item_completed_does_not_duplicate_rendered
     assert!(drain_insert_history(&mut rx).is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn live_app_server_turn_completed_clears_working_status_after_answer_item() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -147,7 +147,7 @@ async fn live_app_server_turn_completed_clears_working_status_after_answer_item(
     assert!(chat.bottom_pane.status_widget().is_none());
 }
 
-#[tokio::test]
+#[test]
 async fn live_app_server_file_change_item_started_preserves_changes() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -177,7 +177,7 @@ async fn live_app_server_file_change_item_started_preserves_changes() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn live_app_server_command_execution_strips_shell_wrapper() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     let script = r#"python3 -c 'print("Hello, world!")'"#;
@@ -259,7 +259,7 @@ fn app_server_patch_changes_to_core_preserves_diffs() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn live_app_server_collab_wait_items_render_history() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     let sender_thread_id =
@@ -346,7 +346,7 @@ async fn live_app_server_collab_wait_items_render_history() {
     assert_chatwidget_snapshot!("app_server_collab_wait_items_render_history", combined);
 }
 
-#[tokio::test]
+#[test]
 async fn live_app_server_collab_spawn_completed_renders_requested_model_and_effort() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     let sender_thread_id =
@@ -409,7 +409,7 @@ async fn live_app_server_collab_spawn_completed_renders_requested_model_and_effo
     );
 }
 
-#[tokio::test]
+#[test]
 async fn live_app_server_failed_turn_does_not_duplicate_error_history() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -471,7 +471,7 @@ async fn live_app_server_failed_turn_does_not_duplicate_error_history() {
     assert!(!chat.bottom_pane.is_task_running());
 }
 
-#[tokio::test]
+#[test]
 async fn live_app_server_stream_recovery_restores_previous_status_header() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -528,7 +528,7 @@ async fn live_app_server_stream_recovery_restores_previous_status_header() {
     assert!(chat.retry_status_header.is_none());
 }
 
-#[tokio::test]
+#[test]
 async fn live_app_server_server_overloaded_error_renders_warning() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -569,7 +569,7 @@ async fn live_app_server_server_overloaded_error_renders_warning() {
     assert!(!chat.bottom_pane.is_task_running());
 }
 
-#[tokio::test]
+#[test]
 async fn live_app_server_invalid_thread_name_update_is_ignored() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     let thread_id = ThreadId::new();
@@ -590,7 +590,7 @@ async fn live_app_server_invalid_thread_name_update_is_ignored() {
     assert_eq!(chat.thread_name, Some("original name".to_string()));
 }
 
-#[tokio::test]
+#[test]
 async fn live_app_server_thread_name_update_shows_resume_hint() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     let thread_id = ThreadId::new();
@@ -614,7 +614,7 @@ async fn live_app_server_thread_name_update_shows_resume_hint() {
     assert!(rendered.contains("codex resume review-fix"));
 }
 
-#[tokio::test]
+#[test]
 async fn live_app_server_thread_closed_requests_immediate_exit() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 

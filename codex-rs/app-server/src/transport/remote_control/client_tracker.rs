@@ -368,7 +368,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn cancelled_outbound_task_emits_connection_closed() {
         let (server_event_tx, _server_event_rx) = mpsc::channel(CHANNEL_CAPACITY);
         let (transport_event_tx, mut transport_event_rx) = mpsc::channel(CHANNEL_CAPACITY);
@@ -428,7 +428,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn shutdown_cancels_blocked_outbound_forwarding() {
         let (server_event_tx, _server_event_rx) = mpsc::channel(1);
         let (transport_event_tx, mut transport_event_rx) = mpsc::channel(CHANNEL_CAPACITY);
@@ -485,7 +485,7 @@ mod tests {
             .expect("shutdown should not hang on blocked server forwarding");
     }
 
-    #[tokio::test]
+    #[test]
     async fn initialize_with_new_stream_id_opens_new_connection_for_same_client() {
         let (server_event_tx, _server_event_rx) = mpsc::channel(CHANNEL_CAPACITY);
         let (transport_event_tx, mut transport_event_rx) = mpsc::channel(CHANNEL_CAPACITY);
@@ -521,7 +521,7 @@ mod tests {
         assert_ne!(first_connection_id, second_connection_id);
     }
 
-    #[tokio::test]
+    #[test]
     async fn legacy_initialize_without_stream_id_resets_inbound_seq_id() {
         let (server_event_tx, _server_event_rx) = mpsc::channel(CHANNEL_CAPACITY);
         let (transport_event_tx, mut transport_event_rx) = mpsc::channel(CHANNEL_CAPACITY);

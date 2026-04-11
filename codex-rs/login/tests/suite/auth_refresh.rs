@@ -31,7 +31,7 @@ const INITIAL_ACCESS_TOKEN: &str = "initial-access-token";
 const INITIAL_REFRESH_TOKEN: &str = "initial-refresh-token";
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn refresh_token_succeeds_updates_storage() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -94,7 +94,7 @@ async fn refresh_token_succeeds_updates_storage() -> Result<()> {
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn refresh_token_refreshes_when_auth_is_unchanged() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -157,7 +157,7 @@ async fn refresh_token_refreshes_when_auth_is_unchanged() -> Result<()> {
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn refresh_token_skips_refresh_when_auth_changed() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -211,7 +211,7 @@ async fn refresh_token_skips_refresh_when_auth_changed() -> Result<()> {
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn refresh_token_errors_on_account_mismatch() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -279,7 +279,7 @@ async fn refresh_token_errors_on_account_mismatch() -> Result<()> {
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn returns_fresh_tokens_as_is() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -325,7 +325,7 @@ async fn returns_fresh_tokens_as_is() -> Result<()> {
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn refreshes_token_when_access_token_is_expired() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -384,7 +384,7 @@ async fn refreshes_token_when_access_token_is_expired() -> Result<()> {
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn auth_reloads_disk_auth_when_cached_auth_is_stale() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -435,7 +435,7 @@ async fn auth_reloads_disk_auth_when_cached_auth_is_stale() -> Result<()> {
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn auth_reloads_disk_auth_without_calling_expired_refresh_token() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -494,7 +494,7 @@ async fn auth_reloads_disk_auth_without_calling_expired_refresh_token() -> Resul
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn refresh_token_returns_permanent_error_for_expired_refresh_token() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -546,7 +546,7 @@ async fn refresh_token_returns_permanent_error_for_expired_refresh_token() -> Re
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn refresh_token_does_not_retry_after_permanent_failure() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -612,7 +612,7 @@ async fn refresh_token_does_not_retry_after_permanent_failure() -> Result<()> {
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn refresh_token_reloads_changed_auth_after_permanent_failure() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -693,7 +693,7 @@ async fn refresh_token_reloads_changed_auth_after_permanent_failure() -> Result<
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn refresh_token_returns_transient_error_on_server_failure() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -744,7 +744,7 @@ async fn refresh_token_returns_transient_error_on_server_failure() -> Result<()>
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn unauthorized_recovery_reloads_then_refreshes_tokens() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -836,7 +836,7 @@ async fn unauthorized_recovery_reloads_then_refreshes_tokens() -> Result<()> {
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn unauthorized_recovery_errors_on_account_mismatch() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -915,7 +915,7 @@ async fn unauthorized_recovery_errors_on_account_mismatch() -> Result<()> {
 }
 
 #[serial_test::serial(auth_refresh)]
-#[tokio::test]
+#[test]
 async fn unauthorized_recovery_requires_chatgpt_auth() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

@@ -1,11 +1,9 @@
 use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
-use ts_rs::TS;
 
-#[derive(Serialize, Deserialize, Copy, Clone, Debug, PartialEq, Eq, JsonSchema, TS, Default)]
+#[derive(Serialize, Deserialize, Copy, Clone, Debug, PartialEq, Eq, JsonSchema, Default)]
 #[serde(rename_all = "lowercase")]
-#[ts(rename_all = "lowercase")]
 pub enum PlanType {
     #[default]
     Free,
@@ -14,11 +12,9 @@ pub enum PlanType {
     Pro,
     Team,
     #[serde(rename = "self_serve_business_usage_based")]
-    #[ts(rename = "self_serve_business_usage_based")]
     SelfServeBusinessUsageBased,
     Business,
     #[serde(rename = "enterprise_cbp_usage_based")]
-    #[ts(rename = "enterprise_cbp_usage_based")]
     EnterpriseCbpUsageBased,
     Enterprise,
     Edu,

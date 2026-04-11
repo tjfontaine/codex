@@ -27,7 +27,7 @@ use tokio::time::timeout;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn thread_archive_requires_materialized_rollout() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -160,7 +160,7 @@ async fn thread_archive_requires_materialized_rollout() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_archive_clears_stale_subscriptions_before_resume() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;

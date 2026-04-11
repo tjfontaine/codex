@@ -305,7 +305,7 @@ mod tests {
                 found = true;
                 break;
             }
-            std::thread::sleep(Duration::from_millis(10));
+            tokio::thread_spawn::sleep(Duration::from_millis(10));
         }
 
         let _ = child.kill();
@@ -315,7 +315,7 @@ mod tests {
     }
 
     #[cfg(target_os = "macos")]
-    #[tokio::test]
+    #[test]
     async fn pid_tracker_collects_spawned_children() {
         let tracker = PidTracker::new(std::process::id() as i32).expect("failed to create tracker");
 
@@ -343,7 +343,7 @@ mod tests {
     }
 
     #[cfg(target_os = "macos")]
-    #[tokio::test]
+    #[test]
     async fn pid_tracker_collects_bash_subshell_descendants() {
         let tracker = PidTracker::new(std::process::id() as i32).expect("failed to create tracker");
 

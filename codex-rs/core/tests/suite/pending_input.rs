@@ -209,7 +209,7 @@ fn assert_two_responses_input_snapshot(snapshot_name: &str, requests: &[Vec<u8>]
     insta::assert_snapshot!(snapshot_name, snapshot);
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 #[ignore = "TODO(aibrahim): flaky"]
 async fn injected_user_input_triggers_follow_up_request_with_deltas() {
     let (gate_completed_tx, gate_completed_rx) = oneshot::channel();
@@ -312,7 +312,7 @@ async fn injected_user_input_triggers_follow_up_request_with_deltas() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn queued_inter_agent_mail_triggers_follow_up_after_reasoning_item() {
     let (gate_reasoning_done_tx, gate_reasoning_done_rx) = oneshot::channel();
 
@@ -357,7 +357,7 @@ async fn queued_inter_agent_mail_triggers_follow_up_after_reasoning_item() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn queued_inter_agent_mail_triggers_follow_up_after_commentary_message_item() {
     let (gate_message_done_tx, gate_message_done_rx) = oneshot::channel();
 
@@ -421,7 +421,7 @@ async fn queued_inter_agent_mail_triggers_follow_up_after_commentary_message_ite
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn user_input_does_not_preempt_after_reasoning_item() {
     let (gate_reasoning_done_tx, gate_reasoning_done_rx) = oneshot::channel();
 
@@ -471,7 +471,7 @@ async fn user_input_does_not_preempt_after_reasoning_item() {
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn steered_user_input_waits_for_model_continuation_after_mid_turn_compact() {
     let first_chunks = vec![
         chunk(ev_response_created("resp-1")),
@@ -566,7 +566,7 @@ async fn steered_user_input_waits_for_model_continuation_after_mid_turn_compact(
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn steered_user_input_follows_compact_when_only_the_steer_needs_follow_up() {
     let (gate_first_completed_tx, gate_first_completed_rx) = oneshot::channel();
 
@@ -655,7 +655,7 @@ async fn steered_user_input_follows_compact_when_only_the_steer_needs_follow_up(
     server.shutdown().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn steered_user_input_waits_when_tool_output_triggers_compact_before_next_request() {
     let (gate_first_completed_tx, gate_first_completed_rx) = oneshot::channel();
 

@@ -45,7 +45,7 @@ fn pipes_stdin_and_stdout_through_socket() -> anyhow::Result<()> {
 
     let (tx, rx) = mpsc::channel();
     let (event_tx, event_rx) = mpsc::channel();
-    let server_thread = thread::spawn(move || -> anyhow::Result<()> {
+    let server_thread = tokio::thread_spawn::spawn(move || -> anyhow::Result<()> {
         let _ = event_tx.send("waiting for accept".to_string());
         let (mut connection, _) = listener
             .accept()
@@ -78,12 +78,12 @@ fn pipes_stdin_and_stdout_through_socket() -> anyhow::Result<()> {
     let mut child_stderr = child.stderr.take().context("missing child stderr")?;
     let (stdout_tx, stdout_rx) = mpsc::channel();
     let (stderr_tx, stderr_rx) = mpsc::channel();
-    thread::spawn(move || {
+    tokio::thread_spawn::spawn(move || {
         let mut stdout = Vec::new();
         let result = child_stdout.read_to_end(&mut stdout).map(|_| stdout);
         let _ = stdout_tx.send(result);
     });
-    thread::spawn(move || {
+    tokio::thread_spawn::spawn(move || {
         let mut stderr = Vec::new();
         let result = child_stderr.read_to_end(&mut stderr).map(|_| stderr);
         let _ = stderr_tx.send(result);
@@ -114,7 +114,7 @@ fn pipes_stdin_and_stdout_through_socket() -> anyhow::Result<()> {
             );
         }
 
-        thread::sleep(Duration::from_millis(25));
+        tokio::thread_spawn::sleep(Duration::from_millis(25));
     };
 
     let stdout = stdout_rx

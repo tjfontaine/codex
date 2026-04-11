@@ -98,42 +98,13 @@ use serde::Serialize;
 use serde_json::Value as JsonValue;
 use serde_with::serde_as;
 use thiserror::Error;
-use ts_rs::TS;
 
 // Macro to declare a camelCased API v2 enum mirroring a core enum which
 // tends to use either snake_case or kebab-case.
-macro_rules! v2_enum_from_core {
-    (
-        $(#[$enum_meta:meta])*
-        pub enum $Name:ident from $Src:path {
-            $( $(#[$variant_meta:meta])* $Variant:ident ),+ $(,)?
-        }
-    ) => {
-        #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
-        $(#[$enum_meta])*
-        #[serde(rename_all = "camelCase")]
-        #[ts(export_to = "v2/")]
-        pub enum $Name {
-            $( $(#[$variant_meta])* $Variant ),+
-        }
+macro_rules! v2_enum_from_core { ($ (# [$ enum_meta : meta]) * pub enum $ Name : ident from $ Src : path { $ ($ (# [$ variant_meta : meta]) * $ Variant : ident) ,+ $ (,) ? }) => { # [derive (Serialize , Deserialize , Debug , Clone , Copy , PartialEq , Eq , JsonSchema)] $ (# [$ enum_meta]) * # [serde (rename_all = "camelCase")] pub enum $ Name { $ ($ (# [$ variant_meta]) * $ Variant) ,+ } impl $ Name { pub fn to_core (self) -> $ Src { match self { $ ($ Name ::$ Variant => <$ Src >::$ Variant) ,+ } } } impl From <$ Src > for $ Name { fn from (value : $ Src) -> Self { match value { $ (<$ Src >::$ Variant => $ Name ::$ Variant) ,+ } } } } ; }
 
-        impl $Name {
-            pub fn to_core(self) -> $Src {
-                match self { $( $Name::$Variant => <$Src>::$Variant ),+ }
-            }
-        }
-
-        impl From<$Src> for $Name {
-            fn from(value: $Src) -> Self {
-                match value { $( <$Src>::$Variant => $Name::$Variant ),+ }
-            }
-        }
-    };
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum NonSteerableTurnKind {
     Review,
     Compact,
@@ -143,22 +114,19 @@ pub enum NonSteerableTurnKind {
 ///
 /// When an upstream HTTP status is available (for example, from the Responses API or a provider),
 /// it is forwarded in `httpStatusCode` on the relevant `codexErrorInfo` variant.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum CodexErrorInfo {
     ContextWindowExceeded,
     UsageLimitExceeded,
     ServerOverloaded,
     HttpConnectionFailed {
         #[serde(rename = "httpStatusCode")]
-        #[ts(rename = "httpStatusCode")]
         http_status_code: Option<u16>,
     },
     /// Failed to connect to the response SSE stream.
     ResponseStreamConnectionFailed {
         #[serde(rename = "httpStatusCode")]
-        #[ts(rename = "httpStatusCode")]
         http_status_code: Option<u16>,
     },
     InternalServerError,
@@ -169,20 +137,17 @@ pub enum CodexErrorInfo {
     /// The response SSE stream disconnected in the middle of a turn before completion.
     ResponseStreamDisconnected {
         #[serde(rename = "httpStatusCode")]
-        #[ts(rename = "httpStatusCode")]
         http_status_code: Option<u16>,
     },
     /// Reached the retry limit for responses.
     ResponseTooManyFailedAttempts {
         #[serde(rename = "httpStatusCode")]
-        #[ts(rename = "httpStatusCode")]
         http_status_code: Option<u16>,
     },
     /// Returned when `turn/start` or `turn/steer` is submitted while the current active turn
     /// cannot accept same-turn steering, for example `/review` or manual `/compact`.
     ActiveTurnNotSteerable {
         #[serde(rename = "turnKind")]
-        #[ts(rename = "turnKind")]
         turn_kind: NonSteerableTurnKind,
     },
     Other,
@@ -230,14 +195,10 @@ impl From<CoreNonSteerableTurnKind> for NonSteerableTurnKind {
     }
 }
 
-#[derive(
-    Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS, ExperimentalApi,
-)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "kebab-case")]
-#[ts(rename_all = "kebab-case", export_to = "v2/")]
 pub enum AskForApproval {
     #[serde(rename = "untrusted")]
-    #[ts(rename = "untrusted")]
     UnlessTrusted,
     OnFailure,
     OnRequest,
@@ -296,9 +257,8 @@ impl From<CoreAskForApproval> for AskForApproval {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-#[ts(rename_all = "snake_case", export_to = "v2/")]
 /// Configures who approval requests are routed to for review. Examples
 /// include sandbox escapes, blocked network access, MCP approval prompts, and
 /// ARC escalations. Defaults to `user`. `guardian_subagent` uses a carefully
@@ -327,9 +287,8 @@ impl From<CoreApprovalsReviewer> for ApprovalsReviewer {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "kebab-case")]
-#[ts(rename_all = "kebab-case", export_to = "v2/")]
 pub enum SandboxMode {
     ReadOnly,
     WorkspaceWrite,
@@ -413,17 +372,15 @@ v2_enum_from_core!(
     }
 );
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase", export_to = "v2/")]
 pub enum ThreadStartSource {
     Startup,
     Clear,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct HookOutputEntry {
     pub kind: HookOutputEntryKind,
     pub text: String,
@@ -438,9 +395,8 @@ impl From<CoreHookOutputEntry> for HookOutputEntry {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct HookRunSummary {
     pub id: String,
     pub event_name: HookEventName,
@@ -477,14 +433,11 @@ impl From<CoreHookRunSummary> for HookRunSummary {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type")]
-#[ts(export_to = "v2/")]
 pub enum ConfigLayerSource {
     /// Managed preferences layer delivered by MDM (macOS only).
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     Mdm {
         domain: String,
         key: String,
@@ -492,7 +445,6 @@ pub enum ConfigLayerSource {
 
     /// Managed config layer from a file (usually `managed_config.toml`).
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     System {
         /// This is the path to the system config.toml file, though it is not
         /// guaranteed to exist.
@@ -504,7 +456,6 @@ pub enum ConfigLayerSource {
     /// - writable by the user
     /// - generally outside the workspace directory
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     User {
         /// This is the path to the user's config.toml file, though it is not
         /// guaranteed to exist.
@@ -514,7 +465,6 @@ pub enum ConfigLayerSource {
     /// Path to a .codex/ folder within a project. There could be multiple of
     /// these between `cwd` and the project/repo root.
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     Project {
         dot_codex_folder: AbsolutePathBuf,
     },
@@ -527,7 +477,6 @@ pub enum ConfigLayerSource {
     /// work out as intended, but we keep this variant as a "best effort" while
     /// we phase out `managed_config.toml` in favor of `requirements.toml`.
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     LegacyManagedConfigTomlFromFile {
         file: AbsolutePathBuf,
     },
@@ -559,9 +508,8 @@ impl PartialOrd for ConfigLayerSource {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-#[ts(export_to = "v2/")]
 pub struct SandboxWorkspaceWrite {
     #[serde(default)]
     pub writable_roots: Vec<PathBuf>,
@@ -573,17 +521,15 @@ pub struct SandboxWorkspaceWrite {
     pub exclude_slash_tmp: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-#[ts(export_to = "v2/")]
 pub struct ToolsV2 {
     pub web_search: Option<WebSearchToolConfig>,
     pub view_image: Option<bool>,
 }
 
-#[derive(Serialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct DynamicToolSpec {
     pub name: String,
     pub description: String,
@@ -625,9 +571,8 @@ impl<'de> Deserialize<'de> for DynamicToolSpec {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, ExperimentalApi)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "snake_case")]
-#[ts(export_to = "v2/")]
 pub struct ProfileV2 {
     pub model: Option<String>,
     pub model_provider: Option<String>,
@@ -649,27 +594,24 @@ pub struct ProfileV2 {
     pub additional: HashMap<String, JsonValue>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-#[ts(export_to = "v2/")]
 pub struct AnalyticsConfig {
     pub enabled: Option<bool>,
     #[serde(default, flatten)]
     pub additional: HashMap<String, JsonValue>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-#[ts(export_to = "v2/")]
 pub enum AppToolApproval {
     Auto,
     Prompt,
     Approve,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-#[ts(export_to = "v2/")]
 pub struct AppsDefaultConfig {
     #[serde(default = "default_enabled")]
     pub enabled: bool,
@@ -679,25 +621,22 @@ pub struct AppsDefaultConfig {
     pub open_world_enabled: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-#[ts(export_to = "v2/")]
 pub struct AppToolConfig {
     pub enabled: Option<bool>,
     pub approval_mode: Option<AppToolApproval>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-#[ts(export_to = "v2/")]
 pub struct AppToolsConfig {
     #[serde(default, flatten)]
     pub tools: HashMap<String, AppToolConfig>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-#[ts(export_to = "v2/")]
 pub struct AppConfig {
     #[serde(default = "default_enabled")]
     pub enabled: bool,
@@ -708,9 +647,8 @@ pub struct AppConfig {
     pub tools: Option<AppToolsConfig>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-#[ts(export_to = "v2/")]
 pub struct AppsConfig {
     #[serde(default, rename = "_default")]
     pub default: Option<AppsDefaultConfig>,
@@ -726,9 +664,8 @@ const fn default_include_platform_defaults() -> bool {
     true
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, ExperimentalApi)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "snake_case")]
-#[ts(export_to = "v2/")]
 pub struct Config {
     pub model: Option<String>,
     pub review_model: Option<String>,
@@ -766,17 +703,15 @@ pub struct Config {
     pub additional: HashMap<String, JsonValue>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ConfigLayerMetadata {
     pub name: ConfigLayerSource,
     pub version: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ConfigLayer {
     pub name: ConfigLayerSource,
     pub version: String,
@@ -785,34 +720,30 @@ pub struct ConfigLayer {
     pub disabled_reason: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum MergeStrategy {
     Replace,
     Upsert,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum WriteStatus {
     Ok,
     OkOverridden,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct OverriddenMetadata {
     pub message: String,
     pub overriding_layer: ConfigLayerMetadata,
     pub effective_value: JsonValue,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ConfigWriteResponse {
     pub status: WriteStatus,
     pub version: String,
@@ -821,9 +752,8 @@ pub struct ConfigWriteResponse {
     pub overridden_metadata: Option<OverriddenMetadata>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum ConfigWriteErrorCode {
     ConfigLayerReadonly,
     ConfigVersionConflict,
@@ -833,22 +763,19 @@ pub enum ConfigWriteErrorCode {
     UserLayerNotFound,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ConfigReadParams {
     #[serde(default)]
     pub include_layers: bool,
     /// Optional working directory to resolve project config layers. If specified,
     /// return the effective config as seen from that directory (i.e., including any
     /// project layers between `cwd` and the project/repo root).
-    #[ts(optional = nullable)]
     pub cwd: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, ExperimentalApi)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ConfigReadResponse {
     #[experimental(nested)]
     pub config: Config,
@@ -857,9 +784,8 @@ pub struct ConfigReadResponse {
     pub layers: Option<Vec<ConfigLayer>>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, ExperimentalApi)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ConfigRequirements {
     #[experimental(nested)]
     pub allowed_approval_policies: Option<Vec<AskForApproval>>,
@@ -873,9 +799,8 @@ pub struct ConfigRequirements {
     pub network: Option<NetworkRequirements>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct NetworkRequirements {
     pub enabled: Option<bool>,
     pub http_port: Option<u16>,
@@ -900,58 +825,48 @@ pub struct NetworkRequirements {
     pub danger_full_access_denylist_only: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "lowercase")]
-#[ts(export_to = "v2/")]
 pub enum NetworkDomainPermission {
     Allow,
     Deny,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "lowercase")]
-#[ts(export_to = "v2/")]
 pub enum NetworkUnixSocketPermission {
     Allow,
     None,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum ResidencyRequirement {
     Us,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, ExperimentalApi)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ConfigRequirementsReadResponse {
     /// Null if no requirements are configured (e.g. no requirements.toml/MDM entries).
     #[experimental(nested)]
     pub requirements: Option<ConfigRequirements>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash, JsonSchema, TS)]
-#[ts(export_to = "v2/")]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash, JsonSchema)]
 pub enum ExternalAgentConfigMigrationItemType {
     #[serde(rename = "AGENTS_MD")]
-    #[ts(rename = "AGENTS_MD")]
     AgentsMd,
     #[serde(rename = "CONFIG")]
-    #[ts(rename = "CONFIG")]
     Config,
     #[serde(rename = "SKILLS")]
-    #[ts(rename = "SKILLS")]
     Skills,
     #[serde(rename = "MCP_SERVER_CONFIG")]
-    #[ts(rename = "MCP_SERVER_CONFIG")]
     McpServerConfig,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ExternalAgentConfigMigrationItem {
     pub item_type: ExternalAgentConfigMigrationItemType,
     pub description: String,
@@ -959,78 +874,65 @@ pub struct ExternalAgentConfigMigrationItem {
     pub cwd: Option<PathBuf>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ExternalAgentConfigDetectResponse {
     pub items: Vec<ExternalAgentConfigMigrationItem>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ExternalAgentConfigDetectParams {
     /// If true, include detection under the user's home (~/.claude, ~/.codex, etc.).
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub include_home: bool,
     /// Zero or more working directories to include for repo-scoped detection.
-    #[ts(optional = nullable)]
     pub cwds: Option<Vec<PathBuf>>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ExternalAgentConfigImportParams {
     pub migration_items: Vec<ExternalAgentConfigMigrationItem>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ExternalAgentConfigImportResponse {}
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ConfigValueWriteParams {
     pub key_path: String,
     pub value: JsonValue,
     pub merge_strategy: MergeStrategy,
     /// Path to the config file to write; defaults to the user's `config.toml` when omitted.
-    #[ts(optional = nullable)]
     pub file_path: Option<String>,
-    #[ts(optional = nullable)]
     pub expected_version: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ConfigBatchWriteParams {
     pub edits: Vec<ConfigEdit>,
     /// Path to the config file to write; defaults to the user's `config.toml` when omitted.
-    #[ts(optional = nullable)]
     pub file_path: Option<String>,
-    #[ts(optional = nullable)]
     pub expected_version: Option<String>,
     /// When true, hot-reload the updated user config into all loaded threads after writing.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub reload_user_config: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ConfigEdit {
     pub key_path: String,
     pub value: JsonValue,
     pub merge_strategy: MergeStrategy,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum CommandExecutionApprovalDecision {
     /// User approved the command.
     Accept,
@@ -1082,9 +984,8 @@ v2_enum_from_core! {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct NetworkApprovalContext {
     pub host: String,
     pub protocol: NetworkApprovalProtocol,
@@ -1099,9 +1000,8 @@ impl From<CoreNetworkApprovalContext> for NetworkApprovalContext {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct AdditionalFileSystemPermissions {
     pub read: Option<Vec<AbsolutePathBuf>>,
     pub write: Option<Vec<AbsolutePathBuf>>,
@@ -1125,9 +1025,8 @@ impl From<AdditionalFileSystemPermissions> for CoreFileSystemPermissions {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct AdditionalNetworkPermissions {
     pub enabled: Option<bool>,
 }
@@ -1148,10 +1047,9 @@ impl From<AdditionalNetworkPermissions> for CoreNetworkPermissions {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
-#[ts(export_to = "v2/")]
 pub struct RequestPermissionProfile {
     pub network: Option<AdditionalNetworkPermissions>,
     pub file_system: Option<AdditionalFileSystemPermissions>,
@@ -1175,9 +1073,8 @@ impl From<RequestPermissionProfile> for CoreRequestPermissionProfile {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct AdditionalPermissionProfile {
     pub network: Option<AdditionalNetworkPermissions>,
     pub file_system: Option<AdditionalFileSystemPermissions>,
@@ -1201,15 +1098,12 @@ impl From<AdditionalPermissionProfile> for CorePermissionProfile {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct GrantedPermissionProfile {
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub network: Option<AdditionalNetworkPermissions>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub file_system: Option<AdditionalFileSystemPermissions>,
 }
 
@@ -1222,9 +1116,8 @@ impl From<GrantedPermissionProfile> for CorePermissionProfile {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum FileChangeApprovalDecision {
     /// User approved the file changes.
     Accept,
@@ -1236,22 +1129,18 @@ pub enum FileChangeApprovalDecision {
     Cancel,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum NetworkAccess {
     #[default]
     Restricted,
     Enabled,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type")]
-#[ts(export_to = "v2/")]
 pub enum ReadOnlyAccess {
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     Restricted {
         #[serde(default = "default_include_platform_defaults")]
         include_platform_defaults: bool,
@@ -1292,14 +1181,11 @@ impl From<CoreReadOnlyAccess> for ReadOnlyAccess {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type")]
-#[ts(export_to = "v2/")]
 pub enum SandboxPolicy {
     DangerFullAccess,
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     ReadOnly {
         #[serde(default)]
         access: ReadOnlyAccess,
@@ -1307,13 +1193,11 @@ pub enum SandboxPolicy {
         network_access: bool,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     ExternalSandbox {
         #[serde(default)]
         network_access: NetworkAccess,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     WorkspaceWrite {
         #[serde(default)]
         writable_roots: Vec<AbsolutePathBuf>,
@@ -1404,9 +1288,8 @@ impl From<codex_protocol::protocol::SandboxPolicy> for SandboxPolicy {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(transparent)]
-#[ts(type = "Array<string>", export_to = "v2/")]
 pub struct ExecPolicyAmendment {
     pub command: Vec<String>,
 }
@@ -1431,9 +1314,8 @@ v2_enum_from_core!(
     }
 );
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct NetworkPolicyAmendment {
     pub host: String,
     pub action: NetworkPolicyRuleAction,
@@ -1457,10 +1339,8 @@ impl From<CoreNetworkPolicyAmendment> for NetworkPolicyAmendment {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type")]
-#[ts(export_to = "v2/")]
 pub enum CommandAction {
     Read {
         command: String,
@@ -1481,14 +1361,12 @@ pub enum CommandAction {
     },
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase", export_to = "v2/")]
 #[derive(Default)]
 pub enum SessionSource {
     Cli,
     #[serde(rename = "vscode")]
-    #[ts(rename = "vscode")]
     #[default]
     VsCode,
     Exec,
@@ -1527,9 +1405,8 @@ impl From<SessionSource> for CoreSessionSource {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct GitInfo {
     pub sha: Option<String>,
     pub branch: Option<String>,
@@ -1578,43 +1455,32 @@ impl From<CoreParsedCommand> for CommandAction {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type")]
-#[ts(export_to = "v2/")]
 pub enum Account {
     #[serde(rename = "apiKey", rename_all = "camelCase")]
-    #[ts(rename = "apiKey", rename_all = "camelCase")]
     ApiKey {},
 
     #[serde(rename = "chatgpt", rename_all = "camelCase")]
-    #[ts(rename = "chatgpt", rename_all = "camelCase")]
     Chatgpt { email: String, plan_type: PlanType },
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, ExperimentalApi)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(tag = "type")]
-#[ts(tag = "type")]
-#[ts(export_to = "v2/")]
 pub enum LoginAccountParams {
     #[serde(rename = "apiKey", rename_all = "camelCase")]
-    #[ts(rename = "apiKey", rename_all = "camelCase")]
     ApiKey {
         #[serde(rename = "apiKey")]
-        #[ts(rename = "apiKey")]
         api_key: String,
     },
     #[serde(rename = "chatgpt")]
-    #[ts(rename = "chatgpt")]
     Chatgpt,
     #[serde(rename = "chatgptDeviceCode")]
-    #[ts(rename = "chatgptDeviceCode")]
     ChatgptDeviceCode,
     /// [UNSTABLE] FOR OPENAI INTERNAL USE ONLY - DO NOT USE.
     /// The access token must contain the same scopes that Codex-managed ChatGPT auth tokens have.
     #[experimental("account/login/start.chatgptAuthTokens")]
     #[serde(rename = "chatgptAuthTokens", rename_all = "camelCase")]
-    #[ts(rename = "chatgptAuthTokens", rename_all = "camelCase")]
     ChatgptAuthTokens {
         /// Access token (JWT) supplied by the client.
         /// This token is used for backend API requests and email extraction.
@@ -1625,21 +1491,16 @@ pub enum LoginAccountParams {
         ///
         /// When `null`, Codex attempts to derive the plan type from access-token
         /// claims. If unavailable, the plan defaults to `unknown`.
-        #[ts(optional = nullable)]
         chatgpt_plan_type: Option<String>,
     },
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type")]
-#[ts(export_to = "v2/")]
 pub enum LoginAccountResponse {
     #[serde(rename = "apiKey", rename_all = "camelCase")]
-    #[ts(rename = "apiKey", rename_all = "camelCase")]
     ApiKey {},
     #[serde(rename = "chatgpt", rename_all = "camelCase")]
-    #[ts(rename = "chatgpt", rename_all = "camelCase")]
     Chatgpt {
         // Use plain String for identifiers to avoid TS/JSON Schema quirks around uuid-specific types.
         // Convert to/from UUIDs at the application layer as needed.
@@ -1648,7 +1509,6 @@ pub enum LoginAccountResponse {
         auth_url: String,
     },
     #[serde(rename = "chatgptDeviceCode", rename_all = "camelCase")]
-    #[ts(rename = "chatgptDeviceCode", rename_all = "camelCase")]
     ChatgptDeviceCode {
         // Use plain String for identifiers to avoid TS/JSON Schema quirks around uuid-specific types.
         // Convert to/from UUIDs at the application layer as needed.
@@ -1659,49 +1519,41 @@ pub enum LoginAccountResponse {
         user_code: String,
     },
     #[serde(rename = "chatgptAuthTokens", rename_all = "camelCase")]
-    #[ts(rename = "chatgptAuthTokens", rename_all = "camelCase")]
     ChatgptAuthTokens {},
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CancelLoginAccountParams {
     pub login_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum CancelLoginAccountStatus {
     Canceled,
     NotFound,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CancelLoginAccountResponse {
     pub status: CancelLoginAccountStatus,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct LogoutAccountResponse {}
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum ChatgptAuthTokensRefreshReason {
     /// Codex attempted a backend request and received `401 Unauthorized`.
     Unauthorized,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ChatgptAuthTokensRefreshParams {
     pub reason: ChatgptAuthTokensRefreshReason,
     /// Workspace/account identifier that Codex was previously using.
@@ -1711,22 +1563,19 @@ pub struct ChatgptAuthTokensRefreshParams {
     ///
     /// This may be `null` when the prior auth state did not include a workspace
     /// identifier (`chatgpt_account_id`).
-    #[ts(optional = nullable)]
     pub previous_account_id: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ChatgptAuthTokensRefreshResponse {
     pub access_token: String,
     pub chatgpt_account_id: String,
     pub chatgpt_plan_type: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct GetAccountRateLimitsResponse {
     /// Backward-compatible single-bucket view; mirrors the historical payload.
     pub rate_limits: RateLimitSnapshot,
@@ -1734,9 +1583,8 @@ pub struct GetAccountRateLimitsResponse {
     pub rate_limits_by_limit_id: Option<HashMap<String, RateLimitSnapshot>>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct GetAccountParams {
     /// When `true`, requests a proactive token refresh before returning.
     ///
@@ -1747,32 +1595,26 @@ pub struct GetAccountParams {
     pub refresh_token: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct GetAccountResponse {
     pub account: Option<Account>,
     pub requires_openai_auth: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ModelListParams {
     /// Opaque pagination cursor returned by a previous call.
-    #[ts(optional = nullable)]
     pub cursor: Option<String>,
     /// Optional page size; defaults to a reasonable server-side value.
-    #[ts(optional = nullable)]
     pub limit: Option<u32>,
     /// When true, include models that are hidden from the default picker list.
-    #[ts(optional = nullable)]
     pub include_hidden: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ModelAvailabilityNux {
     pub message: String,
 }
@@ -1785,9 +1627,8 @@ impl From<CoreModelAvailabilityNux> for ModelAvailabilityNux {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct Model {
     pub id: String,
     pub model: String,
@@ -1809,9 +1650,8 @@ pub struct Model {
     pub is_default: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ModelUpgradeInfo {
     pub model: String,
     pub upgrade_copy: Option<String>,
@@ -1819,17 +1659,15 @@ pub struct ModelUpgradeInfo {
     pub migration_markdown: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ReasoningEffortOption {
     pub reasoning_effort: ReasoningEffort,
     pub description: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ModelListResponse {
     pub data: Vec<Model>,
     /// Opaque cursor to pass to the next call to continue after the last item.
@@ -1838,21 +1676,18 @@ pub struct ModelListResponse {
 }
 
 /// EXPERIMENTAL - list collaboration mode presets.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CollaborationModeListParams {}
 
 /// EXPERIMENTAL - collaboration mode preset metadata for clients.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CollaborationModeMask {
     pub name: String,
     pub mode: Option<ModeKind>,
     pub model: Option<String>,
     #[serde(rename = "reasoning_effort")]
-    #[ts(rename = "reasoning_effort")]
     pub reasoning_effort: Option<Option<ReasoningEffort>>,
 }
 
@@ -1868,28 +1703,23 @@ impl From<CoreCollaborationModeMask> for CollaborationModeMask {
 }
 
 /// EXPERIMENTAL - collaboration mode presets response.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CollaborationModeListResponse {
     pub data: Vec<CollaborationModeMask>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ExperimentalFeatureListParams {
     /// Opaque pagination cursor returned by a previous call.
-    #[ts(optional = nullable)]
     pub cursor: Option<String>,
     /// Optional page size; defaults to a reasonable server-side value.
-    #[ts(optional = nullable)]
     pub limit: Option<u32>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum ExperimentalFeatureStage {
     /// Feature is available for user testing and feedback.
     Beta,
@@ -1903,9 +1733,8 @@ pub enum ExperimentalFeatureStage {
     Removed,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ExperimentalFeature {
     /// Stable key used in config.toml and CLI flag toggles.
     pub name: String,
@@ -1926,9 +1755,8 @@ pub struct ExperimentalFeature {
     pub default_enabled: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ExperimentalFeatureListResponse {
     pub data: Vec<ExperimentalFeature>,
     /// Opaque cursor to pass to the next call to continue after the last item.
@@ -1936,9 +1764,8 @@ pub struct ExperimentalFeatureListResponse {
     pub next_cursor: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Default, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Default, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ExperimentalFeatureEnablementSetParams {
     /// Process-wide runtime feature enablement keyed by canonical feature name.
     ///
@@ -1947,41 +1774,34 @@ pub struct ExperimentalFeatureEnablementSetParams {
     pub enablement: std::collections::BTreeMap<String, bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ExperimentalFeatureEnablementSetResponse {
     /// Feature enablement entries updated by this request.
     pub enablement: std::collections::BTreeMap<String, bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ListMcpServerStatusParams {
     /// Opaque pagination cursor returned by a previous call.
-    #[ts(optional = nullable)]
     pub cursor: Option<String>,
     /// Optional page size; defaults to a server-defined value.
-    #[ts(optional = nullable)]
     pub limit: Option<u32>,
     /// Controls how much MCP inventory data to fetch for each server.
     /// Defaults to `Full` when omitted.
-    #[ts(optional = nullable)]
     pub detail: Option<McpServerStatusDetail>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase", export_to = "v2/")]
 pub enum McpServerStatusDetail {
     Full,
     ToolsAndAuthOnly,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpServerStatus {
     pub name: String,
     pub tools: std::collections::HashMap<String, McpTool>,
@@ -1990,9 +1810,8 @@ pub struct McpServerStatus {
     pub auth_status: McpAuthStatus,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ListMcpServerStatusResponse {
     pub data: Vec<McpServerStatus>,
     /// Opaque cursor to pass to the next call to continue after the last item.
@@ -2000,44 +1819,37 @@ pub struct ListMcpServerStatusResponse {
     pub next_cursor: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpResourceReadParams {
     pub thread_id: String,
     pub server: String,
     pub uri: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpResourceReadResponse {
     pub contents: Vec<McpResourceContent>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// EXPERIMENTAL - list available apps/connectors.
 pub struct AppsListParams {
     /// Opaque pagination cursor returned by a previous call.
-    #[ts(optional = nullable)]
     pub cursor: Option<String>,
     /// Optional page size; defaults to a reasonable server-side value.
-    #[ts(optional = nullable)]
     pub limit: Option<u32>,
     /// Optional thread id used to evaluate app feature gating from that thread's config.
-    #[ts(optional = nullable)]
     pub thread_id: Option<String>,
     /// When true, bypass app caches and fetch the latest data from sources.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub force_refetch: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// EXPERIMENTAL - app metadata returned by app-list APIs.
 pub struct AppBranding {
     pub category: Option<String>,
@@ -2048,16 +1860,14 @@ pub struct AppBranding {
     pub is_discoverable_app: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct AppReview {
     pub status: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct AppScreenshot {
     pub url: Option<String>,
     #[serde(alias = "file_id")]
@@ -2066,9 +1876,8 @@ pub struct AppScreenshot {
     pub user_prompt: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct AppMetadata {
     pub review: Option<AppReview>,
     pub categories: Option<Vec<String>>,
@@ -2084,9 +1893,8 @@ pub struct AppMetadata {
     pub show_in_composer_when_unlinked: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// EXPERIMENTAL - app metadata returned by app-list APIs.
 pub struct AppInfo {
     pub id: String,
@@ -2113,9 +1921,8 @@ pub struct AppInfo {
     pub plugin_display_names: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// EXPERIMENTAL - app metadata summary for plugin responses.
 pub struct AppSummary {
     pub id: String,
@@ -2137,9 +1944,8 @@ impl From<AppInfo> for AppSummary {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// EXPERIMENTAL - app list response.
 pub struct AppsListResponse {
     pub data: Vec<AppInfo>,
@@ -2148,87 +1954,72 @@ pub struct AppsListResponse {
     pub next_cursor: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// EXPERIMENTAL - notification emitted when the app list changes.
 pub struct AppListUpdatedNotification {
     pub data: Vec<AppInfo>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpServerRefreshParams {}
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpServerRefreshResponse {}
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpServerOauthLoginParams {
     pub name: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional = nullable)]
     pub scopes: Option<Vec<String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional = nullable)]
     pub timeout_secs: Option<i64>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpServerOauthLoginResponse {
     pub authorization_url: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FeedbackUploadParams {
     pub classification: String,
-    #[ts(optional = nullable)]
     pub reason: Option<String>,
-    #[ts(optional = nullable)]
     pub thread_id: Option<String>,
     pub include_logs: bool,
-    #[ts(optional = nullable)]
     pub extra_log_files: Option<Vec<PathBuf>>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FeedbackUploadResponse {
     pub thread_id: String,
 }
 
 /// Read a file from the host filesystem.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsReadFileParams {
     /// Absolute path to read.
     pub path: AbsolutePathBuf,
 }
 
 /// Base64-encoded file contents returned by `fs/readFile`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsReadFileResponse {
     /// File contents encoded as base64.
     pub data_base64: String,
 }
 
 /// Write a file on the host filesystem.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsWriteFileParams {
     /// Absolute path to write.
     pub path: AbsolutePathBuf,
@@ -2237,68 +2028,58 @@ pub struct FsWriteFileParams {
 }
 
 /// Successful response for `fs/writeFile`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsWriteFileResponse {}
 
 /// Create a directory on the host filesystem.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsCreateDirectoryParams {
     /// Absolute directory path to create.
     pub path: AbsolutePathBuf,
     /// Whether parent directories should also be created. Defaults to `true`.
-    #[ts(optional = nullable)]
     pub recursive: Option<bool>,
 }
 
 /// Successful response for `fs/createDirectory`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsCreateDirectoryResponse {}
 
 /// Request metadata for an absolute path.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsGetMetadataParams {
     /// Absolute path to inspect.
     pub path: AbsolutePathBuf,
 }
 
 /// Metadata returned by `fs/getMetadata`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsGetMetadataResponse {
     /// Whether the path currently resolves to a directory.
     pub is_directory: bool,
     /// Whether the path currently resolves to a regular file.
     pub is_file: bool,
     /// File creation time in Unix milliseconds when available, otherwise `0`.
-    #[ts(type = "number")]
     pub created_at_ms: i64,
     /// File modification time in Unix milliseconds when available, otherwise `0`.
-    #[ts(type = "number")]
     pub modified_at_ms: i64,
 }
 
 /// List direct child names for a directory.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsReadDirectoryParams {
     /// Absolute directory path to read.
     pub path: AbsolutePathBuf,
 }
 
 /// A directory entry returned by `fs/readDirectory`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsReadDirectoryEntry {
     /// Direct child entry name only, not an absolute or relative path.
     pub file_name: String,
@@ -2309,39 +2090,33 @@ pub struct FsReadDirectoryEntry {
 }
 
 /// Directory entries returned by `fs/readDirectory`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsReadDirectoryResponse {
     /// Direct child entries in the requested directory.
     pub entries: Vec<FsReadDirectoryEntry>,
 }
 
 /// Remove a file or directory tree from the host filesystem.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsRemoveParams {
     /// Absolute path to remove.
     pub path: AbsolutePathBuf,
     /// Whether directory removal should recurse. Defaults to `true`.
-    #[ts(optional = nullable)]
     pub recursive: Option<bool>,
     /// Whether missing paths should be ignored. Defaults to `true`.
-    #[ts(optional = nullable)]
     pub force: Option<bool>,
 }
 
 /// Successful response for `fs/remove`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsRemoveResponse {}
 
 /// Copy a file or directory tree on the host filesystem.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsCopyParams {
     /// Absolute source path.
     pub source_path: AbsolutePathBuf,
@@ -2353,15 +2128,13 @@ pub struct FsCopyParams {
 }
 
 /// Successful response for `fs/copy`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsCopyResponse {}
 
 /// Start filesystem watch notifications for an absolute path.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsWatchParams {
     /// Connection-scoped watch identifier used for `fs/unwatch` and `fs/changed`.
     pub watch_id: String,
@@ -2370,33 +2143,29 @@ pub struct FsWatchParams {
 }
 
 /// Successful response for `fs/watch`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsWatchResponse {
     /// Canonicalized path associated with the watch.
     pub path: AbsolutePathBuf,
 }
 
 /// Stop filesystem watch notifications for a prior `fs/watch`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsUnwatchParams {
     /// Watch identifier previously provided to `fs/watch`.
     pub watch_id: String,
 }
 
 /// Successful response for `fs/unwatch`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsUnwatchResponse {}
 
 /// Filesystem watch notification emitted for `fs/watch` subscribers.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FsChangedNotification {
     /// Watch identifier previously provided to `fs/watch`.
     pub watch_id: String,
@@ -2405,9 +2174,8 @@ pub struct FsChangedNotification {
 }
 
 /// PTY size in character cells for `command/exec` PTY sessions.
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CommandExecTerminalSize {
     /// Terminal height in character cells.
     pub rows: u16,
@@ -2421,9 +2189,8 @@ pub struct CommandExecTerminalSize {
 /// The final `command/exec` response is deferred until the process exits and is
 /// sent only after all `command/exec/outputDelta` notifications for that
 /// connection have been emitted.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CommandExecParams {
     /// Command argv vector. Empty arrays are rejected.
     pub command: Vec<String>,
@@ -2433,7 +2200,6 @@ pub struct CommandExecParams {
     /// `command/exec/write`, `command/exec/resize`, and
     /// `command/exec/terminate` calls. When omitted, buffered execution gets an
     /// internal id that is not exposed to the client.
-    #[ts(optional = nullable)]
     pub process_id: Option<String>,
     /// Enable PTY mode.
     ///
@@ -2455,8 +2221,6 @@ pub struct CommandExecParams {
     ///
     /// When omitted, the server default applies. Cannot be combined with
     /// `disableOutputCap`.
-    #[ts(type = "number | null")]
-    #[ts(optional = nullable)]
     pub output_bytes_cap: Option<usize>,
     /// Disable stdout/stderr capture truncation for this request.
     ///
@@ -2472,35 +2236,28 @@ pub struct CommandExecParams {
     ///
     /// When omitted, the server default applies. Cannot be combined with
     /// `disableTimeout`.
-    #[ts(type = "number | null")]
-    #[ts(optional = nullable)]
     pub timeout_ms: Option<i64>,
     /// Optional working directory. Defaults to the server cwd.
-    #[ts(optional = nullable)]
     pub cwd: Option<PathBuf>,
     /// Optional environment overrides merged into the server-computed
     /// environment.
     ///
     /// Matching names override inherited values. Set a key to `null` to unset
     /// an inherited variable.
-    #[ts(optional = nullable)]
     pub env: Option<HashMap<String, Option<String>>>,
     /// Optional initial PTY size in character cells. Only valid when `tty` is
     /// true.
-    #[ts(optional = nullable)]
     pub size: Option<CommandExecTerminalSize>,
     /// Optional sandbox policy for this command.
     ///
     /// Uses the same shape as thread/turn execution sandbox configuration and
     /// defaults to the user's configured policy when omitted.
-    #[ts(optional = nullable)]
     pub sandbox_policy: Option<SandboxPolicy>,
 }
 
 /// Final buffered result for `command/exec`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CommandExecResponse {
     /// Process exit code.
     pub exit_code: i32,
@@ -2516,15 +2273,13 @@ pub struct CommandExecResponse {
 
 /// Write stdin bytes to a running `command/exec` session, close stdin, or
 /// both.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CommandExecWriteParams {
     /// Client-supplied, connection-scoped `processId` from the original
     /// `command/exec` request.
     pub process_id: String,
     /// Optional base64-encoded stdin bytes to write.
-    #[ts(optional = nullable)]
     pub delta_base64: Option<String>,
     /// Close stdin after writing `deltaBase64`, if present.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
@@ -2532,15 +2287,13 @@ pub struct CommandExecWriteParams {
 }
 
 /// Empty success response for `command/exec/write`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CommandExecWriteResponse {}
 
 /// Terminate a running `command/exec` session.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CommandExecTerminateParams {
     /// Client-supplied, connection-scoped `processId` from the original
     /// `command/exec` request.
@@ -2548,15 +2301,13 @@ pub struct CommandExecTerminateParams {
 }
 
 /// Empty success response for `command/exec/terminate`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CommandExecTerminateResponse {}
 
 /// Resize a running PTY-backed `command/exec` session.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CommandExecResizeParams {
     /// Client-supplied, connection-scoped `processId` from the original
     /// `command/exec` request.
@@ -2566,15 +2317,13 @@ pub struct CommandExecResizeParams {
 }
 
 /// Empty success response for `command/exec/resize`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CommandExecResizeResponse {}
 
 /// Stream label for `command/exec/outputDelta` notifications.
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum CommandExecOutputStream {
     /// stdout stream. PTY mode multiplexes terminal output here.
     Stdout,
@@ -2584,15 +2333,10 @@ pub enum CommandExecOutputStream {
 
 // === Threads, Turns, and Items ===
 // Thread APIs
-#[derive(
-    Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema, TS, ExperimentalApi,
-)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadStartParams {
-    #[ts(optional = nullable)]
     pub model: Option<String>,
-    #[ts(optional = nullable)]
     pub model_provider: Option<String>,
     #[serde(
         default,
@@ -2600,40 +2344,26 @@ pub struct ThreadStartParams {
         serialize_with = "super::serde_helpers::serialize_double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    #[ts(optional = nullable)]
     pub service_tier: Option<Option<ServiceTier>>,
-    #[ts(optional = nullable)]
     pub cwd: Option<String>,
     #[experimental(nested)]
-    #[ts(optional = nullable)]
     pub approval_policy: Option<AskForApproval>,
     /// Override where approval requests are routed for review on this thread
     /// and subsequent turns.
-    #[ts(optional = nullable)]
     pub approvals_reviewer: Option<ApprovalsReviewer>,
-    #[ts(optional = nullable)]
     pub sandbox: Option<SandboxMode>,
-    #[ts(optional = nullable)]
     pub config: Option<HashMap<String, JsonValue>>,
-    #[ts(optional = nullable)]
     pub service_name: Option<String>,
-    #[ts(optional = nullable)]
     pub base_instructions: Option<String>,
-    #[ts(optional = nullable)]
     pub developer_instructions: Option<String>,
-    #[ts(optional = nullable)]
     pub personality: Option<Personality>,
-    #[ts(optional = nullable)]
     pub ephemeral: Option<bool>,
-    #[ts(optional = nullable)]
     pub session_start_source: Option<ThreadStartSource>,
     #[experimental("thread/start.dynamicTools")]
-    #[ts(optional = nullable)]
     pub dynamic_tools: Option<Vec<DynamicToolSpec>>,
     /// Test-only experimental field used to validate experimental gating and
     /// schema filtering behavior in a stable way.
     #[experimental("thread/start.mockExperimentalField")]
-    #[ts(optional = nullable)]
     pub mock_experimental_field: Option<String>,
     /// If true, opt into emitting raw Responses API items on the event stream.
     /// This is for internal use only (e.g. Codex Cloud).
@@ -2647,26 +2377,22 @@ pub struct ThreadStartParams {
     pub persist_extended_history: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct MockExperimentalMethodParams {
     /// Test-only payload field.
-    #[ts(optional = nullable)]
     pub value: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct MockExperimentalMethodResponse {
     /// Echoes the input `value`.
     pub echoed: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, ExperimentalApi)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadStartResponse {
     pub thread: Thread,
     pub model: String,
@@ -2681,11 +2407,8 @@ pub struct ThreadStartResponse {
     pub reasoning_effort: Option<ReasoningEffort>,
 }
 
-#[derive(
-    Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS, ExperimentalApi,
-)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// There are three ways to resume a thread:
 /// 1. By thread_id: load the thread from disk by thread_id and resume it.
 /// 2. By history: instantiate the thread from memory and resume it.
@@ -2702,19 +2425,15 @@ pub struct ThreadResumeParams {
     /// If specified, the thread will be resumed with the provided history
     /// instead of loaded from disk.
     #[experimental("thread/resume.history")]
-    #[ts(optional = nullable)]
     pub history: Option<Vec<ResponseItem>>,
 
     /// [UNSTABLE] Specify the rollout path to resume from.
     /// If specified, the thread_id param will be ignored.
     #[experimental("thread/resume.path")]
-    #[ts(optional = nullable)]
     pub path: Option<PathBuf>,
 
     /// Configuration overrides for the resumed thread, if any.
-    #[ts(optional = nullable)]
     pub model: Option<String>,
-    #[ts(optional = nullable)]
     pub model_provider: Option<String>,
     #[serde(
         default,
@@ -2722,26 +2441,17 @@ pub struct ThreadResumeParams {
         serialize_with = "super::serde_helpers::serialize_double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    #[ts(optional = nullable)]
     pub service_tier: Option<Option<ServiceTier>>,
-    #[ts(optional = nullable)]
     pub cwd: Option<String>,
     #[experimental(nested)]
-    #[ts(optional = nullable)]
     pub approval_policy: Option<AskForApproval>,
     /// Override where approval requests are routed for review on this thread
     /// and subsequent turns.
-    #[ts(optional = nullable)]
     pub approvals_reviewer: Option<ApprovalsReviewer>,
-    #[ts(optional = nullable)]
     pub sandbox: Option<SandboxMode>,
-    #[ts(optional = nullable)]
     pub config: Option<HashMap<String, serde_json::Value>>,
-    #[ts(optional = nullable)]
     pub base_instructions: Option<String>,
-    #[ts(optional = nullable)]
     pub developer_instructions: Option<String>,
-    #[ts(optional = nullable)]
     pub personality: Option<Personality>,
     /// If true, persist additional rollout EventMsg variants required to
     /// reconstruct a richer thread history on subsequent resume/fork/read.
@@ -2750,9 +2460,8 @@ pub struct ThreadResumeParams {
     pub persist_extended_history: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, ExperimentalApi)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadResumeResponse {
     pub thread: Thread,
     pub model: String,
@@ -2767,11 +2476,8 @@ pub struct ThreadResumeResponse {
     pub reasoning_effort: Option<ReasoningEffort>,
 }
 
-#[derive(
-    Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS, ExperimentalApi,
-)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// There are two ways to fork a thread:
 /// 1. By thread_id: load the thread from disk by thread_id and fork it into a new thread.
 /// 2. By path: load the thread from disk by path and fork it into a new thread.
@@ -2785,13 +2491,10 @@ pub struct ThreadForkParams {
     /// [UNSTABLE] Specify the rollout path to fork from.
     /// If specified, the thread_id param will be ignored.
     #[experimental("thread/fork.path")]
-    #[ts(optional = nullable)]
     pub path: Option<PathBuf>,
 
     /// Configuration overrides for the forked thread, if any.
-    #[ts(optional = nullable)]
     pub model: Option<String>,
-    #[ts(optional = nullable)]
     pub model_provider: Option<String>,
     #[serde(
         default,
@@ -2799,24 +2502,16 @@ pub struct ThreadForkParams {
         serialize_with = "super::serde_helpers::serialize_double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    #[ts(optional = nullable)]
     pub service_tier: Option<Option<ServiceTier>>,
-    #[ts(optional = nullable)]
     pub cwd: Option<String>,
     #[experimental(nested)]
-    #[ts(optional = nullable)]
     pub approval_policy: Option<AskForApproval>,
     /// Override where approval requests are routed for review on this thread
     /// and subsequent turns.
-    #[ts(optional = nullable)]
     pub approvals_reviewer: Option<ApprovalsReviewer>,
-    #[ts(optional = nullable)]
     pub sandbox: Option<SandboxMode>,
-    #[ts(optional = nullable)]
     pub config: Option<HashMap<String, serde_json::Value>>,
-    #[ts(optional = nullable)]
     pub base_instructions: Option<String>,
-    #[ts(optional = nullable)]
     pub developer_instructions: Option<String>,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub ephemeral: bool,
@@ -2827,9 +2522,8 @@ pub struct ThreadForkParams {
     pub persist_extended_history: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, ExperimentalApi)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadForkResponse {
     pub thread: Thread,
     pub model: String,
@@ -2844,35 +2538,30 @@ pub struct ThreadForkResponse {
     pub reasoning_effort: Option<ReasoningEffort>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadArchiveParams {
     pub thread_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadArchiveResponse {}
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadUnsubscribeParams {
     pub thread_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadUnsubscribeResponse {
     pub status: ThreadUnsubscribeStatus,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum ThreadUnsubscribeStatus {
     NotLoaded,
     NotSubscribed,
@@ -2880,18 +2569,16 @@ pub enum ThreadUnsubscribeStatus {
 }
 
 /// Parameters for `thread/increment_elicitation`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadIncrementElicitationParams {
     /// Thread whose out-of-band elicitation counter should be incremented.
     pub thread_id: String,
 }
 
 /// Response for `thread/increment_elicitation`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadIncrementElicitationResponse {
     /// Current out-of-band elicitation count after the increment.
     pub count: u64,
@@ -2900,18 +2587,16 @@ pub struct ThreadIncrementElicitationResponse {
 }
 
 /// Parameters for `thread/decrement_elicitation`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadDecrementElicitationParams {
     /// Thread whose out-of-band elicitation counter should be decremented.
     pub thread_id: String,
 }
 
 /// Response for `thread/decrement_elicitation`.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadDecrementElicitationResponse {
     /// Current out-of-band elicitation count after the decrement.
     pub count: u64,
@@ -2919,41 +2604,35 @@ pub struct ThreadDecrementElicitationResponse {
     pub paused: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadSetNameParams {
     pub thread_id: String,
     pub name: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadUnarchiveParams {
     pub thread_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadSetNameResponse {}
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadMetadataUpdateParams {
     pub thread_id: String,
     /// Patch the stored Git metadata for this thread.
     /// Omit a field to leave it unchanged, set it to `null` to clear it, or
     /// provide a string to replace the stored value.
-    #[ts(optional = nullable)]
     pub git_info: Option<ThreadMetadataGitInfoUpdateParams>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadMetadataGitInfoUpdateParams {
     /// Omit to leave the stored commit unchanged, set to `null` to clear it,
     /// or provide a non-empty string to replace it.
@@ -2963,7 +2642,6 @@ pub struct ThreadMetadataGitInfoUpdateParams {
         serialize_with = "super::serde_helpers::serialize_double_option",
         deserialize_with = "super::serde_helpers::deserialize_double_option"
     )]
-    #[ts(optional = nullable, type = "string | null")]
     pub sha: Option<Option<String>>,
     /// Omit to leave the stored branch unchanged, set to `null` to clear it,
     /// or provide a non-empty string to replace it.
@@ -2973,7 +2651,6 @@ pub struct ThreadMetadataGitInfoUpdateParams {
         serialize_with = "super::serde_helpers::serialize_double_option",
         deserialize_with = "super::serde_helpers::deserialize_double_option"
     )]
-    #[ts(optional = nullable, type = "string | null")]
     pub branch: Option<Option<String>>,
     /// Omit to leave the stored origin URL unchanged, set to `null` to clear it,
     /// or provide a non-empty string to replace it.
@@ -2983,39 +2660,33 @@ pub struct ThreadMetadataGitInfoUpdateParams {
         serialize_with = "super::serde_helpers::serialize_double_option",
         deserialize_with = "super::serde_helpers::deserialize_double_option"
     )]
-    #[ts(optional = nullable, type = "string | null")]
     pub origin_url: Option<Option<String>>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadMetadataUpdateResponse {
     pub thread: Thread,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadUnarchiveResponse {
     pub thread: Thread,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadCompactStartParams {
     pub thread_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadCompactStartResponse {}
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadShellCommandParams {
     pub thread_id: String,
     /// Shell command string evaluated by the thread's configured shell.
@@ -3025,26 +2696,22 @@ pub struct ThreadShellCommandParams {
     pub command: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadShellCommandResponse {}
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadBackgroundTerminalsCleanParams {
     pub thread_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadBackgroundTerminalsCleanResponse {}
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRollbackParams {
     pub thread_id: String,
     /// The number of turns to drop from the end of the thread. Must be >= 1.
@@ -3054,9 +2721,8 @@ pub struct ThreadRollbackParams {
     pub num_turns: u32,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRollbackResponse {
     /// The updated thread after applying the rollback, with `turns` populated.
     ///
@@ -3066,47 +2732,36 @@ pub struct ThreadRollbackResponse {
     pub thread: Thread,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadListParams {
     /// Opaque pagination cursor returned by a previous call.
-    #[ts(optional = nullable)]
     pub cursor: Option<String>,
     /// Optional page size; defaults to a reasonable server-side value.
-    #[ts(optional = nullable)]
     pub limit: Option<u32>,
     /// Optional sort key; defaults to created_at.
-    #[ts(optional = nullable)]
     pub sort_key: Option<ThreadSortKey>,
     /// Optional provider filter; when set, only sessions recorded under these
     /// providers are returned. When present but empty, includes all providers.
-    #[ts(optional = nullable)]
     pub model_providers: Option<Vec<String>>,
     /// Optional source filter; when set, only sessions from these source kinds
     /// are returned. When omitted or empty, defaults to interactive sources.
-    #[ts(optional = nullable)]
     pub source_kinds: Option<Vec<ThreadSourceKind>>,
     /// Optional archived filter; when set to true, only archived threads are returned.
     /// If false or null, only non-archived threads are returned.
-    #[ts(optional = nullable)]
     pub archived: Option<bool>,
     /// Optional cwd filter; when set, only threads whose session cwd exactly
     /// matches this path are returned.
-    #[ts(optional = nullable)]
     pub cwd: Option<String>,
     /// Optional substring filter for the extracted thread title.
-    #[ts(optional = nullable)]
     pub search_term: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase", export_to = "v2/")]
 pub enum ThreadSourceKind {
     Cli,
     #[serde(rename = "vscode")]
-    #[ts(rename = "vscode")]
     VsCode,
     Exec,
     AppServer,
@@ -3118,17 +2773,15 @@ pub enum ThreadSourceKind {
     Unknown,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-#[ts(export_to = "v2/")]
 pub enum ThreadSortKey {
     CreatedAt,
     UpdatedAt,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadListResponse {
     pub data: Vec<Thread>,
     /// Opaque cursor to pass to the next call to continue after the last item.
@@ -3136,21 +2789,17 @@ pub struct ThreadListResponse {
     pub next_cursor: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadLoadedListParams {
     /// Opaque pagination cursor returned by a previous call.
-    #[ts(optional = nullable)]
     pub cursor: Option<String>,
     /// Optional page size; defaults to no limit.
-    #[ts(optional = nullable)]
     pub limit: Option<u32>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadLoadedListResponse {
     /// Thread ids for sessions currently loaded in memory.
     pub data: Vec<String>,
@@ -3159,32 +2808,27 @@ pub struct ThreadLoadedListResponse {
     pub next_cursor: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type")]
-#[ts(export_to = "v2/")]
 pub enum ThreadStatus {
     NotLoaded,
     Idle,
     SystemError,
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     Active {
         active_flags: Vec<ThreadActiveFlag>,
     },
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum ThreadActiveFlag {
     WaitingOnApproval,
     WaitingOnUserInput,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadReadParams {
     pub thread_id: String,
     /// When true, include turns and their items from rollout history.
@@ -3192,16 +2836,14 @@ pub struct ThreadReadParams {
     pub include_turns: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadReadResponse {
     pub thread: Thread,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct SkillsListParams {
     /// When empty, defaults to the current session working directory.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -3213,32 +2855,27 @@ pub struct SkillsListParams {
 
     /// Optional per-cwd extra roots to scan as user-scoped skills.
     #[serde(default)]
-    #[ts(optional = nullable)]
     pub per_cwd_extra_user_roots: Option<Vec<SkillsListExtraRootsForCwd>>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct SkillsListExtraRootsForCwd {
     pub cwd: PathBuf,
     pub extra_user_roots: Vec<PathBuf>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct SkillsListResponse {
     pub data: Vec<SkillsListEntry>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PluginListParams {
     /// Optional working directories used to discover repo marketplaces. When omitted,
     /// only home-scoped marketplaces and the official curated marketplace are considered.
-    #[ts(optional = nullable)]
     pub cwds: Option<Vec<AbsolutePathBuf>>,
     /// When true, reconcile the official curated marketplace against the remote plugin state
     /// before listing marketplaces.
@@ -3246,9 +2883,8 @@ pub struct PluginListParams {
     pub force_remote_sync: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PluginListResponse {
     pub marketplaces: Vec<PluginMarketplaceEntry>,
     #[serde(default)]
@@ -3258,33 +2894,28 @@ pub struct PluginListResponse {
     pub featured_plugin_ids: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct MarketplaceLoadErrorInfo {
     pub marketplace_path: AbsolutePathBuf,
     pub message: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PluginReadParams {
     pub marketplace_path: AbsolutePathBuf,
     pub plugin_name: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PluginReadResponse {
     pub plugin: PluginDetail,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-#[ts(rename_all = "snake_case")]
-#[ts(export_to = "v2/")]
 pub enum SkillScope {
     User,
     Repo,
@@ -3292,94 +2923,73 @@ pub enum SkillScope {
     Admin,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct SkillMetadata {
     pub name: String,
     pub description: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     /// Legacy short_description from SKILL.md. Prefer SKILL.json interface.short_description.
     pub short_description: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub interface: Option<SkillInterface>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub dependencies: Option<SkillDependencies>,
     pub path: PathBuf,
     pub scope: SkillScope,
     pub enabled: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct SkillInterface {
-    #[ts(optional)]
     pub display_name: Option<String>,
-    #[ts(optional)]
     pub short_description: Option<String>,
-    #[ts(optional)]
     pub icon_small: Option<PathBuf>,
-    #[ts(optional)]
     pub icon_large: Option<PathBuf>,
-    #[ts(optional)]
     pub brand_color: Option<String>,
-    #[ts(optional)]
     pub default_prompt: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct SkillDependencies {
     pub tools: Vec<SkillToolDependency>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct SkillToolDependency {
     #[serde(rename = "type")]
-    #[ts(rename = "type")]
     pub r#type: String,
     pub value: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub description: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub transport: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub command: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub url: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct SkillErrorInfo {
     pub path: PathBuf,
     pub message: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct SkillsListEntry {
     pub cwd: PathBuf,
     pub skills: Vec<SkillMetadata>,
     pub errors: Vec<SkillErrorInfo>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PluginMarketplaceEntry {
     pub name: String,
     pub path: AbsolutePathBuf,
@@ -3387,41 +2997,32 @@ pub struct PluginMarketplaceEntry {
     pub plugins: Vec<PluginSummary>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct MarketplaceInterface {
     pub display_name: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
-#[ts(export_to = "v2/")]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 pub enum PluginInstallPolicy {
     #[serde(rename = "NOT_AVAILABLE")]
-    #[ts(rename = "NOT_AVAILABLE")]
     NotAvailable,
     #[serde(rename = "AVAILABLE")]
-    #[ts(rename = "AVAILABLE")]
     Available,
     #[serde(rename = "INSTALLED_BY_DEFAULT")]
-    #[ts(rename = "INSTALLED_BY_DEFAULT")]
     InstalledByDefault,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
-#[ts(export_to = "v2/")]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 pub enum PluginAuthPolicy {
     #[serde(rename = "ON_INSTALL")]
-    #[ts(rename = "ON_INSTALL")]
     OnInstall,
     #[serde(rename = "ON_USE")]
-    #[ts(rename = "ON_USE")]
     OnUse,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PluginSummary {
     pub id: String,
     pub name: String,
@@ -3433,9 +3034,8 @@ pub struct PluginSummary {
     pub interface: Option<PluginInterface>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PluginDetail {
     pub marketplace_name: String,
     pub marketplace_path: AbsolutePathBuf,
@@ -3446,9 +3046,8 @@ pub struct PluginDetail {
     pub mcp_servers: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct SkillSummary {
     pub name: String,
     pub description: String,
@@ -3458,9 +3057,8 @@ pub struct SkillSummary {
     pub enabled: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PluginInterface {
     pub display_name: Option<String>,
     pub short_description: Option<String>,
@@ -3480,39 +3078,31 @@ pub struct PluginInterface {
     pub screenshots: Vec<AbsolutePathBuf>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type")]
-#[ts(export_to = "v2/")]
 pub enum PluginSource {
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     Local { path: AbsolutePathBuf },
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct SkillsConfigWriteParams {
     /// Path-based selector.
-    #[ts(optional = nullable)]
     pub path: Option<AbsolutePathBuf>,
     /// Name-based selector.
-    #[ts(optional = nullable)]
     pub name: Option<String>,
     pub enabled: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct SkillsConfigWriteResponse {
     pub effective_enabled: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PluginInstallParams {
     pub marketplace_path: AbsolutePathBuf,
     pub plugin_name: String,
@@ -3521,17 +3111,15 @@ pub struct PluginInstallParams {
     pub force_remote_sync: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PluginInstallResponse {
     pub auth_policy: PluginAuthPolicy,
     pub apps_needing_auth: Vec<AppSummary>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PluginUninstallParams {
     pub plugin_id: String,
     /// When true, apply the remote plugin change before the local uninstall flow.
@@ -3539,9 +3127,8 @@ pub struct PluginUninstallParams {
     pub force_remote_sync: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PluginUninstallResponse {}
 
 impl From<CoreSkillMetadata> for SkillMetadata {
@@ -3617,9 +3204,8 @@ impl From<CoreSkillErrorInfo> for SkillErrorInfo {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct Thread {
     pub id: String,
     /// Source thread id when this thread was created by forking another thread.
@@ -3631,10 +3217,8 @@ pub struct Thread {
     /// Model provider used for this thread (for example, 'openai').
     pub model_provider: String,
     /// Unix timestamp (in seconds) when the thread was created.
-    #[ts(type = "number")]
     pub created_at: i64,
     /// Unix timestamp (in seconds) when the thread was last updated.
-    #[ts(type = "number")]
     pub updated_at: i64,
     /// Current runtime status for the thread.
     pub status: ThreadStatus,
@@ -3661,31 +3245,27 @@ pub struct Thread {
     pub turns: Vec<Turn>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct AccountUpdatedNotification {
     pub auth_mode: Option<AuthMode>,
     pub plan_type: Option<PlanType>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadTokenUsageUpdatedNotification {
     pub thread_id: String,
     pub turn_id: String,
     pub token_usage: ThreadTokenUsage,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadTokenUsage {
     pub total: TokenUsageBreakdown,
     pub last: TokenUsageBreakdown,
     // TODO(aibrahim): make this not optional
-    #[ts(type = "number | null")]
     pub model_context_window: Option<i64>,
 }
 
@@ -3699,19 +3279,13 @@ impl From<CoreTokenUsageInfo> for ThreadTokenUsage {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TokenUsageBreakdown {
-    #[ts(type = "number")]
     pub total_tokens: i64,
-    #[ts(type = "number")]
     pub input_tokens: i64,
-    #[ts(type = "number")]
     pub cached_input_tokens: i64,
-    #[ts(type = "number")]
     pub output_tokens: i64,
-    #[ts(type = "number")]
     pub reasoning_output_tokens: i64,
 }
 
@@ -3727,9 +3301,8 @@ impl From<CoreTokenUsage> for TokenUsageBreakdown {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct Turn {
     pub id: String,
     /// Only populated on a `thread/resume` or `thread/fork` response.
@@ -3740,19 +3313,15 @@ pub struct Turn {
     /// Only populated when the Turn's status is failed.
     pub error: Option<TurnError>,
     /// Unix timestamp (in seconds) when the turn started.
-    #[ts(type = "number | null")]
     pub started_at: Option<i64>,
     /// Unix timestamp (in seconds) when the turn completed.
-    #[ts(type = "number | null")]
     pub completed_at: Option<i64>,
     /// Duration between turn start and completion in milliseconds, if known.
-    #[ts(type = "number | null")]
     pub duration_ms: Option<i64>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct MemoryCitation {
     pub entries: Vec<MemoryCitationEntry>,
     pub thread_ids: Vec<String>,
@@ -3767,9 +3336,8 @@ impl From<CoreMemoryCitation> for MemoryCitation {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct MemoryCitationEntry {
     pub path: String,
     pub line_start: u32,
@@ -3788,9 +3356,8 @@ impl From<CoreMemoryCitationEntry> for MemoryCitationEntry {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, Error)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, Error)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 #[error("{message}")]
 pub struct TurnError {
     pub message: String,
@@ -3799,9 +3366,8 @@ pub struct TurnError {
     pub additional_details: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ErrorNotification {
     pub error: TurnError,
     // Set to true if the error is transient and the app-server process will automatically retry.
@@ -3812,9 +3378,8 @@ pub struct ErrorNotification {
 }
 
 /// EXPERIMENTAL - thread realtime audio chunk.
-#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeAudioChunk {
     pub data: String,
     pub sample_rate: u32,
@@ -3862,9 +3427,8 @@ impl From<ThreadRealtimeAudioChunk> for CoreRealtimeAudioFrame {
 }
 
 /// EXPERIMENTAL - start a thread-scoped realtime session.
-#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeStartParams {
     pub thread_id: String,
     #[serde(
@@ -3873,20 +3437,15 @@ pub struct ThreadRealtimeStartParams {
         serialize_with = "super::serde_helpers::serialize_double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    #[ts(optional = nullable)]
     pub prompt: Option<Option<String>>,
-    #[ts(optional = nullable)]
     pub session_id: Option<String>,
-    #[ts(optional = nullable)]
     pub transport: Option<ThreadRealtimeStartTransport>,
-    #[ts(optional = nullable)]
     pub voice: Option<RealtimeVoice>,
 }
 
 /// EXPERIMENTAL - transport used by thread realtime.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(export_to = "v2/", tag = "type")]
 pub enum ThreadRealtimeStartTransport {
     Websocket,
     Webrtc {
@@ -3897,73 +3456,63 @@ pub enum ThreadRealtimeStartTransport {
 }
 
 /// EXPERIMENTAL - response for starting thread realtime.
-#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeStartResponse {}
 
 /// EXPERIMENTAL - append audio input to thread realtime.
-#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeAppendAudioParams {
     pub thread_id: String,
     pub audio: ThreadRealtimeAudioChunk,
 }
 
 /// EXPERIMENTAL - response for appending realtime audio input.
-#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeAppendAudioResponse {}
 
 /// EXPERIMENTAL - append text input to thread realtime.
-#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeAppendTextParams {
     pub thread_id: String,
     pub text: String,
 }
 
 /// EXPERIMENTAL - response for appending realtime text input.
-#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeAppendTextResponse {}
 
 /// EXPERIMENTAL - stop thread realtime.
-#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeStopParams {
     pub thread_id: String,
 }
 
 /// EXPERIMENTAL - response for stopping thread realtime.
-#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeStopResponse {}
 
 /// EXPERIMENTAL - list voices supported by thread realtime.
-#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeListVoicesParams {}
 
 /// EXPERIMENTAL - response for listing supported realtime voices.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeListVoicesResponse {
     pub voices: RealtimeVoicesList,
 }
 
 /// EXPERIMENTAL - emitted when thread realtime startup is accepted.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeStartedNotification {
     pub thread_id: String,
     pub session_id: Option<String>,
@@ -3971,9 +3520,8 @@ pub struct ThreadRealtimeStartedNotification {
 }
 
 /// EXPERIMENTAL - raw non-audio thread realtime item emitted by the backend.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeItemAddedNotification {
     pub thread_id: String,
     pub item: JsonValue,
@@ -3981,9 +3529,8 @@ pub struct ThreadRealtimeItemAddedNotification {
 
 /// EXPERIMENTAL - flat transcript delta emitted whenever realtime
 /// transcript text changes.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeTranscriptUpdatedNotification {
     pub thread_id: String,
     pub role: String,
@@ -3991,44 +3538,39 @@ pub struct ThreadRealtimeTranscriptUpdatedNotification {
 }
 
 /// EXPERIMENTAL - streamed output audio emitted by thread realtime.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeOutputAudioDeltaNotification {
     pub thread_id: String,
     pub audio: ThreadRealtimeAudioChunk,
 }
 
 /// EXPERIMENTAL - emitted with the remote SDP for a WebRTC realtime session.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeSdpNotification {
     pub thread_id: String,
     pub sdp: String,
 }
 
 /// EXPERIMENTAL - emitted when thread realtime encounters an error.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeErrorNotification {
     pub thread_id: String,
     pub message: String,
 }
 
 /// EXPERIMENTAL - emitted when thread realtime transport closes.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadRealtimeClosedNotification {
     pub thread_id: String,
     pub reason: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum TurnStatus {
     Completed,
     Interrupted,
@@ -4037,34 +3579,25 @@ pub enum TurnStatus {
 }
 
 // Turn APIs
-#[derive(
-    Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS, ExperimentalApi,
-)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TurnStartParams {
     pub thread_id: String,
     pub input: Vec<UserInput>,
     /// Optional turn-scoped Responses API client metadata.
     #[experimental("turn/start.responsesapiClientMetadata")]
-    #[ts(optional = nullable)]
     pub responsesapi_client_metadata: Option<HashMap<String, String>>,
     /// Override the working directory for this turn and subsequent turns.
-    #[ts(optional = nullable)]
     pub cwd: Option<PathBuf>,
     /// Override the approval policy for this turn and subsequent turns.
     #[experimental(nested)]
-    #[ts(optional = nullable)]
     pub approval_policy: Option<AskForApproval>,
     /// Override where approval requests are routed for review on this turn and
     /// subsequent turns.
-    #[ts(optional = nullable)]
     pub approvals_reviewer: Option<ApprovalsReviewer>,
     /// Override the sandbox policy for this turn and subsequent turns.
-    #[ts(optional = nullable)]
     pub sandbox_policy: Option<SandboxPolicy>,
     /// Override the model for this turn and subsequent turns.
-    #[ts(optional = nullable)]
     pub model: Option<String>,
     /// Override the service tier for this turn and subsequent turns.
     #[serde(
@@ -4073,20 +3606,15 @@ pub struct TurnStartParams {
         serialize_with = "super::serde_helpers::serialize_double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    #[ts(optional = nullable)]
     pub service_tier: Option<Option<ServiceTier>>,
     /// Override the reasoning effort for this turn and subsequent turns.
-    #[ts(optional = nullable)]
     pub effort: Option<ReasoningEffort>,
     /// Override the reasoning summary for this turn and subsequent turns.
-    #[ts(optional = nullable)]
     pub summary: Option<ReasoningSummary>,
     /// Override the personality for this turn and subsequent turns.
-    #[ts(optional = nullable)]
     pub personality: Option<Personality>,
     /// Optional JSON Schema used to constrain the final assistant message for
     /// this turn.
-    #[ts(optional = nullable)]
     pub output_schema: Option<JsonValue>,
 
     /// EXPERIMENTAL - Set a pre-set collaboration mode.
@@ -4095,13 +3623,11 @@ pub struct TurnStartParams {
     /// For `collaboration_mode.settings.developer_instructions`, `null` means
     /// "use the built-in instructions for the selected mode".
     #[experimental("turn/start.collaborationMode")]
-    #[ts(optional = nullable)]
     pub collaboration_mode: Option<CollaborationMode>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ReviewStartParams {
     pub thread_id: String,
     pub target: ReviewTarget,
@@ -4109,13 +3635,11 @@ pub struct ReviewStartParams {
     /// Where to run the review: inline (default) on the current thread or
     /// detached on a new thread (returned in `reviewThreadId`).
     #[serde(default)]
-    #[ts(optional = nullable)]
     pub delivery: Option<ReviewDelivery>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ReviewStartResponse {
     pub turn: Turn,
     /// Identifies the thread where the review runs.
@@ -4125,21 +3649,18 @@ pub struct ReviewStartResponse {
     pub review_thread_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type", export_to = "v2/")]
 pub enum ReviewTarget {
     /// Review the working tree: staged, unstaged, and untracked files.
     UncommittedChanges,
 
     /// Review changes between the current branch and the given base branch.
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     BaseBranch { branch: String },
 
     /// Review the changes introduced by a specific commit.
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     Commit {
         sha: String,
         /// Optional human-readable label (e.g., commit subject) for UIs.
@@ -4148,58 +3669,48 @@ pub enum ReviewTarget {
 
     /// Arbitrary instructions, equivalent to the old free-form prompt.
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     Custom { instructions: String },
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TurnStartResponse {
     pub turn: Turn,
 }
 
-#[derive(
-    Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, TS, ExperimentalApi,
-)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TurnSteerParams {
     pub thread_id: String,
     pub input: Vec<UserInput>,
     /// Optional turn-scoped Responses API client metadata.
     #[experimental("turn/steer.responsesapiClientMetadata")]
-    #[ts(optional = nullable)]
     pub responsesapi_client_metadata: Option<HashMap<String, String>>,
     /// Required active turn id precondition. The request fails when it does not
     /// match the currently active turn.
     pub expected_turn_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TurnSteerResponse {
     pub turn_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TurnInterruptParams {
     pub thread_id: String,
     pub turn_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TurnInterruptResponse {}
 
 // User input types
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ByteRange {
     pub start: usize,
     pub end: usize,
@@ -4223,9 +3734,8 @@ impl From<ByteRange> for CoreByteRange {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TextElement {
     /// Byte range in the parent `text` buffer that this element occupies.
     pub byte_range: ByteRange,
@@ -4265,10 +3775,8 @@ impl From<TextElement> for CoreTextElement {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type")]
-#[ts(export_to = "v2/")]
 pub enum UserInput {
     Text {
         text: String,
@@ -4341,22 +3849,17 @@ impl UserInput {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type")]
-#[ts(export_to = "v2/")]
 pub enum ThreadItem {
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     UserMessage { id: String, content: Vec<UserInput> },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     HookPrompt {
         id: String,
         fragments: Vec<HookPromptFragment>,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     AgentMessage {
         id: String,
         text: String,
@@ -4366,12 +3869,10 @@ pub enum ThreadItem {
         memory_citation: Option<MemoryCitation>,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     /// EXPERIMENTAL - proposed plan item content. The completed plan item is
     /// authoritative and may not match the concatenation of `PlanDelta` text.
     Plan { id: String, text: String },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     Reasoning {
         id: String,
         #[serde(default)]
@@ -4380,7 +3881,6 @@ pub enum ThreadItem {
         content: Vec<String>,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     CommandExecution {
         id: String,
         /// The command to be executed.
@@ -4401,18 +3901,15 @@ pub enum ThreadItem {
         /// The command's exit code.
         exit_code: Option<i32>,
         /// The duration of the command execution in milliseconds.
-        #[ts(type = "number | null")]
         duration_ms: Option<i64>,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     FileChange {
         id: String,
         changes: Vec<FileUpdateChange>,
         status: PatchApplyStatus,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     McpToolCall {
         id: String,
         server: String,
@@ -4422,11 +3919,9 @@ pub enum ThreadItem {
         result: Option<McpToolCallResult>,
         error: Option<McpToolCallError>,
         /// The duration of the MCP tool call in milliseconds.
-        #[ts(type = "number | null")]
         duration_ms: Option<i64>,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     DynamicToolCall {
         id: String,
         tool: String,
@@ -4435,11 +3930,9 @@ pub enum ThreadItem {
         content_items: Option<Vec<DynamicToolCallOutputContentItem>>,
         success: Option<bool>,
         /// The duration of the dynamic tool call in milliseconds.
-        #[ts(type = "number | null")]
         duration_ms: Option<i64>,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     CollabAgentToolCall {
         /// Unique identifier for this collab tool call.
         id: String,
@@ -4462,40 +3955,32 @@ pub enum ThreadItem {
         agents_states: HashMap<String, CollabAgentState>,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     WebSearch {
         id: String,
         query: String,
         action: Option<WebSearchAction>,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     ImageView { id: String, path: String },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     ImageGeneration {
         id: String,
         status: String,
         revised_prompt: Option<String>,
         result: String,
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        #[ts(optional)]
         saved_path: Option<String>,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     EnteredReviewMode { id: String, review: String },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     ExitedReviewMode { id: String, review: String },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     ContextCompaction { id: String },
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase", export_to = "v2/")]
 pub struct HookPromptFragment {
     pub text: String,
     pub hook_run_id: String,
@@ -4524,9 +4009,8 @@ impl ThreadItem {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// [UNSTABLE] Lifecycle state for a guardian approval review.
 pub enum GuardianApprovalReviewStatus {
     InProgress,
@@ -4535,9 +4019,8 @@ pub enum GuardianApprovalReviewStatus {
     Aborted,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// [UNSTABLE] Source that produced a terminal guardian approval review decision.
 pub enum AutoReviewDecisionSource {
     Agent,
@@ -4551,9 +4034,8 @@ impl From<CoreGuardianAssessmentDecisionSource> for AutoReviewDecisionSource {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "lowercase")]
-#[ts(export_to = "v2/")]
 /// [UNSTABLE] Risk level assigned by guardian approval review.
 pub enum GuardianRiskLevel {
     Low,
@@ -4573,9 +4055,8 @@ impl From<CoreGuardianRiskLevel> for GuardianRiskLevel {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "lowercase")]
-#[ts(export_to = "v2/")]
 /// [UNSTABLE] Authorization level assigned by guardian approval review.
 pub enum GuardianUserAuthorization {
     Unknown,
@@ -4598,9 +4079,8 @@ impl From<CoreGuardianUserAuthorization> for GuardianUserAuthorization {
 /// [UNSTABLE] Temporary guardian approval review payload used by
 /// `item/autoApprovalReview/*` notifications. This shape is expected to change
 /// soon.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct GuardianApprovalReview {
     pub status: GuardianApprovalReviewStatus,
     pub risk_level: Option<GuardianRiskLevel>,
@@ -4608,10 +4088,8 @@ pub struct GuardianApprovalReview {
     pub rationale: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum GuardianCommandSource {
     Shell,
     UnifiedExec,
@@ -4635,18 +4113,16 @@ impl From<GuardianCommandSource> for CoreGuardianCommandSource {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct GuardianCommandReviewAction {
     pub source: GuardianCommandSource,
     pub command: String,
     pub cwd: PathBuf,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct GuardianExecveReviewAction {
     pub source: GuardianCommandSource,
     pub program: String,
@@ -4654,17 +4130,15 @@ pub struct GuardianExecveReviewAction {
     pub cwd: PathBuf,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct GuardianApplyPatchReviewAction {
     pub cwd: PathBuf,
     pub files: Vec<PathBuf>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct GuardianNetworkAccessReviewAction {
     pub target: String,
     pub host: String,
@@ -4672,9 +4146,8 @@ pub struct GuardianNetworkAccessReviewAction {
     pub port: u16,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct GuardianMcpToolCallReviewAction {
     pub server: String,
     pub tool_name: String,
@@ -4683,20 +4156,16 @@ pub struct GuardianMcpToolCallReviewAction {
     pub tool_title: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type", rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum GuardianApprovalReviewAction {
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     Command {
         source: GuardianCommandSource,
         command: String,
         cwd: PathBuf,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     Execve {
         source: GuardianCommandSource,
         program: String,
@@ -4704,10 +4173,8 @@ pub enum GuardianApprovalReviewAction {
         cwd: PathBuf,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     ApplyPatch { cwd: PathBuf, files: Vec<PathBuf> },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     NetworkAccess {
         target: String,
         host: String,
@@ -4715,7 +4182,6 @@ pub enum GuardianApprovalReviewAction {
         port: u16,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     McpToolCall {
         server: String,
         tool_name: String,
@@ -4833,10 +4299,8 @@ impl From<GuardianApprovalReviewAction> for CoreGuardianAssessmentAction {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type", rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum WebSearchAction {
     Search {
         query: Option<String>,
@@ -4937,9 +4401,8 @@ impl From<codex_protocol::items::HookPromptFragment> for HookPromptFragment {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum CommandExecutionStatus {
     InProgress,
     Completed,
@@ -4974,9 +4437,8 @@ v2_enum_from_core! {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum CollabAgentTool {
     SpawnAgent,
     SendInput,
@@ -4985,28 +4447,24 @@ pub enum CollabAgentTool {
     CloseAgent,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FileUpdateChange {
     pub path: String,
     pub kind: PatchChangeKind,
     pub diff: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type")]
-#[ts(export_to = "v2/")]
 pub enum PatchChangeKind {
     Add,
     Delete,
     Update { move_path: Option<PathBuf> },
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum PatchApplyStatus {
     InProgress,
     Completed,
@@ -5030,36 +4488,32 @@ impl From<&CorePatchApplyStatus> for PatchApplyStatus {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum McpToolCallStatus {
     InProgress,
     Completed,
     Failed,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum DynamicToolCallStatus {
     InProgress,
     Completed,
     Failed,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum CollabAgentToolCallStatus {
     InProgress,
     Completed,
     Failed,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum CollabAgentStatus {
     PendingInit,
     Running,
@@ -5070,9 +4524,8 @@ pub enum CollabAgentStatus {
     NotFound,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CollabAgentState {
     pub status: CollabAgentStatus,
     pub message: Option<String>,
@@ -5113,9 +4566,8 @@ impl From<CoreAgentStatus> for CollabAgentState {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpToolCallResult {
     // NOTE: `rmcp::model::Content` (and its `RawContent` variants) would be a more precise Rust
     // representation of MCP content blocks. We intentionally use `serde_json::Value` here because
@@ -5125,120 +4577,104 @@ pub struct McpToolCallResult {
     pub content: Vec<JsonValue>,
     pub structured_content: Option<JsonValue>,
     #[serde(rename = "_meta")]
-    #[ts(rename = "_meta")]
     pub meta: Option<JsonValue>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpToolCallError {
     pub message: String,
 }
 
 // === Server Notifications ===
 // Thread/Turn lifecycle notifications and item progress events
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadStartedNotification {
     pub thread: Thread,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadStatusChangedNotification {
     pub thread_id: String,
     pub status: ThreadStatus,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadArchivedNotification {
     pub thread_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadUnarchivedNotification {
     pub thread_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadClosedNotification {
     pub thread_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// Notification emitted when watched local skill files change.
 ///
 /// Treat this as an invalidation signal and re-run `skills/list` with the
 /// client's current parameters when refreshed skill metadata is needed.
 pub struct SkillsChangedNotification {}
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ThreadNameUpdatedNotification {
     pub thread_id: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub thread_name: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TurnStartedNotification {
     pub thread_id: String,
     pub turn: Turn,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct HookStartedNotification {
     pub thread_id: String,
     pub turn_id: Option<String>,
     pub run: HookRunSummary,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct Usage {
     pub input_tokens: i32,
     pub cached_input_tokens: i32,
     pub output_tokens: i32,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TurnCompletedNotification {
     pub thread_id: String,
     pub turn: Turn,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct HookCompletedNotification {
     pub thread_id: String,
     pub turn_id: Option<String>,
     pub run: HookRunSummary,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// Notification that the turn-level unified diff has changed.
 /// Contains the latest aggregated diff across all file changes in the turn.
 pub struct TurnDiffUpdatedNotification {
@@ -5247,9 +4683,8 @@ pub struct TurnDiffUpdatedNotification {
     pub diff: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TurnPlanUpdatedNotification {
     pub thread_id: String,
     pub turn_id: String,
@@ -5257,17 +4692,15 @@ pub struct TurnPlanUpdatedNotification {
     pub plan: Vec<TurnPlanStep>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TurnPlanStep {
     pub step: String,
     pub status: TurnPlanStepStatus,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum TurnPlanStepStatus {
     Pending,
     InProgress,
@@ -5293,18 +4726,16 @@ impl From<CorePlanStepStatus> for TurnPlanStepStatus {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ItemStartedNotification {
     pub item: ThreadItem,
     pub thread_id: String,
     pub turn_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// [UNSTABLE] Temporary notification payload for guardian automatic approval
 /// review. This shape is expected to change soon.
 pub struct ItemGuardianApprovalReviewStartedNotification {
@@ -5328,9 +4759,8 @@ pub struct ItemGuardianApprovalReviewStartedNotification {
     pub action: GuardianApprovalReviewAction,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// [UNSTABLE] Temporary notification payload for guardian automatic approval
 /// review. This shape is expected to change soon.
 pub struct ItemGuardianApprovalReviewCompletedNotification {
@@ -5355,18 +4785,16 @@ pub struct ItemGuardianApprovalReviewCompletedNotification {
     pub action: GuardianApprovalReviewAction,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ItemCompletedNotification {
     pub item: ThreadItem,
     pub thread_id: String,
     pub turn_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct RawResponseItemCompletedNotification {
     pub thread_id: String,
     pub turn_id: String,
@@ -5374,9 +4802,8 @@ pub struct RawResponseItemCompletedNotification {
 }
 
 // Item-specific progress notifications
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct AgentMessageDeltaNotification {
     pub thread_id: String,
     pub turn_id: String,
@@ -5384,9 +4811,8 @@ pub struct AgentMessageDeltaNotification {
     pub delta: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// EXPERIMENTAL - proposed plan streaming deltas for plan items. Clients should
 /// not assume concatenated deltas match the completed plan item content.
 pub struct PlanDeltaNotification {
@@ -5396,44 +4822,37 @@ pub struct PlanDeltaNotification {
     pub delta: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ReasoningSummaryTextDeltaNotification {
     pub thread_id: String,
     pub turn_id: String,
     pub item_id: String,
     pub delta: String,
-    #[ts(type = "number")]
     pub summary_index: i64,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ReasoningSummaryPartAddedNotification {
     pub thread_id: String,
     pub turn_id: String,
     pub item_id: String,
-    #[ts(type = "number")]
     pub summary_index: i64,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ReasoningTextDeltaNotification {
     pub thread_id: String,
     pub turn_id: String,
     pub item_id: String,
     pub delta: String,
-    #[ts(type = "number")]
     pub content_index: i64,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TerminalInteractionNotification {
     pub thread_id: String,
     pub turn_id: String,
@@ -5443,9 +4862,8 @@ pub struct TerminalInteractionNotification {
 }
 
 #[serde_as]
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CommandExecutionOutputDeltaNotification {
     pub thread_id: String,
     pub turn_id: String,
@@ -5457,9 +4875,8 @@ pub struct CommandExecutionOutputDeltaNotification {
 ///
 /// These notifications are connection-scoped. If the originating connection
 /// closes, the server terminates the process.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CommandExecOutputDeltaNotification {
     /// Client-supplied, connection-scoped `processId` from the original
     /// `command/exec` request.
@@ -5473,9 +4890,8 @@ pub struct CommandExecOutputDeltaNotification {
     pub cap_reached: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FileChangeOutputDeltaNotification {
     pub thread_id: String,
     pub turn_id: String,
@@ -5483,17 +4899,15 @@ pub struct FileChangeOutputDeltaNotification {
     pub delta: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ServerRequestResolvedNotification {
     pub thread_id: String,
     pub request_id: RequestId,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpToolCallProgressNotification {
     pub thread_id: String,
     pub turn_id: String,
@@ -5501,20 +4915,17 @@ pub struct McpToolCallProgressNotification {
     pub message: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpServerOauthLoginCompletedNotification {
     pub name: String,
     pub success: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub error: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum McpServerStartupState {
     Starting,
     Ready,
@@ -5522,51 +4933,44 @@ pub enum McpServerStartupState {
     Cancelled,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpServerStatusUpdatedNotification {
     pub name: String,
     pub status: McpServerStartupState,
     pub error: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct WindowsWorldWritableWarningNotification {
     pub sample_paths: Vec<String>,
     pub extra_count: usize,
     pub failed_scan: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum WindowsSandboxSetupMode {
     Elevated,
     Unelevated,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct WindowsSandboxSetupStartParams {
     pub mode: WindowsSandboxSetupMode,
-    #[ts(optional = nullable)]
     pub cwd: Option<AbsolutePathBuf>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct WindowsSandboxSetupStartResponse {
     pub started: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct WindowsSandboxSetupCompletedNotification {
     pub mode: WindowsSandboxSetupMode,
     pub success: bool,
@@ -5574,17 +4978,15 @@ pub struct WindowsSandboxSetupCompletedNotification {
 }
 
 /// Deprecated: Use `ContextCompaction` item type instead.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ContextCompactedNotification {
     pub thread_id: String,
     pub turn_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, ExperimentalApi)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, ExperimentalApi)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CommandExecutionRequestApprovalParams {
     pub thread_id: String,
     pub turn_id: String,
@@ -5597,45 +4999,35 @@ pub struct CommandExecutionRequestApprovalParams {
     /// one parent `itemId`, so `approvalId` is a distinct opaque callback id
     /// (a UUID) used to disambiguate routing.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional = nullable)]
     pub approval_id: Option<String>,
     /// Optional explanatory reason (e.g. request for network access).
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional = nullable)]
     pub reason: Option<String>,
     /// Optional context for a managed-network approval prompt.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional = nullable)]
     pub network_approval_context: Option<NetworkApprovalContext>,
     /// The command to be executed.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional = nullable)]
     pub command: Option<String>,
     /// The command's working directory.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional = nullable)]
     pub cwd: Option<PathBuf>,
     /// Best-effort parsed command actions for friendly display.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional = nullable)]
     pub command_actions: Option<Vec<CommandAction>>,
     /// Optional additional permissions requested for this command.
     #[experimental("item/commandExecution/requestApproval.additionalPermissions")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional = nullable)]
     pub additional_permissions: Option<AdditionalPermissionProfile>,
     /// Optional proposed execpolicy amendment to allow similar commands without prompting.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional = nullable)]
     pub proposed_execpolicy_amendment: Option<ExecPolicyAmendment>,
     /// Optional proposed network policy amendments (allow/deny host) for future requests.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional = nullable)]
     pub proposed_network_policy_amendments: Option<Vec<NetworkPolicyAmendment>>,
     /// Ordered list of decisions the client may present for this prompt.
     #[experimental("item/commandExecution/requestApproval.availableDecisions")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional = nullable)]
     pub available_decisions: Option<Vec<CommandExecutionApprovalDecision>>,
 }
 
@@ -5648,39 +5040,32 @@ impl CommandExecutionRequestApprovalParams {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CommandExecutionRequestApprovalResponse {
     pub decision: CommandExecutionApprovalDecision,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct FileChangeRequestApprovalParams {
     pub thread_id: String,
     pub turn_id: String,
     pub item_id: String,
     /// Optional explanatory reason (e.g. request for extra write access).
-    #[ts(optional = nullable)]
     pub reason: Option<String>,
     /// [UNSTABLE] When set, the agent is asking the user to allow writes under this root
     /// for the remainder of the session (unclear if this is honored today).
-    #[ts(optional = nullable)]
     pub grant_root: Option<PathBuf>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
-#[ts(export_to = "v2/")]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 pub struct FileChangeRequestApprovalResponse {
     pub decision: FileChangeApprovalDecision,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub enum McpServerElicitationAction {
     Accept,
     Decline,
@@ -5717,9 +5102,8 @@ impl From<rmcp::model::ElicitationAction> for McpServerElicitationAction {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpServerElicitationRequestParams {
     pub thread_id: String,
     /// Active Codex turn when this elicitation was observed, if app-server could correlate one.
@@ -5741,32 +5125,26 @@ pub struct McpServerElicitationRequestParams {
 ///
 /// This matches the `requestedSchema` shape from the MCP 2025-11-25
 /// `ElicitRequestFormParams` schema.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-#[ts(export_to = "v2/")]
 pub struct McpElicitationSchema {
     #[serde(rename = "$schema", skip_serializing_if = "Option::is_none")]
-    #[ts(optional, rename = "$schema")]
     pub schema_uri: Option<String>,
     #[serde(rename = "type")]
-    #[ts(rename = "type")]
     pub type_: McpElicitationObjectType,
     pub properties: BTreeMap<String, McpElicitationPrimitiveSchema>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub required: Option<Vec<String>>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "lowercase")]
-#[ts(export_to = "v2/")]
 pub enum McpElicitationObjectType {
     Object,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(untagged)]
-#[ts(export_to = "v2/")]
 pub enum McpElicitationPrimitiveSchema {
     Enum(McpElicitationEnumSchema),
     String(McpElicitationStringSchema),
@@ -5774,43 +5152,33 @@ pub enum McpElicitationPrimitiveSchema {
     Boolean(McpElicitationBooleanSchema),
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-#[ts(export_to = "v2/")]
 pub struct McpElicitationStringSchema {
     #[serde(rename = "type")]
-    #[ts(rename = "type")]
     pub type_: McpElicitationStringType,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub min_length: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub max_length: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub format: Option<McpElicitationStringFormat>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub default: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "lowercase")]
-#[ts(export_to = "v2/")]
 pub enum McpElicitationStringType {
     String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "kebab-case")]
-#[ts(rename_all = "kebab-case", export_to = "v2/")]
 pub enum McpElicitationStringFormat {
     Email,
     Uri,
@@ -5818,261 +5186,197 @@ pub enum McpElicitationStringFormat {
     DateTime,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-#[ts(export_to = "v2/")]
 pub struct McpElicitationNumberSchema {
     #[serde(rename = "type")]
-    #[ts(rename = "type")]
     pub type_: McpElicitationNumberType,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub minimum: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub maximum: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub default: Option<f64>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "lowercase")]
-#[ts(export_to = "v2/")]
 pub enum McpElicitationNumberType {
     Number,
     Integer,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-#[ts(export_to = "v2/")]
 pub struct McpElicitationBooleanSchema {
     #[serde(rename = "type")]
-    #[ts(rename = "type")]
     pub type_: McpElicitationBooleanType,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub default: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "lowercase")]
-#[ts(export_to = "v2/")]
 pub enum McpElicitationBooleanType {
     Boolean,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(untagged)]
-#[ts(export_to = "v2/")]
 pub enum McpElicitationEnumSchema {
     SingleSelect(McpElicitationSingleSelectEnumSchema),
     MultiSelect(McpElicitationMultiSelectEnumSchema),
     Legacy(McpElicitationLegacyTitledEnumSchema),
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-#[ts(export_to = "v2/")]
 pub struct McpElicitationLegacyTitledEnumSchema {
     #[serde(rename = "type")]
-    #[ts(rename = "type")]
     pub type_: McpElicitationStringType,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub description: Option<String>,
     #[serde(rename = "enum")]
-    #[ts(rename = "enum")]
     pub enum_: Vec<String>,
     #[serde(rename = "enumNames", skip_serializing_if = "Option::is_none")]
-    #[ts(optional, rename = "enumNames")]
     pub enum_names: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub default: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(untagged)]
-#[ts(export_to = "v2/")]
 pub enum McpElicitationSingleSelectEnumSchema {
     Untitled(McpElicitationUntitledSingleSelectEnumSchema),
     Titled(McpElicitationTitledSingleSelectEnumSchema),
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-#[ts(export_to = "v2/")]
 pub struct McpElicitationUntitledSingleSelectEnumSchema {
     #[serde(rename = "type")]
-    #[ts(rename = "type")]
     pub type_: McpElicitationStringType,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub description: Option<String>,
     #[serde(rename = "enum")]
-    #[ts(rename = "enum")]
     pub enum_: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub default: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-#[ts(export_to = "v2/")]
 pub struct McpElicitationTitledSingleSelectEnumSchema {
     #[serde(rename = "type")]
-    #[ts(rename = "type")]
     pub type_: McpElicitationStringType,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub description: Option<String>,
     #[serde(rename = "oneOf")]
-    #[ts(rename = "oneOf")]
     pub one_of: Vec<McpElicitationConstOption>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub default: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(untagged)]
-#[ts(export_to = "v2/")]
 pub enum McpElicitationMultiSelectEnumSchema {
     Untitled(McpElicitationUntitledMultiSelectEnumSchema),
     Titled(McpElicitationTitledMultiSelectEnumSchema),
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-#[ts(export_to = "v2/")]
 pub struct McpElicitationUntitledMultiSelectEnumSchema {
     #[serde(rename = "type")]
-    #[ts(rename = "type")]
     pub type_: McpElicitationArrayType,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub min_items: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub max_items: Option<u64>,
     pub items: McpElicitationUntitledEnumItems,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub default: Option<Vec<String>>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-#[ts(export_to = "v2/")]
 pub struct McpElicitationTitledMultiSelectEnumSchema {
     #[serde(rename = "type")]
-    #[ts(rename = "type")]
     pub type_: McpElicitationArrayType,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub min_items: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub max_items: Option<u64>,
     pub items: McpElicitationTitledEnumItems,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub default: Option<Vec<String>>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "lowercase")]
-#[ts(export_to = "v2/")]
 pub enum McpElicitationArrayType {
     Array,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(deny_unknown_fields)]
-#[ts(export_to = "v2/")]
 pub struct McpElicitationUntitledEnumItems {
     #[serde(rename = "type")]
-    #[ts(rename = "type")]
     pub type_: McpElicitationStringType,
     #[serde(rename = "enum")]
-    #[ts(rename = "enum")]
     pub enum_: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(deny_unknown_fields)]
-#[ts(export_to = "v2/")]
 pub struct McpElicitationTitledEnumItems {
     #[serde(rename = "anyOf", alias = "oneOf")]
-    #[ts(rename = "anyOf")]
     pub any_of: Vec<McpElicitationConstOption>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(deny_unknown_fields)]
-#[ts(export_to = "v2/")]
 pub struct McpElicitationConstOption {
     #[serde(rename = "const")]
-    #[ts(rename = "const")]
     pub const_: String,
     pub title: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "mode", rename_all = "camelCase")]
-#[ts(tag = "mode")]
-#[ts(export_to = "v2/")]
 pub enum McpServerElicitationRequest {
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     Form {
         #[serde(rename = "_meta")]
-        #[ts(rename = "_meta")]
         meta: Option<JsonValue>,
         message: String,
         requested_schema: McpElicitationSchema,
     },
     #[serde(rename_all = "camelCase")]
-    #[ts(rename_all = "camelCase")]
     Url {
         #[serde(rename = "_meta")]
-        #[ts(rename = "_meta")]
         meta: Option<JsonValue>,
         message: String,
         url: String,
@@ -6109,9 +5413,8 @@ impl TryFrom<CoreElicitationRequest> for McpServerElicitationRequest {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct McpServerElicitationRequestResponse {
     pub action: McpServerElicitationAction,
     /// Structured user input for accepted elicitations, mirroring RMCP `CreateElicitationResult`.
@@ -6120,7 +5423,6 @@ pub struct McpServerElicitationRequestResponse {
     pub content: Option<JsonValue>,
     /// Optional client metadata for form-mode action handling.
     #[serde(rename = "_meta")]
-    #[ts(rename = "_meta")]
     pub meta: Option<JsonValue>,
 }
 
@@ -6143,9 +5445,8 @@ impl From<rmcp::model::CreateElicitationResult> for McpServerElicitationRequestR
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct DynamicToolCallParams {
     pub thread_id: String,
     pub turn_id: String,
@@ -6154,9 +5455,8 @@ pub struct DynamicToolCallParams {
     pub arguments: JsonValue,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PermissionsRequestApprovalParams {
     pub thread_id: String,
     pub turn_id: String,
@@ -6174,27 +5474,23 @@ v2_enum_from_core!(
     }
 );
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct PermissionsRequestApprovalResponse {
     pub permissions: GrantedPermissionProfile,
     #[serde(default)]
     pub scope: PermissionGrantScope,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct DynamicToolCallResponse {
     pub content_items: Vec<DynamicToolCallOutputContentItem>,
     pub success: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[ts(tag = "type")]
-#[ts(export_to = "v2/")]
 pub enum DynamicToolCallOutputContentItem {
     #[serde(rename_all = "camelCase")]
     InputText { text: String },
@@ -6215,18 +5511,16 @@ impl From<DynamicToolCallOutputContentItem>
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// EXPERIMENTAL. Defines a single selectable option for request_user_input.
 pub struct ToolRequestUserInputOption {
     pub label: String,
     pub description: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// EXPERIMENTAL. Represents one request_user_input question and its required options.
 pub struct ToolRequestUserInputQuestion {
     pub id: String,
@@ -6239,9 +5533,8 @@ pub struct ToolRequestUserInputQuestion {
     pub options: Option<Vec<ToolRequestUserInputOption>>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// EXPERIMENTAL. Params sent with a request_user_input event.
 pub struct ToolRequestUserInputParams {
     pub thread_id: String,
@@ -6250,32 +5543,28 @@ pub struct ToolRequestUserInputParams {
     pub questions: Vec<ToolRequestUserInputQuestion>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// EXPERIMENTAL. Captures a user's answer to a request_user_input question.
 pub struct ToolRequestUserInputAnswer {
     pub answers: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 /// EXPERIMENTAL. Response payload mapping question ids to answers.
 pub struct ToolRequestUserInputResponse {
     pub answers: HashMap<String, ToolRequestUserInputAnswer>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct AccountRateLimitsUpdatedNotification {
     pub rate_limits: RateLimitSnapshot,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct RateLimitSnapshot {
     pub limit_id: Option<String>,
     pub limit_name: Option<String>,
@@ -6298,14 +5587,11 @@ impl From<CoreRateLimitSnapshot> for RateLimitSnapshot {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct RateLimitWindow {
     pub used_percent: i32,
-    #[ts(type = "number | null")]
     pub window_duration_mins: Option<i64>,
-    #[ts(type = "number | null")]
     pub resets_at: Option<i64>,
 }
 
@@ -6319,9 +5605,8 @@ impl From<CoreRateLimitWindow> for RateLimitWindow {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct CreditsSnapshot {
     pub has_credits: bool,
     pub unlimited: bool,
@@ -6338,9 +5623,8 @@ impl From<CoreCreditsSnapshot> for CreditsSnapshot {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct AccountLoginCompletedNotification {
     // Use plain String for identifiers to avoid TS/JSON Schema quirks around uuid-specific types.
     // Convert to/from UUIDs at the application layer as needed.
@@ -6349,9 +5633,8 @@ pub struct AccountLoginCompletedNotification {
     pub error: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ModelReroutedNotification {
     pub thread_id: String,
     pub turn_id: String,
@@ -6360,9 +5643,8 @@ pub struct ModelReroutedNotification {
     pub reason: ModelRerouteReason,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct DeprecationNoticeNotification {
     /// Concise summary of what is deprecated.
     pub summary: String,
@@ -6370,9 +5652,8 @@ pub struct DeprecationNoticeNotification {
     pub details: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TextPosition {
     /// 1-based line number.
     pub line: usize,
@@ -6380,17 +5661,15 @@ pub struct TextPosition {
     pub column: usize,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct TextRange {
     pub start: TextPosition,
     pub end: TextPosition,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[ts(export_to = "v2/")]
 pub struct ConfigWarningNotification {
     /// Concise summary of the warning.
     pub summary: String,
@@ -6398,11 +5677,9 @@ pub struct ConfigWarningNotification {
     pub details: Option<String>,
     /// Optional path to the config file that triggered the warning.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub path: Option<String>,
     /// Optional range for the error location inside the config file.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
     pub range: Option<TextRange>,
 }
 

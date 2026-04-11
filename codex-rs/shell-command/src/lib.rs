@@ -1,3 +1,4 @@
+#![allow(dead_code, unused_variables, unused_imports)]
 //! Command parsing and safety utilities shared across Codex crates.
 
 mod shell_detect;

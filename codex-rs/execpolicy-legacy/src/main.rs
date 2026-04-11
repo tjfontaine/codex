@@ -82,7 +82,7 @@ fn main() -> Result<()> {
             },
             None => {
                 eprintln!("no command provided");
-                std::process::exit(1);
+                panic!("process::exit(1) called — cannot exit in WASM");
             }
         },
         Command::CheckJson { exec } => exec,
@@ -91,7 +91,7 @@ fn main() -> Result<()> {
     let (output, exit_code) = check_command(&policy, exec, args.require_safe);
     let json = serde_json::to_string(&output)?;
     println!("{json}");
-    std::process::exit(exit_code);
+    panic!("process::exit(exit_code) called — cannot exit in WASM");
 }
 
 fn check_command(

@@ -1,16 +1,13 @@
 [package]
 name = "codex-async-utils"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
-
-[lints]
-workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [dependencies]
-async-trait.workspace = true
-tokio = { workspace = true, features = ["macros", "rt", "rt-multi-thread", "time"] }
-tokio-util.workspace = true
+async-trait = { version = "0.1.89" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
+tokio-util = { path = "../../../codex-wasm/wasi-tokio-util" }
 
 [dev-dependencies]
-pretty_assertions.workspace = true
+pretty_assertions = { version = "1.4.1" }

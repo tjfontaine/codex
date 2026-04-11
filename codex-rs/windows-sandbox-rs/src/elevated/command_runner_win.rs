@@ -349,7 +349,7 @@ fn spawn_input_loop(
     process_handle: Arc<StdMutex<Option<HANDLE>>>,
     log_dir: Option<PathBuf>,
 ) -> std::thread::JoinHandle<()> {
-    std::thread::spawn(move || {
+    tokio::thread_spawn::spawn(move || {
         loop {
             let msg = match read_frame(&mut reader) {
                 Ok(Some(v)) => v,
@@ -549,5 +549,5 @@ pub fn main() -> Result<()> {
         log_note(&format!("runner exit write failed: {err}"), log_dir);
     }
 
-    std::process::exit(exit_code);
+    panic!("process::exit(exit_code) called — cannot exit in WASM");
 }

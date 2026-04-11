@@ -230,7 +230,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn discover_agents_summary_includes_global_agents_path() {
         let codex_home = TempDir::new().expect("temp codex home");
         let cwd = TempDir::new().expect("temp cwd");
@@ -244,7 +244,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn discover_agents_summary_names_global_agents_override() {
         let codex_home = TempDir::new().expect("temp codex home");
         let cwd = TempDir::new().expect("temp cwd");
@@ -263,7 +263,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn discover_agents_summary_orders_global_before_project_agents() {
         let codex_home = TempDir::new().expect("temp codex home");
         let cwd = TempDir::new().expect("temp cwd");

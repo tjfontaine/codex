@@ -70,7 +70,7 @@ fn build_consolidation_prompt_renders_embedded_template() {
     assert!(prompt.contains("- selected inputs this run: 0"));
 }
 
-#[tokio::test]
+#[test]
 async fn build_consolidation_prompt_points_to_extensions_without_inlining_them() {
     let temp = tempdir().unwrap();
     let memories_dir = temp.path().join("memories");
@@ -105,7 +105,7 @@ async fn build_consolidation_prompt_points_to_extensions_without_inlining_them()
     assert!(!prompt.contains("source-specific resource"));
 }
 
-#[tokio::test]
+#[test]
 async fn build_memory_tool_developer_instructions_renders_embedded_template() {
     let temp = tempdir().unwrap();
     let codex_home = temp.path();

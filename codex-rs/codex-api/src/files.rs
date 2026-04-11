@@ -302,7 +302,7 @@ mod tests {
         format!("{}/backend-api", server.uri())
     }
 
-    #[tokio::test]
+    #[test]
     async fn upload_local_file_returns_canonical_uri() {
         let server = MockServer::start().await;
         Mock::given(method("POST"))

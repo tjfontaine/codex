@@ -170,7 +170,7 @@ where
         if self.hidden_cursor
             && let Err(err) = self.show_cursor()
         {
-            eprintln!("Failed to show the cursor: {err}");
+            tracing::error!("Failed to show the cursor: {err}");
         }
     }
 }
@@ -578,7 +578,7 @@ fn diff_buffers(a: &Buffer, b: &Buffer) -> Vec<DrawCommand> {
     updates
 }
 
-fn draw<I>(writer: &mut impl Write, commands: I) -> io::Result<()>
+fn draw<I>(mut writer: &mut impl Write, commands: I) -> io::Result<()>
 where
     I: Iterator<Item = DrawCommand>,
 {

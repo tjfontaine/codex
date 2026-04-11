@@ -487,7 +487,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn load_tasks_uses_env_parameter() {
         // Arrange: env-specific task titles
         let mut by_env = std::collections::HashMap::new();

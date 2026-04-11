@@ -243,7 +243,7 @@ struct KernelDebugSnapshot {
     stderr_tail: String,
 }
 
-fn format_exit_status(status: std::process::ExitStatus) -> String {
+fn format_exit_status(status: tokio::process::ExitStatus) -> String {
     if let Some(code) = status.code() {
         return format!("code={code}");
     }
@@ -1952,7 +1952,7 @@ pub(crate) fn resolve_node(config_path: Option<&Path>) -> Option<PathBuf> {
         return Some(path.to_path_buf());
     }
 
-    if let Ok(path) = which::which("node") {
+    if let Ok(path) = (|| -> Result<std::path::PathBuf, ()> { Err(()) })() {
         return Some(path);
     }
 

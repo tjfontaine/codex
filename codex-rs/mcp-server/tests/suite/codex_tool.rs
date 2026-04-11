@@ -35,7 +35,7 @@ const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs
 /// Test that a shell command that is not on the "trusted" list triggers an
 /// elicitation request to the MCP and that sending the approval runs the
 /// command, as expected.
-#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[test]
 async fn test_shell_command_approval_triggers_elicitation() {
     if env::var(CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR).is_ok() {
         println!(
@@ -215,7 +215,7 @@ fn create_expected_elicitation_request_params(
 
 /// Test that patch approval triggers an elicitation request to the MCP and that
 /// sending the approval applies the patch, as expected.
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn test_patch_approval_triggers_elicitation() {
     if env::var(CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR).is_ok() {
         println!(
@@ -344,7 +344,7 @@ async fn patch_approval_triggers_elicitation() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn test_codex_tool_passes_base_instructions() {
     skip_if_no_network!();
 

@@ -1,17 +1,14 @@
 [package]
 name = "codex-utils-sandbox-summary"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
-
-[lints]
-workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [dependencies]
-codex-core = { workspace = true }
-codex-model-provider-info = { workspace = true }
-codex-protocol = { workspace = true }
+codex-core = { path = "../../core" }
+codex-model-provider-info = { path = "../../model-provider-info" }
+codex-protocol = { path = "../../protocol" }
 
 [dev-dependencies]
-codex-utils-absolute-path = { workspace = true }
-pretty_assertions = { workspace = true }
+codex-utils-absolute-path = { path = "../absolute-path" }
+pretty_assertions = { version = "1.4.1" }

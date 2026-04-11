@@ -45,7 +45,7 @@ mod imp {
     /// Execute the build-time bubblewrap `main` function with the given argv.
     pub(crate) fn exec_vendored_bwrap(argv: Vec<String>, preserved_files: Vec<File>) -> ! {
         let exit_code = run_vendored_bwrap_main(&argv, &preserved_files);
-        std::process::exit(exit_code);
+        panic!("process::exit(exit_code) called — cannot exit in WASM");
     }
 }
 

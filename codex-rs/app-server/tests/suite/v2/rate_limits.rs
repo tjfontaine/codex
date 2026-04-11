@@ -27,7 +27,7 @@ use wiremock::matchers::path;
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 const INVALID_REQUEST_ERROR_CODE: i64 = -32600;
 
-#[tokio::test]
+#[test]
 async fn get_account_rate_limits_requires_auth() -> Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -52,7 +52,7 @@ async fn get_account_rate_limits_requires_auth() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn get_account_rate_limits_requires_chatgpt_auth() -> Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -79,7 +79,7 @@ async fn get_account_rate_limits_requires_chatgpt_auth() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn get_account_rate_limits_returns_snapshot() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_chatgpt_auth(

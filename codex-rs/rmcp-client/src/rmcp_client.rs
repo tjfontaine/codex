@@ -362,8 +362,8 @@ impl ProcessGroupGuard {
                 }
             };
         if should_escalate {
-            std::thread::spawn(move || {
-                std::thread::sleep(PROCESS_GROUP_TERM_GRACE_PERIOD);
+            tokio::thread_spawn::spawn(move || {
+                tokio::thread_spawn::sleep(PROCESS_GROUP_TERM_GRACE_PERIOD);
                 if let Err(error) =
                     codex_utils_pty::process_group::kill_process_group(process_group_id)
                 {

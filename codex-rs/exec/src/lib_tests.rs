@@ -204,7 +204,7 @@ fn lagged_event_warning_message_is_explicit() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn resume_lookup_model_providers_filters_only_last_lookup() {
     let codex_home = tempdir().expect("create temp codex home");
     let cwd = tempdir().expect("create temp cwd");
@@ -338,7 +338,7 @@ fn canceled_mcp_server_elicitation_response_uses_cancel_action() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_params_include_review_policy_when_review_policy_is_manual_only() {
     let codex_home = tempdir().expect("create temp codex home");
     let cwd = tempdir().expect("create temp cwd");
@@ -361,7 +361,7 @@ async fn thread_start_params_include_review_policy_when_review_policy_is_manual_
     );
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_params_include_review_policy_when_auto_review_is_enabled() {
     let codex_home = tempdir().expect("create temp codex home");
     let cwd = tempdir().expect("create temp cwd");

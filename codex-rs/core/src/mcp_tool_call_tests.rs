@@ -135,7 +135,7 @@ fn approval_question_text_prepends_safety_reason() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn mcp_tool_call_span_records_expected_fields() {
     let buffer: &'static std::sync::Mutex<Vec<u8>> =
         Box::leak(Box::new(std::sync::Mutex::new(Vec::new())));
@@ -186,7 +186,7 @@ async fn mcp_tool_call_span_records_expected_fields() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn approval_elicitation_request_uses_message_override_and_preserves_tool_params_keys() {
     let (session, turn_context) = make_session_and_context().await;
     let question = build_mcp_tool_approval_question(
@@ -548,7 +548,7 @@ fn sanitize_mcp_tool_result_for_model_preserves_image_when_supported() {
     assert_eq!(got, original);
 }
 
-#[tokio::test]
+#[test]
 async fn mcp_tool_call_request_meta_includes_turn_metadata_for_custom_server() {
     let (_, turn_context) = make_session_and_context().await;
     let expected_turn_metadata = serde_json::from_str::<serde_json::Value>(
@@ -571,7 +571,7 @@ async fn mcp_tool_call_request_meta_includes_turn_metadata_for_custom_server() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn codex_apps_tool_call_request_meta_includes_turn_metadata_and_codex_apps_meta() {
     let (_, turn_context) = make_session_and_context().await;
     let expected_turn_metadata = serde_json::from_str::<serde_json::Value>(
@@ -808,7 +808,7 @@ fn prepare_arc_request_action_serializes_mcp_tool_call_shape() {
     );
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn guardian_review_decision_maps_to_mcp_tool_decision() {
     let (session, _) = make_session_and_context().await;
     let session = Arc::new(session);
@@ -928,7 +928,7 @@ fn approval_elicitation_meta_merges_session_and_always_persist_with_connector_so
     );
 }
 
-#[tokio::test]
+#[test]
 async fn approval_callsite_mode_distinguishes_default_and_always_allow() {
     let (_session, turn_context) = make_session_and_context().await;
 
@@ -1025,7 +1025,7 @@ fn accepted_elicitation_without_content_defaults_to_accept() {
     assert_eq!(response, McpToolApprovalDecision::Accept);
 }
 
-#[tokio::test]
+#[test]
 async fn persist_codex_app_tool_approval_writes_tool_override() {
     let tmp = tempdir().expect("tempdir");
 
@@ -1064,7 +1064,7 @@ async fn persist_codex_app_tool_approval_writes_tool_override() {
     assert!(contents.contains("[apps.calendar.tools.\"calendar/list_events\"]"));
 }
 
-#[tokio::test]
+#[test]
 async fn persist_custom_mcp_tool_approval_writes_tool_override() {
     let tmp = tempdir().expect("tempdir");
     std::fs::write(
@@ -1099,7 +1099,7 @@ async fn persist_custom_mcp_tool_approval_writes_tool_override() {
     assert!(contents.contains("[mcp_servers.docs.tools.search]"));
 }
 
-#[tokio::test]
+#[test]
 async fn maybe_persist_mcp_tool_approval_reloads_session_config() {
     let (session, turn_context) = make_session_and_context().await;
     let codex_home = session.codex_home().await;
@@ -1138,7 +1138,7 @@ async fn maybe_persist_mcp_tool_approval_reloads_session_config() {
     assert_eq!(mcp_tool_approval_is_remembered(&session, &key).await, true);
 }
 
-#[tokio::test]
+#[test]
 async fn maybe_persist_mcp_tool_approval_reloads_session_config_for_custom_server() {
     let (session, turn_context) = make_session_and_context().await;
     let codex_home = session.codex_home().await;
@@ -1180,7 +1180,7 @@ async fn maybe_persist_mcp_tool_approval_reloads_session_config_for_custom_serve
     assert_eq!(mcp_tool_approval_is_remembered(&session, &key).await, true);
 }
 
-#[tokio::test]
+#[test]
 async fn maybe_persist_mcp_tool_approval_writes_project_config_for_project_server() {
     let (session, mut turn_context) = make_session_and_context().await;
     let codex_home = session.codex_home().await;
@@ -1236,7 +1236,7 @@ async fn maybe_persist_mcp_tool_approval_writes_project_config_for_project_serve
     assert_eq!(mcp_tool_approval_is_remembered(&session, &key).await, true);
 }
 
-#[tokio::test]
+#[test]
 async fn approve_mode_skips_when_annotations_do_not_require_approval() {
     let (session, turn_context) = make_session_and_context().await;
     let session = Arc::new(session);
@@ -1274,7 +1274,7 @@ async fn approve_mode_skips_when_annotations_do_not_require_approval() {
     assert_eq!(decision, None);
 }
 
-#[tokio::test]
+#[test]
 async fn guardian_mode_skips_auto_when_annotations_do_not_require_approval() {
     use wiremock::Mock;
     use wiremock::ResponseTemplate;
@@ -1342,7 +1342,7 @@ async fn guardian_mode_skips_auto_when_annotations_do_not_require_approval() {
     assert_eq!(decision, None);
 }
 
-#[tokio::test]
+#[test]
 async fn guardian_mode_mcp_denial_returns_rationale_message() {
     let server = start_mock_server().await;
     let guardian_request_log = mount_sse_once(
@@ -1424,7 +1424,7 @@ async fn guardian_mode_mcp_denial_returns_rationale_message() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn prompt_mode_waits_for_approval_when_annotations_do_not_require_approval() {
     let (session, turn_context, _rx_event) = make_session_and_context_with_rx().await;
     {
@@ -1476,7 +1476,7 @@ async fn prompt_mode_waits_for_approval_when_annotations_do_not_require_approval
     approval_task.abort();
 }
 
-#[tokio::test]
+#[test]
 async fn approve_mode_blocks_when_arc_returns_interrupt_for_model() {
     use wiremock::Mock;
     use wiremock::MockServer;
@@ -1546,7 +1546,7 @@ async fn approve_mode_blocks_when_arc_returns_interrupt_for_model() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn custom_approve_mode_blocks_when_arc_returns_interrupt_for_model() {
     use wiremock::Mock;
     use wiremock::MockServer;
@@ -1616,7 +1616,7 @@ async fn custom_approve_mode_blocks_when_arc_returns_interrupt_for_model() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn approve_mode_blocks_when_arc_returns_interrupt_without_annotations() {
     use wiremock::Mock;
     use wiremock::MockServer;
@@ -1686,7 +1686,7 @@ async fn approve_mode_blocks_when_arc_returns_interrupt_without_annotations() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn full_access_mode_skips_arc_monitor_for_all_approval_modes() {
     use wiremock::Mock;
     use wiremock::MockServer;
@@ -1765,7 +1765,7 @@ async fn full_access_mode_skips_arc_monitor_for_all_approval_modes() {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn approve_mode_routes_arc_ask_user_to_guardian_when_guardian_reviewer_is_enabled() {
     use wiremock::Mock;
     use wiremock::ResponseTemplate;

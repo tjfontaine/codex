@@ -1,25 +1,25 @@
 [package]
-edition.workspace = true
-license.workspace = true
+edition = "2024"
+license = "Apache-2.0"
 name = "codex-code-mode"
-version.workspace = true
+version = "0.0.0"
 
 [lib]
 doctest = false
 name = "codex_code_mode"
 path = "src/lib.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-async-trait = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-tokio = { workspace = true, features = ["macros", "rt", "sync", "time"] }
-tokio-util = { workspace = true, features = ["rt"] }
-tracing = { workspace = true }
-v8 = { workspace = true }
+async-trait = { version = "0.1.89" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
+tokio-util = { path = "../../../codex-wasm/wasi-tokio-util" }
+tracing = { version = "0.1.44" }
+wasi-js-engine = { path = "../../../crates/wasi-js-engine" }
+wasi-code-runtime = { path = "../../../codex-wasm/wasi-code-runtime" }
 
 [dev-dependencies]
-pretty_assertions = { workspace = true }
+pretty_assertions = { version = "1.4.1" }
+wasi-js-engine = { path = "../../../crates/wasi-js-engine" }
+wasi-code-runtime = { path = "../../../codex-wasm/wasi-code-runtime" }

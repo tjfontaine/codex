@@ -13,7 +13,6 @@ use strum::IntoEnumIterator;
 use strum_macros::Display;
 use strum_macros::EnumIter;
 use tracing::warn;
-use ts_rs::TS;
 
 use crate::config_types::Personality;
 use crate::config_types::ReasoningSummary;
@@ -23,21 +22,7 @@ const PERSONALITY_PLACEHOLDER: &str = "{{ personality }}";
 pub const SPEED_TIER_FAST: &str = "fast";
 
 /// See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning
-#[derive(
-    Debug,
-    Serialize,
-    Deserialize,
-    Default,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Display,
-    JsonSchema,
-    TS,
-    EnumIter,
-    Hash,
-)]
+#[derive(Debug, Serialize, Deserialize, Default, Clone, Copy, PartialEq, Eq, Display, JsonSchema, EnumIter, Hash)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum ReasoningEffort {
@@ -60,20 +45,7 @@ impl FromStr for ReasoningEffort {
 }
 
 /// Canonical user-input modality tags advertised by a model.
-#[derive(
-    Debug,
-    Serialize,
-    Deserialize,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Display,
-    JsonSchema,
-    TS,
-    EnumIter,
-    Hash,
-)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Display, JsonSchema, EnumIter, Hash)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum InputModality {
@@ -92,7 +64,7 @@ pub fn default_input_modalities() -> Vec<InputModality> {
 }
 
 /// A reasoning effort option that can be surfaced for a model.
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema, PartialEq, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, PartialEq, Eq)]
 pub struct ReasoningEffortPreset {
     /// Effort level that the model supports.
     pub effort: ReasoningEffort,
@@ -100,7 +72,7 @@ pub struct ReasoningEffortPreset {
     pub description: String,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, PartialEq)]
 pub struct ModelUpgrade {
     pub id: String,
     pub reasoning_effort_mapping: Option<HashMap<ReasoningEffort, ReasoningEffort>>,
@@ -110,13 +82,13 @@ pub struct ModelUpgrade {
     pub migration_markdown: Option<String>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema, PartialEq, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, PartialEq, Eq)]
 pub struct ModelAvailabilityNux {
     pub message: String,
 }
 
 /// Metadata describing a Codex-supported model.
-#[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, PartialEq)]
 pub struct ModelPreset {
     /// Stable identifier for the preset.
     pub id: String,
@@ -152,9 +124,7 @@ pub struct ModelPreset {
 }
 
 /// Visibility of a model in the picker or APIs.
-#[derive(
-    Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, TS, JsonSchema, EnumIter, Display,
-)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, JsonSchema, EnumIter, Display)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum ModelVisibility {
@@ -164,20 +134,7 @@ pub enum ModelVisibility {
 }
 
 /// Shell execution capability for a model.
-#[derive(
-    Debug,
-    Serialize,
-    Deserialize,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    TS,
-    JsonSchema,
-    EnumIter,
-    Display,
-    Hash,
-)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, JsonSchema, EnumIter, Display, Hash)]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum ConfigShellToolType {
@@ -188,16 +145,14 @@ pub enum ConfigShellToolType {
     ShellCommand,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash, TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum ApplyPatchToolType {
     Freeform,
     Function,
 }
 
-#[derive(
-    Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash, TS, JsonSchema, Default,
-)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash, JsonSchema, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum WebSearchToolType {
     #[default]
@@ -206,14 +161,14 @@ pub enum WebSearchToolType {
 }
 
 /// Server-provided truncation policy metadata for a model.
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, TS, JsonSchema)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum TruncationMode {
     Bytes,
     Tokens,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, TS, JsonSchema)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, JsonSchema)]
 pub struct TruncationPolicyConfig {
     pub mode: TruncationMode,
     pub limit: i64,
@@ -236,7 +191,7 @@ impl TruncationPolicyConfig {
 }
 
 /// Semantic version triple encoded as an array in JSON (e.g. [0, 62, 0]).
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, TS, JsonSchema)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, JsonSchema)]
 pub struct ClientVersion(pub i32, pub i32, pub i32);
 
 const fn default_effective_context_window_percent() -> i64 {
@@ -244,7 +199,7 @@ const fn default_effective_context_window_percent() -> i64 {
 }
 
 /// Model metadata returned by the Codex backend `/models` endpoint.
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, TS, JsonSchema)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, JsonSchema)]
 pub struct ModelInfo {
     pub slug: String,
     pub display_name: String,
@@ -293,7 +248,6 @@ pub struct ModelInfo {
     /// Internal-only marker set by core when a model slug resolved to fallback metadata.
     #[serde(default, skip_serializing, skip_deserializing)]
     #[schemars(skip)]
-    #[ts(skip)]
     pub used_fallback_model_metadata: bool,
     #[serde(default)]
     pub supports_search_tool: bool,
@@ -343,7 +297,7 @@ impl ModelInfo {
 
 /// A strongly-typed template for assembling model instructions and developer messages. If
 /// instructions_* is populated and valid, it will override base_instructions.
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, TS, JsonSchema)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, JsonSchema)]
 pub struct ModelMessages {
     pub instructions_template: Option<String>,
     pub instructions_variables: Option<ModelInstructionsVariables>,
@@ -372,7 +326,7 @@ impl ModelMessages {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, TS, JsonSchema)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, JsonSchema)]
 pub struct ModelInstructionsVariables {
     pub personality_default: Option<String>,
     pub personality_friendly: Option<String>,
@@ -399,7 +353,7 @@ impl ModelInstructionsVariables {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, TS, JsonSchema)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, JsonSchema)]
 pub struct ModelInfoUpgrade {
     pub model: String,
     pub migration_markdown: String,
@@ -415,7 +369,7 @@ impl From<&ModelUpgrade> for ModelInfoUpgrade {
 }
 
 /// Response wrapper for `/models`.
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, TS, JsonSchema, Default)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, JsonSchema, Default)]
 pub struct ModelsResponse {
     pub models: Vec<ModelInfo>,
 }

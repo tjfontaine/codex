@@ -122,7 +122,7 @@ pub fn try_find_pwsh_executable_blocking() -> Option<AbsolutePathBuf> {
 
 fn try_find_powershellish_executable_in_path(candidates: &[&str]) -> Option<AbsolutePathBuf> {
     for candidate in candidates {
-        let Ok(resolved_path) = which::which(candidate) else {
+        let Ok(resolved_path) = (|| -> Result<std::path::PathBuf, ()> { Err(()) })() else {
             continue;
         };
 

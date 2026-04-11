@@ -27,7 +27,7 @@ fn assistant_output_text_with_phase(text: &str, phase: Option<MessagePhase>) -> 
     }
 }
 
-#[tokio::test]
+#[test]
 async fn handle_non_tool_response_item_strips_citations_from_assistant_message() {
     let (session, turn_context) = make_session_and_context().await;
     let item = assistant_output_text(
@@ -125,7 +125,7 @@ fn completed_item_defers_mailbox_delivery_for_image_generation_calls() {
     ));
 }
 
-#[tokio::test]
+#[test]
 async fn save_image_generation_result_saves_base64_to_png_in_codex_home() {
     let codex_home = tempfile::tempdir().expect("create codex home");
     let expected_path =
@@ -142,7 +142,7 @@ async fn save_image_generation_result_saves_base64_to_png_in_codex_home() {
     let _ = std::fs::remove_file(&saved_path);
 }
 
-#[tokio::test]
+#[test]
 async fn save_image_generation_result_rejects_data_url_payload() {
     let result = "data:image/jpeg;base64,Zm9v";
     let codex_home = tempfile::tempdir().expect("create codex home");
@@ -153,7 +153,7 @@ async fn save_image_generation_result_rejects_data_url_payload() {
     assert!(matches!(err, CodexErr::InvalidRequest(_)));
 }
 
-#[tokio::test]
+#[test]
 async fn save_image_generation_result_overwrites_existing_file() {
     let codex_home = tempfile::tempdir().expect("create codex home");
     let existing_path =
@@ -176,7 +176,7 @@ async fn save_image_generation_result_overwrites_existing_file() {
     let _ = std::fs::remove_file(&saved_path);
 }
 
-#[tokio::test]
+#[test]
 async fn save_image_generation_result_sanitizes_call_id_for_codex_home_output_path() {
     let codex_home = tempfile::tempdir().expect("create codex home");
     let expected_path = image_generation_artifact_path(codex_home.path(), "session-1", "../ig/..");
@@ -192,7 +192,7 @@ async fn save_image_generation_result_sanitizes_call_id_for_codex_home_output_pa
     let _ = std::fs::remove_file(&saved_path);
 }
 
-#[tokio::test]
+#[test]
 async fn save_image_generation_result_rejects_non_standard_base64() {
     let codex_home = tempfile::tempdir().expect("create codex home");
     let err = save_image_generation_result(codex_home.path(), "session-1", "ig_urlsafe", "_-8")
@@ -201,7 +201,7 @@ async fn save_image_generation_result_rejects_non_standard_base64() {
     assert!(matches!(err, CodexErr::InvalidRequest(_)));
 }
 
-#[tokio::test]
+#[test]
 async fn save_image_generation_result_rejects_non_base64_data_urls() {
     let codex_home = tempfile::tempdir().expect("create codex home");
     let err = save_image_generation_result(

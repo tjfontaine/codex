@@ -26,7 +26,7 @@ use tokio::time::timeout;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn initialize_uses_client_info_name_as_originator() -> Result<()> {
     let responses = Vec::new();
     let server = create_mock_responses_server_sequence_unchecked(responses).await;
@@ -62,7 +62,7 @@ async fn initialize_uses_client_info_name_as_originator() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn initialize_respects_originator_override_env_var() -> Result<()> {
     let responses = Vec::new();
     let server = create_mock_responses_server_sequence_unchecked(responses).await;
@@ -105,7 +105,7 @@ async fn initialize_respects_originator_override_env_var() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn initialize_rejects_invalid_client_name() -> Result<()> {
     let responses = Vec::new();
     let server = create_mock_responses_server_sequence_unchecked(responses).await;
@@ -140,7 +140,7 @@ async fn initialize_rejects_invalid_client_name() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn initialize_opt_out_notification_methods_filters_notifications() -> Result<()> {
     let responses = Vec::new();
     let server = create_mock_responses_server_sequence_unchecked(responses).await;
@@ -203,7 +203,7 @@ async fn initialize_opt_out_notification_methods_filters_notifications() -> Resu
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_notify_payload_includes_initialize_client_name() -> Result<()> {
     let responses = vec![create_final_assistant_message_sse_response("Done")?];
     let server = create_mock_responses_server_sequence_unchecked(responses).await;

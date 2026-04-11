@@ -458,7 +458,7 @@ fn request_message_input_texts(body: &[u8], role: &str) -> Vec<String> {
         .collect()
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn stop_hook_can_block_multiple_times_in_same_turn() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -572,7 +572,7 @@ async fn stop_hook_can_block_multiple_times_in_same_turn() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn session_start_hook_sees_materialized_transcript_path() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -617,7 +617,7 @@ async fn session_start_hook_sees_materialized_transcript_path() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn resumed_thread_keeps_stop_continuation_prompt_in_history() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -693,7 +693,7 @@ async fn resumed_thread_keeps_stop_continuation_prompt_in_history() -> Result<()
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn multiple_blocking_stop_hooks_persist_multiple_hook_prompt_fragments() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -759,7 +759,7 @@ async fn multiple_blocking_stop_hooks_persist_multiple_hook_prompt_fragments() -
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn blocked_user_prompt_submit_persists_additional_context_for_next_turn() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -842,7 +842,7 @@ async fn blocked_user_prompt_submit_persists_additional_context_for_next_turn() 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn blocked_queued_prompt_does_not_strand_earlier_accepted_prompt() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1005,7 +1005,7 @@ async fn blocked_queued_prompt_does_not_strand_earlier_accepted_prompt() -> Resu
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pre_tool_use_blocks_shell_command_before_execution() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1107,7 +1107,7 @@ async fn pre_tool_use_blocks_shell_command_before_execution() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pre_tool_use_blocks_local_shell_before_execution() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1201,7 +1201,7 @@ async fn pre_tool_use_blocks_local_shell_before_execution() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pre_tool_use_blocks_exec_command_before_execution() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1288,7 +1288,7 @@ async fn pre_tool_use_blocks_exec_command_before_execution() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pre_tool_use_does_not_fire_for_non_shell_tools() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1360,7 +1360,7 @@ async fn pre_tool_use_does_not_fire_for_non_shell_tools() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn post_tool_use_records_additional_context_for_shell_command() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1457,7 +1457,7 @@ async fn post_tool_use_records_additional_context_for_shell_command() -> Result<
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn post_tool_use_block_decision_replaces_shell_command_output_with_reason() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1525,7 +1525,7 @@ async fn post_tool_use_block_decision_replaces_shell_command_output_with_reason(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn post_tool_use_continue_false_replaces_shell_command_output_with_stop_reason() -> Result<()>
 {
     skip_if_no_network!(Ok(()));
@@ -1594,7 +1594,7 @@ async fn post_tool_use_continue_false_replaces_shell_command_output_with_stop_re
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn post_tool_use_records_additional_context_for_local_shell() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1668,7 +1668,7 @@ async fn post_tool_use_records_additional_context_for_local_shell() -> Result<()
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn post_tool_use_exit_two_replaces_one_shot_exec_command_output_with_feedback() -> Result<()>
 {
     skip_if_no_network!(Ok(()));
@@ -1743,7 +1743,7 @@ async fn post_tool_use_exit_two_replaces_one_shot_exec_command_output_with_feedb
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn post_tool_use_does_not_fire_for_non_shell_tools() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

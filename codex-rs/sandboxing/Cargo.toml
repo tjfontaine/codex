@@ -1,27 +1,23 @@
 [package]
 name = "codex-sandboxing"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [lib]
 name = "codex_sandboxing"
 path = "src/lib.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-codex-network-proxy = { workspace = true }
-codex-protocol = { workspace = true }
-codex-utils-absolute-path = { workspace = true }
-dunce = { workspace = true }
-libc = { workspace = true }
-serde_json = { workspace = true }
-tracing = { workspace = true, features = ["log"] }
-url = { workspace = true }
-which = { workspace = true }
+codex-network-proxy = { path = "../../../codex-wasm/wasi-network-proxy" }
+codex-protocol = { path = "../protocol" }
+codex-utils-absolute-path = { path = "../utils/absolute-path" }
+dunce = { version = "1.0.4" }
+libc = { version = "0.2.182" }
+serde_json = { version = "1" }
+tracing = { version = "0.1.44", features = ["log"] }
+url = { version = "2" }
 
 [dev-dependencies]
-pretty_assertions = { workspace = true }
-tempfile = { workspace = true }
+pretty_assertions = { version = "1.4.1" }
+tempfile = { version = "3.23.0" }

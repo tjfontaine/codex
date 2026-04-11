@@ -254,7 +254,6 @@ async fn should_install_mcp_dependencies(
     let call_id = format!("mcp-deps-{sub_id}");
     let response_fut = sess.request_user_input(turn_context, call_id, args);
     let response = tokio::select! {
-        biased;
         _ = cancellation_token.cancelled() => {
             let empty = RequestUserInputResponse {
                 answers: HashMap::new(),

@@ -36,7 +36,7 @@ use wiremock::MockServer;
 /// Verify that submitting `Op::Review` spawns a child task and emits
 /// EnteredReviewMode -> ExitedReviewMode(None) -> TurnComplete
 /// in that order when the model returns a structured review JSON payload.
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn review_op_emits_lifecycle_and_review_output() {
     // Skip under Codex sandbox network restrictions.
     skip_if_no_network!();
@@ -386,7 +386,7 @@ async fn review_does_not_emit_agent_message_on_structured_output() {
 
 /// Ensure that when a custom `review_model` is set in the config, the review
 /// request uses that model (and not the main chat model).
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn review_uses_custom_review_model_from_config() {
     skip_if_no_network!();
 
@@ -441,7 +441,7 @@ async fn review_uses_custom_review_model_from_config() {
 
 /// Ensure that when `review_model` is not set in the config, the review request
 /// uses the session model.
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn review_uses_session_model_when_review_model_unset() {
     skip_if_no_network!();
 
@@ -676,7 +676,7 @@ async fn review_input_isolated_from_parent_history() {
 
 /// After a review thread finishes, its conversation should be visible in the
 /// parent session so later turns can reference the results.
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn review_history_surfaces_in_parent_session() {
     skip_if_no_network!();
 
@@ -777,7 +777,7 @@ async fn review_history_surfaces_in_parent_session() {
 
 /// `/review` should use the session's current cwd (including runtime overrides)
 /// when resolving base-branch review prompts (merge-base computation).
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn review_uses_overridden_cwd_for_base_branch_merge_base() {
     skip_if_no_network!();
 

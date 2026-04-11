@@ -34,7 +34,7 @@ use tokio::time::timeout;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn thread_metadata_update_patches_git_branch_and_returns_updated_thread() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -124,7 +124,7 @@ async fn thread_metadata_update_patches_git_branch_and_returns_updated_thread() 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_metadata_update_rejects_empty_git_info_patch() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -170,7 +170,7 @@ async fn thread_metadata_update_rejects_empty_git_info_patch() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_metadata_update_repairs_missing_sqlite_row_for_stored_thread() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -223,7 +223,7 @@ async fn thread_metadata_update_repairs_missing_sqlite_row_for_stored_thread() -
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_metadata_update_repairs_loaded_thread_without_resetting_summary() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -303,7 +303,7 @@ async fn thread_metadata_update_repairs_loaded_thread_without_resetting_summary(
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_metadata_update_repairs_missing_sqlite_row_for_archived_thread() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -366,7 +366,7 @@ async fn thread_metadata_update_repairs_missing_sqlite_row_for_archived_thread()
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_metadata_update_can_clear_stored_git_fields() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;

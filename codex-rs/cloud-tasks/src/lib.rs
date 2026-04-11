@@ -76,10 +76,10 @@ async fn init_backend(user_agent_suffix: &str) -> anyhow::Result<BackendContext>
     let auth = match auth {
         Some(auth) => auth,
         None => {
-            eprintln!(
+            tracing::error!(
                 "Not signed in. Please run 'codex login' to sign in with ChatGPT, then re-run 'codex cloud'."
             );
-            std::process::exit(1);
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     };
 
@@ -90,10 +90,10 @@ async fn init_backend(user_agent_suffix: &str) -> anyhow::Result<BackendContext>
     let token = match auth.get_token() {
         Ok(t) if !t.is_empty() => t,
         _ => {
-            eprintln!(
+            tracing::error!(
                 "Not signed in. Please run 'codex login' to sign in with ChatGPT, then re-run 'codex cloud'."
             );
-            std::process::exit(1);
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     };
 
@@ -241,7 +241,7 @@ fn resolve_query_input(query_arg: Option<String>) -> anyhow::Result<String> {
                 ));
             }
             if !force_stdin {
-                eprintln!("Reading query from stdin...");
+                tracing::error!("Reading query from stdin...");
             }
             let mut buffer = String::new();
             std::io::stdin()
@@ -507,7 +507,7 @@ async fn run_status_command(args: crate::cli::StatusCommand) -> anyhow::Result<(
         println!("{line}");
     }
     if !matches!(summary.status, TaskStatus::Ready) {
-        std::process::exit(1);
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
     Ok(())
 }
@@ -604,7 +604,7 @@ async fn run_apply_command(args: crate::cli::ApplyCommand) -> anyhow::Result<()>
         outcome.status,
         codex_cloud_tasks_client::ApplyStatus::Success
     ) {
-        std::process::exit(1);
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
     Ok(())
 }
@@ -2016,7 +2016,7 @@ pub async fn run_main(cli: Cli, _codex_linux_sandbox_exe: Option<PathBuf>) -> an
     let _ = crossterm::execute!(std::io::stdout(), LeaveAlternateScreen);
 
     if exit_code != 0 {
-        std::process::exit(exit_code);
+        panic!("process::exit(exit_code) called — cannot exit in WASM");
     }
     Ok(())
 }
@@ -2173,7 +2173,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn branch_override_is_used_when_provided() {
         let git_ref = resolve_git_ref_with_git_info(
             Some(&"feature/override".to_string()),
@@ -2184,7 +2184,7 @@ mod tests {
         assert_eq!(git_ref, "feature/override");
     }
 
-    #[tokio::test]
+    #[test]
     async fn trims_override_whitespace() {
         let git_ref = resolve_git_ref_with_git_info(
             Some(&"  feature/spaces  ".to_string()),
@@ -2195,7 +2195,7 @@ mod tests {
         assert_eq!(git_ref, "feature/spaces");
     }
 
-    #[tokio::test]
+    #[test]
     async fn prefers_current_branch_when_available() {
         let git_ref = resolve_git_ref_with_git_info(
             /*branch_override*/ None,
@@ -2209,7 +2209,7 @@ mod tests {
         assert_eq!(git_ref, "feature/current");
     }
 
-    #[tokio::test]
+    #[test]
     async fn falls_back_to_current_branch_when_default_is_missing() {
         let git_ref = resolve_git_ref_with_git_info(
             /*branch_override*/ None,
@@ -2220,7 +2220,7 @@ mod tests {
         assert_eq!(git_ref, "develop");
     }
 
-    #[tokio::test]
+    #[test]
     async fn falls_back_to_main_when_no_git_info_is_available() {
         let git_ref = resolve_git_ref_with_git_info(
             /*branch_override*/ None,
@@ -2338,7 +2338,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn collect_attempt_diffs_includes_sibling_attempts() {
         let backend = MockClient;
         let task_id = parse_task_id("https://chatgpt.com/codex/tasks/T-1000").expect("id");

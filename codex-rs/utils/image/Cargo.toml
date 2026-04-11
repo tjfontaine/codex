@@ -1,19 +1,16 @@
 [package]
 name = "codex-utils-image"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
-
-[lints]
-workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [dependencies]
-base64 = { workspace = true }
-image = { workspace = true, features = ["jpeg", "png", "gif", "webp"] }
-codex-utils-cache = { workspace = true }
-mime_guess = { workspace = true }
-thiserror = { workspace = true }
-tokio = { workspace = true, features = ["fs", "rt", "rt-multi-thread", "macros"] }
+base64 = { version = "0.22.1" }
+image = { version = "^0.25.9", default-features = false , features = ["jpeg", "png", "gif", "webp"] }
+codex-utils-cache = { path = "../cache" }
+mime_guess = { version = "2.0.5" }
+thiserror = { version = "2.0.17" }
+tokio = { path = "../../../../codex-wasm/wasi-tokio" }
 
 [dev-dependencies]
-image = { workspace = true, features = ["jpeg", "png", "gif", "webp"] }
+image = { version = "^0.25.9", default-features = false , features = ["jpeg", "png", "gif", "webp"] }

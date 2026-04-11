@@ -36,8 +36,8 @@ pub(super) fn schedule_timeout(
     state
         .pending_timeouts
         .insert(timeout_id, ScheduledTimeout { callback });
-    thread::spawn(move || {
-        thread::sleep(Duration::from_millis(delay_ms));
+    tokio::thread_spawn::spawn(move || {
+        tokio::thread_spawn::sleep(Duration::from_millis(delay_ms));
         let _ = runtime_command_tx.send(RuntimeCommand::TimeoutFired { id: timeout_id });
     });
 

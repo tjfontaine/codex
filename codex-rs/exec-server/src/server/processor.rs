@@ -200,7 +200,7 @@ mod tests {
     use crate::protocol::TerminateResponse;
     use crate::server::session_registry::SessionRegistry;
 
-    #[tokio::test]
+    #[test]
     async fn transport_disconnect_detaches_session_during_in_flight_read() {
         let registry = SessionRegistry::new();
         let (mut first_writer, mut first_lines, first_task) =

@@ -11,7 +11,7 @@ fn codex_command(codex_home: &Path) -> Result<assert_cmd::Command> {
     Ok(cmd)
 }
 
-#[tokio::test]
+#[test]
 async fn features_enable_writes_feature_flag_to_config() -> Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -28,7 +28,7 @@ async fn features_enable_writes_feature_flag_to_config() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn features_disable_writes_feature_flag_to_config() -> Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -45,7 +45,7 @@ async fn features_disable_writes_feature_flag_to_config() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn features_enable_under_development_feature_prints_warning() -> Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -60,7 +60,7 @@ async fn features_enable_under_development_feature_prints_warning() -> Result<()
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn features_list_is_sorted_alphabetically_by_feature_name() -> Result<()> {
     let codex_home = TempDir::new()?;
 

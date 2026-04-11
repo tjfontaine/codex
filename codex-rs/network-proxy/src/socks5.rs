@@ -534,7 +534,7 @@ mod tests {
         Arc::new(NetworkProxyState::with_reloader(state, reloader))
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn handle_socks5_tcp_emits_block_decision_for_proxy_disabled() {
         let state = state_for_settings(NetworkProxySettings {
             enabled: false,
@@ -575,7 +575,7 @@ mod tests {
         assert_eq!(event.field("client.address"), Some("unknown"));
     }
 
-    #[tokio::test(flavor = "current_thread")]
+    #[test]
     async fn inspect_socks5_udp_emits_block_decision_for_mode_guard_deny() {
         let state = state_for_settings(NetworkProxySettings {
             enabled: true,

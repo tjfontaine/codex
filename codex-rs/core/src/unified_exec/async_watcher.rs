@@ -60,7 +60,7 @@ pub(crate) fn start_streaming_output(
 
         loop {
             tokio::select! {
-                _ = exit_token.cancelled(), if grace_sleep.is_none() => {
+                _ = exit_token.cancelled() => {
                     let deadline = Instant::now() + TRAILING_OUTPUT_GRACE;
                     grace_sleep.replace(Box::pin(tokio::time::sleep_until(deadline)));
                 }
@@ -69,7 +69,7 @@ pub(crate) fn start_streaming_output(
                     if let Some(sleep) = grace_sleep.as_mut() {
                         sleep.as_mut().await;
                     }
-                }, if grace_sleep.is_some() => {
+                } => {
                     output_drained.notify_one();
                     break;
                 }

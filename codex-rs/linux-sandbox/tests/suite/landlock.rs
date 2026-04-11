@@ -194,12 +194,12 @@ fn expect_denied(
     }
 }
 
-#[tokio::test]
+#[test]
 async fn test_root_read() {
     run_cmd(&["ls", "-l", "/bin"], &[], SHORT_TIMEOUT_MS).await;
 }
 
-#[tokio::test]
+#[test]
 #[should_panic]
 async fn test_root_write() {
     let tmpfile = NamedTempFile::new().unwrap();
@@ -212,7 +212,7 @@ async fn test_root_write() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn test_dev_null_write() {
     if should_skip_bwrap_tests().await {
         eprintln!("skipping bwrap test: bwrap sandbox prerequisites are unavailable");
@@ -234,7 +234,7 @@ async fn test_dev_null_write() {
     assert_eq!(output.exit_code, 0);
 }
 
-#[tokio::test]
+#[test]
 async fn bwrap_populates_minimal_dev_nodes() {
     if should_skip_bwrap_tests().await {
         eprintln!("skipping bwrap test: bwrap sandbox prerequisites are unavailable");
@@ -258,7 +258,7 @@ async fn bwrap_populates_minimal_dev_nodes() {
     assert_eq!(output.exit_code, 0);
 }
 
-#[tokio::test]
+#[test]
 async fn bwrap_preserves_writable_dev_shm_bind_mount() {
     if should_skip_bwrap_tests().await {
         eprintln!("skipping bwrap test: bwrap sandbox prerequisites are unavailable");
@@ -300,7 +300,7 @@ async fn bwrap_preserves_writable_dev_shm_bind_mount() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn test_writable_root() {
     let tmpdir = tempfile::tempdir().unwrap();
     let file_path = tmpdir.path().join("test");
@@ -318,7 +318,7 @@ async fn test_writable_root() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_ignores_missing_writable_roots_under_bwrap() {
     if should_skip_bwrap_tests().await {
         eprintln!("skipping bwrap test: bwrap sandbox prerequisites are unavailable");
@@ -344,7 +344,7 @@ async fn sandbox_ignores_missing_writable_roots_under_bwrap() {
     assert_eq!(output.stdout.text, "sandbox-ok");
 }
 
-#[tokio::test]
+#[test]
 async fn test_no_new_privs_is_enabled() {
     let output = run_cmd_output(
         &["bash", "-lc", "grep '^NoNewPrivs:' /proc/self/status"],
@@ -363,7 +363,7 @@ async fn test_no_new_privs_is_enabled() {
     assert_eq!(line.trim(), "NoNewPrivs:\t1");
 }
 
-#[tokio::test]
+#[test]
 #[should_panic(expected = "Sandbox(Timeout")]
 async fn test_timeout() {
     run_cmd(&["sleep", "2"], &[], /*timeout_ms*/ 50).await;
@@ -432,29 +432,29 @@ async fn assert_network_blocked(cmd: &[&str]) {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_blocks_curl() {
     assert_network_blocked(&["curl", "-I", "http://openai.com"]).await;
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_blocks_wget() {
     assert_network_blocked(&["wget", "-qO-", "http://openai.com"]).await;
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_blocks_ping() {
     // ICMP requires raw socket – should be denied quickly with EPERM.
     assert_network_blocked(&["ping", "-c", "1", "8.8.8.8"]).await;
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_blocks_nc() {
     // Zero‑length connection attempt to localhost.
     assert_network_blocked(&["nc", "-z", "127.0.0.1", "80"]).await;
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_blocks_git_and_codex_writes_inside_writable_root() {
     if should_skip_bwrap_tests().await {
         eprintln!("skipping bwrap test: bwrap sandbox prerequisites are unavailable");
@@ -505,7 +505,7 @@ async fn sandbox_blocks_git_and_codex_writes_inside_writable_root() {
     assert_ne!(codex_output.exit_code, 0);
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_blocks_codex_symlink_replacement_attack() {
     if should_skip_bwrap_tests().await {
         eprintln!("skipping bwrap test: bwrap sandbox prerequisites are unavailable");
@@ -541,7 +541,7 @@ async fn sandbox_blocks_codex_symlink_replacement_attack() {
     assert_ne!(codex_output.exit_code, 0);
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_blocks_explicit_split_policy_carveouts_under_bwrap() {
     if should_skip_bwrap_tests().await {
         eprintln!("skipping bwrap test: bwrap sandbox prerequisites are unavailable");
@@ -613,7 +613,7 @@ async fn sandbox_blocks_explicit_split_policy_carveouts_under_bwrap() {
     assert_ne!(output.exit_code, 0);
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_reenables_writable_subpaths_under_unreadable_parents() {
     if should_skip_bwrap_tests().await {
         eprintln!("skipping bwrap test: bwrap sandbox prerequisites are unavailable");
@@ -695,7 +695,7 @@ async fn sandbox_reenables_writable_subpaths_under_unreadable_parents() {
     assert_eq!(output.stdout.text.trim(), "allowed");
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_blocks_root_read_carveouts_under_bwrap() {
     if should_skip_bwrap_tests().await {
         eprintln!("skipping bwrap test: bwrap sandbox prerequisites are unavailable");
@@ -746,7 +746,7 @@ async fn sandbox_blocks_root_read_carveouts_under_bwrap() {
     assert_ne!(output.exit_code, 0);
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_blocks_ssh() {
     // Force ssh to attempt a real TCP connection but fail quickly.  `BatchMode`
     // avoids password prompts, and `ConnectTimeout` keeps the hang time low.
@@ -761,12 +761,12 @@ async fn sandbox_blocks_ssh() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_blocks_getent() {
     assert_network_blocked(&["getent", "ahosts", "openai.com"]).await;
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_blocks_dev_tcp_redirection() {
     // This syntax is only supported by bash and zsh. We try bash first.
     // Fallback generic socket attempt using /bin/sh with bash‑style /dev/tcp.  Not

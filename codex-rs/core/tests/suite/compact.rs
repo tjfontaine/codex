@@ -200,7 +200,7 @@ fn format_labeled_requests_snapshot(
     )
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn summarize_context_three_requests_and_instructions() {
     skip_if_no_network!();
 
@@ -410,7 +410,7 @@ async fn summarize_context_three_requests_and_instructions() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn manual_compact_uses_custom_prompt() {
     skip_if_no_network!();
 
@@ -502,7 +502,7 @@ async fn manual_compact_uses_custom_prompt() {
     }
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn manual_compact_emits_api_and_local_token_usage_events() {
     skip_if_no_network!();
 
@@ -560,7 +560,7 @@ async fn manual_compact_emits_api_and_local_token_usage_events() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn manual_compact_emits_context_compaction_items() {
     skip_if_no_network!();
 
@@ -635,7 +635,7 @@ async fn manual_compact_emits_context_compaction_items() {
     assert!(legacy_event);
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn multiple_auto_compact_per_task_runs_after_token_limit_hit() {
     skip_if_no_network!();
 
@@ -1586,7 +1586,7 @@ async fn auto_compact_starts_after_turn_started() {
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn auto_compact_runs_after_resume_when_token_usage_is_over_limit() {
     skip_if_no_network!();
 
@@ -1706,7 +1706,7 @@ async fn auto_compact_runs_after_resume_when_token_usage_is_over_limit() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pre_sampling_compact_runs_on_switch_to_smaller_context_model() {
     skip_if_no_network!();
 
@@ -1832,7 +1832,7 @@ async fn pre_sampling_compact_runs_on_switch_to_smaller_context_model() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pre_sampling_compact_runs_after_resume_and_switch_to_smaller_model() {
     skip_if_no_network!();
 
@@ -1977,7 +1977,7 @@ async fn pre_sampling_compact_runs_after_resume_and_switch_to_smaller_model() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn auto_compact_persists_rollout_entries() {
     skip_if_no_network!();
 
@@ -2116,7 +2116,7 @@ async fn auto_compact_persists_rollout_entries() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn manual_compact_retries_after_context_window_error() {
     skip_if_no_network!();
 
@@ -2227,7 +2227,7 @@ async fn manual_compact_retries_after_context_window_error() {
     }
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 // TODO(ccunningham): Re-enable after the follow-up compaction behavior PR lands.
 // Current main behavior around non-context manual /compact failures is known-incorrect.
 #[ignore = "behavior change covered in follow-up compaction PR"]
@@ -2304,7 +2304,7 @@ async fn manual_compact_non_context_failure_retries_then_emits_task_error() {
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn manual_compact_twice_preserves_latest_user_messages() {
     skip_if_no_network!();
 
@@ -2506,7 +2506,7 @@ async fn manual_compact_twice_preserves_latest_user_messages() {
     assert_eq!(history_before_seeded_prefix, expected_history.as_slice());
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_events() {
     skip_if_no_network!();
 
@@ -2618,7 +2618,7 @@ async fn auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn snapshot_request_shape_mid_turn_continuation_compaction() {
     skip_if_no_network!();
 
@@ -2723,7 +2723,7 @@ async fn snapshot_request_shape_mid_turn_continuation_compaction() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn auto_compact_clamps_config_limit_to_context_window() {
     skip_if_no_network!();
 
@@ -2783,7 +2783,7 @@ async fn auto_compact_clamps_config_limit_to_context_window() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn auto_compact_counts_encrypted_reasoning_before_last_user() {
     skip_if_no_network!();
 
@@ -2910,7 +2910,7 @@ async fn auto_compact_counts_encrypted_reasoning_before_last_user() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn auto_compact_runs_when_reasoning_header_clears_between_turns() {
     skip_if_no_network!();
 
@@ -2994,7 +2994,7 @@ async fn auto_compact_runs_when_reasoning_header_clears_between_turns() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 // TODO(ccunningham): Update once pre-turn compaction includes incoming user input.
 async fn snapshot_request_shape_pre_turn_compaction_including_incoming_user_message() {
     skip_if_no_network!();
@@ -3115,7 +3115,7 @@ async fn snapshot_request_shape_pre_turn_compaction_including_incoming_user_mess
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 // TODO(ccunningham): Update once pre-turn compaction context-overflow handling includes incoming
 // user input and emits richer oversized-input messaging.
 async fn snapshot_request_shape_pre_turn_compaction_strips_incoming_model_switch() {
@@ -3244,7 +3244,7 @@ async fn snapshot_request_shape_pre_turn_compaction_strips_incoming_model_switch
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn snapshot_request_shape_pre_turn_compaction_context_window_exceeded() {
     skip_if_no_network!();
 
@@ -3333,7 +3333,7 @@ async fn snapshot_request_shape_pre_turn_compaction_context_window_exceeded() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn snapshot_request_shape_manual_compact_without_previous_user_messages() {
     skip_if_no_network!();
 

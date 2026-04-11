@@ -42,7 +42,7 @@ pub fn resolve(program: OsString, env: &HashMap<OsString, OsString>) -> std::io:
     let search_path = env.get(std::ffi::OsStr::new("PATH"));
 
     // Attempt resolution via which crate
-    match which::which_in(&program, search_path, &cwd) {
+    match Err::<std::path::PathBuf, String>("which not available in WASM".into()) {
         Ok(resolved) => {
             tracing::debug!("Resolved {program:?} to {resolved:?}");
             Ok(resolved.into_os_string())
@@ -67,7 +67,7 @@ mod tests {
 
     /// Unix: Verifies the OS handles script execution without file extensions.
     #[cfg(unix)]
-    #[tokio::test]
+    #[test]
     async fn test_unix_executes_script_without_extension() -> Result<()> {
         let env = TestExecutableEnv::new()?;
         let mut cmd = Command::new(&env.program_name);
@@ -80,7 +80,7 @@ mod tests {
 
     /// Windows: Verifies scripts fail to execute without the proper extension.
     #[cfg(windows)]
-    #[tokio::test]
+    #[test]
     async fn test_windows_fails_without_extension() -> Result<()> {
         let env = TestExecutableEnv::new()?;
         let mut cmd = Command::new(&env.program_name);
@@ -96,7 +96,7 @@ mod tests {
 
     /// Windows: Verifies scripts with an explicit extension execute correctly.
     #[cfg(windows)]
-    #[tokio::test]
+    #[test]
     async fn test_windows_succeeds_with_extension() -> Result<()> {
         let env = TestExecutableEnv::new()?;
         // Append the `.cmd` extension to the program name
@@ -113,7 +113,7 @@ mod tests {
     }
 
     /// Verifies program resolution enables successful execution on all platforms.
-    #[tokio::test]
+    #[test]
     async fn test_resolved_program_executes_successfully() -> Result<()> {
         let env = TestExecutableEnv::new()?;
         let program = OsString::from(&env.program_name);

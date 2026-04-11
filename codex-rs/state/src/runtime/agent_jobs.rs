@@ -99,7 +99,7 @@ INSERT INTO agent_job_items (
     }
 
     pub async fn get_agent_job(&self, job_id: &str) -> anyhow::Result<Option<AgentJob>> {
-        let row = sqlx::query_as::<_, AgentJobRow>(
+        let row = sqlx::query_as::<AgentJobRow>(
             r#"
 SELECT
     id,
@@ -176,7 +176,7 @@ WHERE job_id =
         job_id: &str,
         item_id: &str,
     ) -> anyhow::Result<Option<AgentJobItem>> {
-        let row: Option<AgentJobItemRow> = sqlx::query_as::<_, AgentJobItemRow>(
+        let row: Option<AgentJobItemRow> = sqlx::query_as::<AgentJobItemRow>(
             r#"
 SELECT
     job_id,
@@ -612,7 +612,7 @@ mod tests {
         Ok((job_id, item_id, thread_id))
     }
 
-    #[tokio::test]
+    #[test]
     async fn report_agent_job_item_result_completes_item_atomically() -> anyhow::Result<()> {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home, "test-provider".to_string()).await?;
@@ -652,7 +652,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn report_agent_job_item_result_rejects_late_reports() -> anyhow::Result<()> {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home, "test-provider".to_string()).await?;

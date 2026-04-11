@@ -5,7 +5,7 @@ use codex_app_server_protocol::AppListUpdatedNotification;
 use codex_app_server_protocol::AppsListResponse;
 use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::ServerNotification;
-use codex_chatgpt::connectors;
+use codex_core::connectors;
 
 use crate::error_code::INVALID_REQUEST_ERROR_CODE;
 use crate::outgoing_message::OutgoingMessageSender;

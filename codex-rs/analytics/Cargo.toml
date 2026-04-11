@@ -1,32 +1,26 @@
 [package]
-edition.workspace = true
-license.workspace = true
+edition = "2024"
+license = "Apache-2.0"
 name = "codex-analytics"
-version.workspace = true
+version = "0.0.0"
 
 [lib]
 doctest = false
 name = "codex_analytics"
 path = "src/lib.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-codex-app-server-protocol = { workspace = true }
-codex-git-utils = { workspace = true }
-codex-login = { workspace = true }
-codex-plugin = { workspace = true }
-codex-protocol = { workspace = true }
-os_info = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-sha1 = { workspace = true }
-tokio = { workspace = true, features = [
-    "macros",
-    "rt-multi-thread",
-] }
-tracing = { workspace = true, features = ["log"] }
+codex-app-server-protocol = { path = "../app-server-protocol" }
+codex-git-utils = { path = "../git-utils" }
+codex-login = { path = "../login" }
+codex-plugin = { path = "../plugin" }
+codex-protocol = { path = "../protocol" }
+os_info = { path = "../../../codex-wasm/wasi-os-info" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+sha1 = { version = "0.10.6" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
+tracing = { version = "0.1.44", features = ["log"] }
 
 [dev-dependencies]
-pretty_assertions = { workspace = true }
+pretty_assertions = { version = "1.4.1" }

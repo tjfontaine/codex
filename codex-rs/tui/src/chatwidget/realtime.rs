@@ -645,12 +645,12 @@ impl ChatWidget {
 }
 
 fn start_realtime_webrtc_offer_task(app_event_tx: AppEventSender) {
-    std::thread::spawn(move || {
+    tokio::thread_spawn::spawn(move || {
         let result = match RealtimeWebrtcSession::start() {
             Ok(started) => {
                 let event_tx = app_event_tx.clone();
                 let local_audio_peak = started.handle.local_audio_peak();
-                std::thread::spawn(move || {
+                tokio::thread_spawn::spawn(move || {
                     for event in started.events {
                         if let RealtimeWebrtcEvent::LocalAudioLevel(peak) = event {
                             local_audio_peak.store(peak, Ordering::Relaxed);
@@ -678,7 +678,7 @@ fn start_realtime_meter_task(
     stop_flag: Arc<AtomicBool>,
     peak: Arc<AtomicU16>,
 ) {
-    std::thread::spawn(move || {
+    tokio::thread_spawn::spawn(move || {
         let mut meter = crate::voice::RecordingMeterState::new();
 
         loop {
@@ -692,7 +692,7 @@ fn start_realtime_meter_task(
                 text: meter_text,
             });
 
-            std::thread::sleep(Duration::from_millis(60));
+            tokio::thread_spawn::sleep(Duration::from_millis(60));
         }
     });
 }

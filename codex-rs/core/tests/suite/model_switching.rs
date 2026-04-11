@@ -103,7 +103,7 @@ fn test_model_info(
     }
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn model_change_appends_model_instructions_developer_message() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -193,7 +193,7 @@ async fn model_change_appends_model_instructions_developer_message() -> Result<(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn model_and_personality_change_only_appends_model_instructions() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -294,7 +294,7 @@ async fn model_and_personality_change_only_appends_model_instructions() -> Resul
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn service_tier_change_is_applied_on_next_http_turn() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -324,7 +324,7 @@ async fn service_tier_change_is_applied_on_next_http_turn() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn flex_service_tier_is_applied_to_http_turn() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -343,7 +343,7 @@ async fn flex_service_tier_is_applied_to_http_turn() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn model_change_from_image_to_text_strips_prior_image_content() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -473,7 +473,7 @@ async fn model_change_from_image_to_text_strips_prior_image_content() -> Result<
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn generated_image_is_replayed_for_image_capable_models() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -597,7 +597,7 @@ async fn generated_image_is_replayed_for_image_capable_models() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn model_change_from_generated_image_to_text_preserves_prior_generated_image_call()
 -> Result<()> {
     skip_if_no_network!(Ok(()));
@@ -739,7 +739,7 @@ async fn model_change_from_generated_image_to_text_preserves_prior_generated_ima
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn thread_rollback_after_generated_image_drops_entire_image_turn_history() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -868,7 +868,7 @@ async fn thread_rollback_after_generated_image_drops_entire_image_turn_history()
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn model_switch_to_smaller_model_updates_token_context_window() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

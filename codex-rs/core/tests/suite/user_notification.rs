@@ -22,7 +22,7 @@ use responses::sse;
 use responses::start_mock_server;
 use std::time::Duration;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn summarize_context_three_requests_and_instructions() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 

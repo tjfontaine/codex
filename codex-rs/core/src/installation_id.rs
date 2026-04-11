@@ -74,7 +74,7 @@ mod tests {
     #[cfg(unix)]
     use std::os::unix::fs::PermissionsExt;
 
-    #[tokio::test]
+    #[test]
     async fn resolve_installation_id_generates_and_persists_uuid() {
         let codex_home = TempDir::new().expect("create temp dir");
         let persisted_path = codex_home.path().join(INSTALLATION_ID_FILENAME);
@@ -100,7 +100,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn resolve_installation_id_reuses_existing_uuid() {
         let codex_home = TempDir::new().expect("create temp dir");
         let existing = Uuid::new_v4().to_string().to_uppercase();
@@ -122,7 +122,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn resolve_installation_id_rewrites_invalid_file_contents() {
         let codex_home = TempDir::new().expect("create temp dir");
         std::fs::write(

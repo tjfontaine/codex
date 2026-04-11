@@ -197,7 +197,7 @@ mod tests {
     use crate::ProcessId;
     use pretty_assertions::assert_eq;
 
-    #[tokio::test]
+    #[test]
     async fn create_local_environment_does_not_connect() {
         let environment = Environment::create(/*exec_server_url*/ None)
             .await
@@ -233,7 +233,7 @@ mod tests {
         assert_eq!(manager.exec_server_url(), Some("ws://127.0.0.1:8765"));
     }
 
-    #[tokio::test]
+    #[test]
     async fn environment_manager_current_caches_environment() {
         let manager = EnvironmentManager::new(/*exec_server_url*/ None);
 
@@ -246,7 +246,7 @@ mod tests {
         assert!(Arc::ptr_eq(&first, &second));
     }
 
-    #[tokio::test]
+    #[test]
     async fn disabled_environment_manager_has_no_current_environment() {
         let manager = EnvironmentManager::new(Some("none".to_string()));
 
@@ -259,7 +259,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn default_environment_has_ready_local_executor() {
         let environment = Environment::default();
 

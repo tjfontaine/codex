@@ -30,7 +30,7 @@ fn permissions_texts(request: &ResponsesRequest) -> Vec<String> {
         .collect()
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn permissions_message_sent_once_on_start() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -63,7 +63,7 @@ async fn permissions_message_sent_once_on_start() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn permissions_message_added_on_override_change() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -135,7 +135,7 @@ async fn permissions_message_added_on_override_change() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn permissions_message_not_added_when_no_change() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -190,7 +190,7 @@ async fn permissions_message_not_added_when_no_change() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn permissions_message_omitted_when_disabled() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -264,7 +264,7 @@ async fn permissions_message_omitted_when_disabled() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn resume_replays_permissions_messages() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -361,7 +361,7 @@ async fn resume_replays_permissions_messages() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn resume_and_fork_append_permissions_messages() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -508,7 +508,7 @@ async fn resume_and_fork_append_permissions_messages() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn permissions_message_includes_writable_roots() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

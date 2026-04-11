@@ -517,7 +517,7 @@ pub(crate) async fn run_onboarding_app(
                     Some(app_server) => app_server.next_event().await,
                     None => None,
                 }
-            }, if app_server.is_some() => {
+            } => {
                 if let Some(event) = event {
                     match event {
                         AppServerEvent::ServerNotification(notification) => {

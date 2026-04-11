@@ -478,7 +478,6 @@ fn parse_data_url(url: &str) -> Option<(String, String)> {
     Some((mime.to_string(), data.to_string()))
 }
 
-#[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("starting rmcp test server");
     // Run the server with STDIO transport. If the client disconnects we simply

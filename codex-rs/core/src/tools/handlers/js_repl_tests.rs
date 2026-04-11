@@ -50,7 +50,7 @@ fn parse_freeform_args_rejects_json_wrapped_code() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn emit_js_repl_exec_end_sends_event() {
     let (session, turn, rx) = make_session_and_context_with_rx().await;
     super::emit_js_repl_exec_end(

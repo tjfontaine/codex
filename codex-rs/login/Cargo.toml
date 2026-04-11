@@ -1,53 +1,42 @@
 [package]
 name = "codex-login"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
-
-[lints]
-workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [dependencies]
-async-trait = { workspace = true }
-base64 = { workspace = true }
-chrono = { workspace = true, features = ["serde"] }
-codex-app-server-protocol = { workspace = true }
-codex-api = { workspace = true }
-codex-client = { workspace = true }
-codex-config = { workspace = true }
-codex-keyring-store = { workspace = true }
-codex-model-provider-info = { workspace = true }
-codex-otel = { workspace = true }
-codex-protocol = { workspace = true }
-codex-terminal-detection = { workspace = true }
-codex-utils-template = { workspace = true }
-once_cell = { workspace = true }
-os_info = { workspace = true }
-rand = { workspace = true }
-reqwest = { workspace = true, features = ["json", "blocking"] }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-sha2 = { workspace = true }
-thiserror = { workspace = true }
-tiny_http = { workspace = true }
-tokio = { workspace = true, features = [
-    "io-std",
-    "macros",
-    "process",
-    "rt-multi-thread",
-    "signal",
-] }
-tracing = { workspace = true }
-url = { workspace = true }
-urlencoding = { workspace = true }
-webbrowser = { workspace = true }
+async-trait = { version = "0.1.89" }
+base64 = { version = "0.22.1" }
+chrono = { version = "0.4.43", features = ["serde"] }
+codex-app-server-protocol = { path = "../app-server-protocol" }
+codex-api = { path = "../codex-api" }
+codex-client = { path = "../codex-client" }
+codex-config = { path = "../config" }
+codex-keyring-store = { path = "../../../codex-wasm/wasi-keyring-store" }
+codex-model-provider-info = { path = "../model-provider-info" }
+codex-otel = { path = "../../../codex-wasm/wasi-codex-otel" }
+codex-protocol = { path = "../protocol" }
+codex-terminal-detection = { path = "../../../codex-wasm/wasi-terminal-detection" }
+codex-utils-template = { path = "../utils/template" }
+once_cell = { version = "1.20.2" }
+os_info = { path = "../../../codex-wasm/wasi-os-info" }
+rand = { version = "0.9" }
+reqwest = { path = "../../../codex-wasm/wasi-reqwest" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+sha2 = { version = "0.10" }
+thiserror = { version = "2.0.17" }
+tiny_http = { version = "0.12" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
+tracing = { version = "0.1.44" }
+url = { version = "2" }
+urlencoding = { version = "2.1" }
+webbrowser = { version = "1.0" }
 
 [dev-dependencies]
-anyhow = { workspace = true }
-core_test_support = { workspace = true }
-keyring = { workspace = true }
-pretty_assertions = { workspace = true }
-regex-lite = { workspace = true }
-serial_test = { workspace = true }
-tempfile = { workspace = true }
-wiremock = { workspace = true }
+anyhow = { version = "1" }
+pretty_assertions = { version = "1.4.1" }
+regex-lite = { version = "0.1.8" }
+serial_test = { version = "3.2.0" }
+tempfile = { version = "3.23.0" }
+wiremock = { version = "0.6" }
