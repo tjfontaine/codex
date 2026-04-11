@@ -438,7 +438,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn list_all_connectors_uses_shared_cache() -> anyhow::Result<()> {
         let calls = Arc::new(AtomicUsize::new(0));
         let call_counter = Arc::clone(&calls);
@@ -476,7 +476,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn list_all_connectors_merges_and_normalizes_directory_apps() -> anyhow::Result<()> {
         let key = cache_key("merged");
         let calls = Arc::new(AtomicUsize::new(0));

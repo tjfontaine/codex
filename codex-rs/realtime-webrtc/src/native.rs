@@ -57,7 +57,7 @@ pub(crate) fn start() -> Result<StartedSession> {
     let (events_tx, events_rx) = mpsc::channel();
     let (offer_tx, offer_rx) = mpsc::channel();
 
-    thread::Builder::new()
+    tokio::thread_spawn::Builder::new()
         .name("codex-realtime-webrtc".to_string())
         .spawn(move || worker_main(command_rx, events_tx, offer_tx))
         .map_err(|err| {

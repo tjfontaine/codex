@@ -443,7 +443,7 @@ fn v2_background_agent_tool_call(call_id: &str, prompt: &str) -> Value {
     })
 }
 
-#[tokio::test]
+#[test]
 async fn realtime_conversation_streams_v2_notifications() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -698,7 +698,7 @@ async fn realtime_conversation_streams_v2_notifications() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn realtime_list_voices_returns_supported_names() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(
@@ -758,7 +758,7 @@ async fn realtime_list_voices_returns_supported_names() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn realtime_conversation_stop_emits_closed_notification() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -840,7 +840,7 @@ async fn realtime_conversation_stop_emits_closed_notification() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn realtime_webrtc_start_emits_sdp_notification() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1001,7 +1001,7 @@ async fn realtime_webrtc_start_emits_sdp_notification() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn webrtc_v1_start_posts_offer_returns_sdp_and_joins_sideband() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1062,7 +1062,7 @@ async fn webrtc_v1_start_posts_offer_returns_sdp_and_joins_sideband() -> Result<
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn webrtc_v1_handoff_request_delegates_and_appends_result() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1128,7 +1128,7 @@ async fn webrtc_v1_handoff_request_delegates_and_appends_result() -> Result<()> 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn webrtc_v2_forwards_audio_and_text_between_client_and_sideband() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1213,7 +1213,7 @@ async fn webrtc_v2_forwards_audio_and_text_between_client_and_sideband() -> Resu
 /// The Realtime API rejects a new `response.create` while a default response is
 /// still active, so the input task should queue the second create and flush it
 /// only after the server sends `response.done` for the active response.
-#[tokio::test]
+#[test]
 async fn webrtc_v2_queues_text_response_create_while_response_is_active() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1301,7 +1301,7 @@ async fn webrtc_v2_queues_text_response_create_while_response_is_active() -> Res
 /// `response.cancelled` should clear the active-response guard exactly like
 /// `response.done`, so a text turn queued during the active response still gets
 /// one deferred `response.create`.
-#[tokio::test]
+#[test]
 async fn webrtc_v2_flushes_queued_text_response_create_when_response_is_cancelled() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1371,7 +1371,7 @@ async fn webrtc_v2_flushes_queued_text_response_create_when_response_is_cancelle
 /// Once the background agent finishes, app-server sends the final function-call
 /// output to realtime and then requests a new `response.create` so realtime can
 /// react to that final output.
-#[tokio::test]
+#[test]
 async fn webrtc_v2_background_agent_tool_call_delegates_and_returns_function_output() -> Result<()>
 {
     skip_if_no_network!(Ok(()));
@@ -1442,7 +1442,7 @@ async fn webrtc_v2_background_agent_tool_call_delegates_and_returns_function_out
 /// The second background-agent tool call is treated as guidance for the active
 /// task. App-server acknowledges that steering message to realtime and then
 /// emits `response.create` so realtime can speak that acknowledgement.
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn webrtc_v2_background_agent_steering_ack_requests_response_create() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1525,7 +1525,7 @@ async fn webrtc_v2_background_agent_steering_ack_requests_response_create() -> R
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn webrtc_v2_background_agent_progress_is_sent_before_function_output() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1563,7 +1563,7 @@ async fn webrtc_v2_background_agent_progress_is_sent_before_function_output() ->
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn webrtc_v2_tool_call_delegated_turn_can_execute_shell_tool() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1651,7 +1651,7 @@ async fn webrtc_v2_tool_call_delegated_turn_can_execute_shell_tool() -> Result<(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn webrtc_v2_tool_call_does_not_block_sideband_audio() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1727,7 +1727,7 @@ async fn webrtc_v2_tool_call_does_not_block_sideband_audio() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn realtime_webrtc_start_surfaces_backend_error() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -1793,7 +1793,7 @@ async fn realtime_webrtc_start_surfaces_backend_error() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn realtime_conversation_requires_feature_flag() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

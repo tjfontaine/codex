@@ -154,7 +154,7 @@ async fn mock_device_code_oauth_token(server: &MockServer, id_token: &str) {
         .await;
 }
 
-#[tokio::test]
+#[test]
 async fn logout_account_removes_auth_and_notifies() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(codex_home.path(), CreateConfigTomlParams::default())?;
@@ -212,7 +212,7 @@ async fn logout_account_removes_auth_and_notifies() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn set_auth_token_updates_account_and_notifies() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mock_server = MockServer::start().await;
@@ -288,7 +288,7 @@ async fn set_auth_token_updates_account_and_notifies() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn account_read_refresh_token_is_noop_in_external_mode() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(
@@ -390,7 +390,7 @@ async fn respond_to_refresh_request(
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 // 401 response triggers account/chatgptAuthTokens/refresh and retries with new tokens.
 async fn external_auth_refreshes_on_unauthorized() -> Result<()> {
     let codex_home = TempDir::new()?;
@@ -510,7 +510,7 @@ async fn external_auth_refreshes_on_unauthorized() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 // Client returns JSON-RPC error to refresh; turn fails.
 async fn external_auth_refresh_error_fails_turn() -> Result<()> {
     let codex_home = TempDir::new()?;
@@ -625,7 +625,7 @@ async fn external_auth_refresh_error_fails_turn() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 // Refresh returns tokens for the wrong workspace; turn fails.
 async fn external_auth_refresh_mismatched_workspace_fails_turn() -> Result<()> {
     let codex_home = TempDir::new()?;
@@ -747,7 +747,7 @@ async fn external_auth_refresh_mismatched_workspace_fails_turn() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 // Refresh returns a malformed access token; turn fails.
 async fn external_auth_refresh_invalid_access_token_fails_turn() -> Result<()> {
     let codex_home = TempDir::new()?;
@@ -862,7 +862,7 @@ async fn external_auth_refresh_invalid_access_token_fails_turn() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn login_account_api_key_succeeds_and_notifies() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(codex_home.path(), CreateConfigTomlParams::default())?;
@@ -910,7 +910,7 @@ async fn login_account_api_key_succeeds_and_notifies() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn login_account_api_key_rejected_when_forced_chatgpt() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(
@@ -940,7 +940,7 @@ async fn login_account_api_key_rejected_when_forced_chatgpt() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn login_account_chatgpt_rejected_when_forced_api() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(
@@ -968,7 +968,7 @@ async fn login_account_chatgpt_rejected_when_forced_api() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn login_account_chatgpt_device_code_returns_error_when_disabled() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mock_server = MockServer::start().await;
@@ -1024,7 +1024,7 @@ async fn login_account_chatgpt_device_code_returns_error_when_disabled() -> Resu
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn login_account_chatgpt_device_code_succeeds_and_notifies() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mock_server = MockServer::start().await;
@@ -1108,7 +1108,7 @@ async fn login_account_chatgpt_device_code_succeeds_and_notifies() -> Result<()>
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn login_account_chatgpt_device_code_failure_notifies_without_account_update() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mock_server = MockServer::start().await;
@@ -1183,7 +1183,7 @@ async fn login_account_chatgpt_device_code_failure_notifies_without_account_upda
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn login_account_chatgpt_device_code_can_be_cancelled() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mock_server = MockServer::start().await;
@@ -1267,7 +1267,7 @@ async fn login_account_chatgpt_device_code_can_be_cancelled() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 // Serialize tests that launch the login server since it binds to a fixed port.
 #[serial(login_port)]
 async fn login_account_chatgpt_start_can_be_cancelled() -> Result<()> {
@@ -1333,7 +1333,7 @@ async fn login_account_chatgpt_start_can_be_cancelled() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 // Serialize tests that launch the login server since it binds to a fixed port.
 #[serial(login_port)]
 async fn set_auth_token_cancels_active_chatgpt_login() -> Result<()> {
@@ -1402,7 +1402,7 @@ async fn set_auth_token_cancels_active_chatgpt_login() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 // Serialize tests that launch the login server since it binds to a fixed port.
 #[serial(login_port)]
 async fn login_account_chatgpt_includes_forced_workspace_query_param() -> Result<()> {
@@ -1436,7 +1436,7 @@ async fn login_account_chatgpt_includes_forced_workspace_query_param() -> Result
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn get_account_no_auth() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(
@@ -1467,7 +1467,7 @@ async fn get_account_no_auth() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn get_account_with_api_key() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(
@@ -1511,7 +1511,7 @@ async fn get_account_with_api_key() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn get_account_when_auth_not_required() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(
@@ -1545,7 +1545,7 @@ async fn get_account_when_auth_not_required() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn get_account_with_chatgpt() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(
@@ -1589,7 +1589,7 @@ async fn get_account_with_chatgpt() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn get_account_with_chatgpt_missing_plan_claim_returns_unknown() -> Result<()> {
     let codex_home = TempDir::new()?;
     create_config_toml(

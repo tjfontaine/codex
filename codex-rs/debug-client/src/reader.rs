@@ -41,7 +41,7 @@ pub fn start_reader(
     auto_approve: bool,
     filtered_output: bool,
 ) -> JoinHandle<()> {
-    thread::spawn(move || {
+    tokio::thread_spawn::spawn(move || {
         let command_decision = if auto_approve {
             CommandExecutionApprovalDecision::Accept
         } else {

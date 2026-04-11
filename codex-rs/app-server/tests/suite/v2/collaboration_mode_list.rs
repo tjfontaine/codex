@@ -24,7 +24,7 @@ use tokio::time::timeout;
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(10);
 
 /// Confirms the server returns the default collaboration mode presets in a stable order.
-#[tokio::test]
+#[test]
 async fn list_collaboration_modes_returns_presets() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mut mcp = McpProcess::new(codex_home.path()).await?;

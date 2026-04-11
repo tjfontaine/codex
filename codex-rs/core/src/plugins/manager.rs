@@ -1090,7 +1090,7 @@ impl PluginsManager {
         }
 
         let manager = Arc::clone(self);
-        if let Err(err) = std::thread::Builder::new()
+        if let Err(err) = tokio::thread_spawn::Builder::new()
             .name("plugins-non-curated-cache-refresh".to_string())
             .spawn(move || manager.run_non_curated_plugin_cache_refresh_loop())
         {
@@ -1110,7 +1110,7 @@ impl PluginsManager {
         }
         let manager = Arc::clone(self);
         let codex_home = self.codex_home.clone();
-        if let Err(err) = std::thread::Builder::new()
+        if let Err(err) = tokio::thread_spawn::Builder::new()
             .name("plugins-curated-repo-sync".to_string())
             .spawn(
                 move || match sync_openai_plugins_repo(codex_home.as_path()) {

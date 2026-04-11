@@ -13,7 +13,7 @@ fn codex_command(codex_home: &Path) -> Result<assert_cmd::Command> {
     Ok(cmd)
 }
 
-#[tokio::test]
+#[test]
 async fn debug_clear_memories_resets_state_and_removes_memory_dir() -> Result<()> {
     let codex_home = TempDir::new()?;
     let runtime =

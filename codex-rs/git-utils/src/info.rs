@@ -12,7 +12,6 @@ use serde::Serialize;
 use tokio::process::Command;
 use tokio::time::Duration as TokioDuration;
 use tokio::time::timeout;
-use ts_rs::TS;
 
 use crate::GitSha;
 
@@ -40,7 +39,7 @@ pub fn get_git_repo_root(base_dir: &Path) -> Option<PathBuf> {
 /// Timeout for git commands to prevent freezing on large repositories
 const GIT_COMMAND_TIMEOUT: TokioDuration = TokioDuration::from_secs(5);
 
-#[derive(Serialize, Deserialize, Clone, Debug, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
 pub struct GitInfo {
     /// Current commit hash (SHA)
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -268,7 +267,7 @@ pub async fn git_diff_to_remote(cwd: &Path) -> Option<GitDiffToRemote> {
 }
 
 /// Run a git command with a timeout to prevent blocking on large repositories
-async fn run_git_command_with_timeout(args: &[&str], cwd: &Path) -> Option<std::process::Output> {
+async fn run_git_command_with_timeout(args: &[&str], cwd: &Path) -> Option<tokio::process::Output> {
     let mut command = Command::new("git");
     command
         .env("GIT_OPTIONAL_LOCKS", "0")

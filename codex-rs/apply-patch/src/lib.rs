@@ -1,3 +1,4 @@
+#![allow(unused_variables, unused_imports)]
 mod invocation;
 mod parser;
 mod seek_sequence;
@@ -596,7 +597,7 @@ mod tests {
         format!("*** Begin Patch\n{body}\n*** End Patch")
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_add_file_hunk_creates_file_with_contents() {
         let dir = tempdir().unwrap();
         let path = dir.path().join("add.txt");
@@ -630,7 +631,7 @@ mod tests {
         assert_eq!(contents, "ab\ncd\n");
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_apply_patch_hunks_accept_relative_and_absolute_paths() {
         let dir = tempdir().unwrap();
         let cwd = dir.path().abs();
@@ -695,7 +696,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_delete_file_hunk_removes_file() {
         let dir = tempdir().unwrap();
         let path = dir.path().join("del.txt");
@@ -723,7 +724,7 @@ mod tests {
         assert!(!path.exists());
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_update_file_hunk_modifies_content() {
         let dir = tempdir().unwrap();
         let path = dir.path().join("update.txt");
@@ -760,7 +761,7 @@ mod tests {
         assert_eq!(contents, "foo\nbaz\n");
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_update_file_hunk_can_move_file() {
         let dir = tempdir().unwrap();
         let src = dir.path().join("src.txt");
@@ -802,7 +803,7 @@ mod tests {
 
     /// Verify that a single `Update File` hunk with multiple change chunks can update different
     /// parts of a file and that the file is listed only once in the summary.
-    #[tokio::test]
+    #[test]
     async fn test_multiple_update_chunks_apply_to_single_file() {
         // Start with a file containing four lines.
         let dir = tempdir().unwrap();
@@ -850,7 +851,7 @@ mod tests {
     /// replacements in separate chunks that appear in non‑adjacent parts of the
     /// file.  Verifies that all edits are applied and that the summary lists the
     /// file only once.
-    #[tokio::test]
+    #[test]
     async fn test_update_file_hunk_interleaved_changes() {
         let dir = tempdir().unwrap();
         let path = dir.path().join("interleaved.txt");
@@ -906,7 +907,7 @@ mod tests {
         assert_eq!(contents, "a\nB\nc\nd\nE\nf\ng\n");
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_pure_addition_chunk_followed_by_removal() {
         let dir = tempdir().unwrap();
         let path = dir.path().join("panic.txt");
@@ -947,7 +948,7 @@ mod tests {
     /// internal matcher failed requiring an exact byte-for-byte match.  The
     /// fuzzy-matching pass that normalises common punctuation should now bridge
     /// the gap.
-    #[tokio::test]
+    #[test]
     async fn test_update_line_with_unicode_dash() {
         let dir = tempdir().unwrap();
         let path = dir.path().join("unicode.py");
@@ -994,7 +995,7 @@ mod tests {
         assert_eq!(String::from_utf8(stderr).unwrap(), "");
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_unified_diff() {
         // Start with a file containing four lines.
         let dir = tempdir().unwrap();
@@ -1037,7 +1038,7 @@ mod tests {
         assert_eq!(expected, diff);
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_unified_diff_first_line_replacement() {
         // Replace the very first line of the file.
         let dir = tempdir().unwrap();
@@ -1076,7 +1077,7 @@ mod tests {
         assert_eq!(expected, diff);
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_unified_diff_last_line_replacement() {
         // Replace the very last line of the file.
         let dir = tempdir().unwrap();
@@ -1116,7 +1117,7 @@ mod tests {
         assert_eq!(expected, diff);
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_unified_diff_insert_at_eof() {
         // Insert a new line at end‑of‑file.
         let dir = tempdir().unwrap();
@@ -1153,7 +1154,7 @@ mod tests {
         assert_eq!(expected, diff);
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_unified_diff_interleaved_changes() {
         // Original file with six lines.
         let dir = tempdir().unwrap();
@@ -1236,7 +1237,7 @@ g
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_apply_patch_fails_on_write_error() {
         let dir = tempdir().unwrap();
         let path = dir.path().join("readonly.txt");

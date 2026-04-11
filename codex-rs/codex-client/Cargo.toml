@@ -1,36 +1,28 @@
 [package]
-edition.workspace = true
-license.workspace = true
+edition = "2024"
+license = "Apache-2.0"
 name = "codex-client"
-version.workspace = true
+version = "0.0.0"
 
 [dependencies]
-async-trait = { workspace = true }
-bytes = { workspace = true }
-eventsource-stream = { workspace = true }
-futures = { workspace = true }
-http = { workspace = true }
-opentelemetry = { workspace = true }
-rand = { workspace = true }
-reqwest = { workspace = true, features = ["json", "stream"] }
-rustls = { workspace = true }
-rustls-native-certs = { workspace = true }
-rustls-pki-types = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-thiserror = { workspace = true }
-tokio = { workspace = true, features = ["macros", "rt", "time", "sync"] }
-tracing = { workspace = true }
-tracing-opentelemetry = { workspace = true }
-codex-utils-rustls-provider = { workspace = true }
-zstd = { workspace = true }
-
-[lints]
-workspace = true
+async-trait = { version = "0.1.89" }
+bytes = { version = "1.10.1" }
+eventsource-stream = { version = "0.2.3" }
+futures = { version = "0.3", default-features = false , features = ["alloc"] }
+http = { version = "1.3.1" }
+opentelemetry = { version = "0.31.0" }
+rand = { version = "0.9" }
+reqwest = { path = "../../../codex-wasm/wasi-reqwest" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+thiserror = { version = "2.0.17" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
+tracing = { version = "0.1.44" }
+tracing-opentelemetry = { version = "0.32.0" }
 
 [dev-dependencies]
-codex-utils-cargo-bin = { workspace = true }
-opentelemetry_sdk = { workspace = true }
-pretty_assertions = { workspace = true }
-tempfile = { workspace = true }
-tracing-subscriber = { workspace = true }
+codex-utils-cargo-bin = { path = "../utils/cargo-bin" }
+opentelemetry_sdk = { version = "0.31.0" }
+pretty_assertions = { version = "1.4.1" }
+tempfile = { version = "3.23.0" }
+tracing-subscriber = { version = "0.3.22" }

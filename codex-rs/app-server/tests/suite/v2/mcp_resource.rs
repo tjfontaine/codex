@@ -40,7 +40,7 @@ const TEST_BLOB_RESOURCE_URI: &str = "test://codex/resource.bin";
 const TEST_RESOURCE_BLOB: &str = "YmluYXJ5LXJlc291cmNl";
 const TEST_RESOURCE_TEXT: &str = "Resource body from the MCP server.";
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn mcp_resource_read_returns_resource_contents() -> Result<()> {
     let responses_server = responses::start_mock_server().await;
     let listener = TcpListener::bind("127.0.0.1:0").await?;
@@ -146,7 +146,7 @@ stream_max_retries = 0
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn mcp_resource_read_returns_error_for_unknown_thread() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mut mcp = McpProcess::new(codex_home.path()).await?;

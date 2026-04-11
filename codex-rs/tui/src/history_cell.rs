@@ -3072,7 +3072,7 @@ mod tests {
         insta::assert_snapshot!(rendered);
     }
 
-    #[tokio::test]
+    #[test]
     async fn session_info_uses_availability_nux_tooltip_override() {
         let config = test_config().await;
         let cell = new_session_info(
@@ -3089,7 +3089,7 @@ mod tests {
         assert!(rendered.contains("Model just became available"));
     }
 
-    #[tokio::test]
+    #[test]
     #[cfg_attr(
         target_os = "windows",
         ignore = "snapshot path rendering differs on Windows"
@@ -3111,7 +3111,7 @@ mod tests {
         insta::assert_snapshot!(rendered);
     }
 
-    #[tokio::test]
+    #[test]
     async fn session_info_first_event_suppresses_tooltips_and_nux() {
         let config = test_config().await;
         let cell = new_session_info(
@@ -3129,7 +3129,7 @@ mod tests {
         assert!(rendered.contains("To get started"));
     }
 
-    #[tokio::test]
+    #[test]
     async fn session_info_hides_tooltips_when_disabled() {
         let mut config = test_config().await;
         config.show_tooltips = false;
@@ -3212,7 +3212,7 @@ mod tests {
         insta::assert_snapshot!(rendered);
     }
 
-    #[tokio::test]
+    #[test]
     async fn mcp_tools_output_masks_sensitive_values() {
         let mut config = test_config().await;
         let mut env = HashMap::new();
@@ -3278,7 +3278,7 @@ mod tests {
         insta::assert_snapshot!(rendered);
     }
 
-    #[tokio::test]
+    #[test]
     async fn mcp_tools_output_lists_tools_for_hyphenated_server_names() {
         let mut config = test_config().await;
         let mut servers = config.mcp_servers.get().clone();
@@ -3318,7 +3318,7 @@ mod tests {
         insta::assert_snapshot!(rendered);
     }
 
-    #[tokio::test]
+    #[test]
     async fn mcp_tools_output_from_statuses_renders_status_only_servers() {
         let mut config = test_config().await;
         let mut plugin_docs =
@@ -4620,7 +4620,7 @@ mod tests {
         assert_eq!(rendered, vec!["• Detailed reasoning goes here."]);
     }
 
-    #[tokio::test]
+    #[test]
     async fn reasoning_summary_block_respects_config_overrides() {
         let mut config = test_config().await;
         config.model = Some("gpt-3.5-turbo".to_string());

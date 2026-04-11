@@ -38,7 +38,7 @@ use tokio::time::timeout;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn thread_read_returns_summary_without_turns() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -93,7 +93,7 @@ async fn thread_read_returns_summary_without_turns() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_read_can_include_turns() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -154,7 +154,7 @@ async fn thread_read_can_include_turns() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_read_returns_forked_from_id_for_forked_threads() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -204,7 +204,7 @@ async fn thread_read_returns_forked_from_id_for_forked_threads() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_read_loaded_thread_returns_precomputed_path_before_materialization() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -253,7 +253,7 @@ async fn thread_read_loaded_thread_returns_precomputed_path_before_materializati
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_name_set_is_reflected_in_read_list_and_resume() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -408,7 +408,7 @@ async fn thread_name_set_is_reflected_in_read_list_and_resume() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_read_include_turns_rejects_unmaterialized_loaded_thread() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -459,7 +459,7 @@ async fn thread_read_include_turns_rejects_unmaterialized_loaded_thread() -> Res
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_read_reports_system_error_idle_flag_after_failed_turn() -> Result<()> {
     let server = responses::start_mock_server().await;
     let _response_mock = responses::mount_sse_once(

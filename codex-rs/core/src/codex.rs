@@ -1800,7 +1800,7 @@ impl Session {
         }
 
         let auth = auth.as_ref();
-        let auth_mode = auth.map(CodexAuth::auth_mode).map(TelemetryAuthMode::from);
+        let auth_mode = auth.map(CodexAuth::auth_mode).map(|m| TelemetryAuthMode::from_display(&m));
         let account_id = auth.and_then(CodexAuth::get_account_id);
         let account_email = auth.and_then(CodexAuth::get_account_email);
         let originator = originator().value;
@@ -1816,7 +1816,7 @@ impl Session {
             session_model.as_str(),
             account_id.clone(),
             account_email.clone(),
-            auth_mode,
+            auth_mode.clone(),
             originator.clone(),
             config.otel.log_user_prompt,
             terminal_type.clone(),
@@ -7608,13 +7608,30 @@ async fn try_run_sampling_request(
             from = field::Empty,
         );
 
-        let event = match stream
-            .next()
-            .instrument(trace_span!(parent: &handle_responses, "receiving"))
-            .or_cancel(&cancellation_token)
-            .await
+        let stream_idle_timeout = turn_context.provider.stream_idle_timeout();
+        let event = match tokio::time::timeout(
+            stream_idle_timeout,
+            stream
+                .next()
+                .instrument(trace_span!(parent: &handle_responses, "receiving")),
+        )
+        .or_cancel(&cancellation_token)
+        .await
         {
-            Ok(event) => event,
+            Ok(Ok(event)) => event,
+            Ok(Err(_elapsed)) => {
+                tracing::warn!(
+                    timeout_secs = stream_idle_timeout.as_secs(),
+                    "stream.next() idle timeout in try_run_sampling_request"
+                );
+                break Err(CodexErr::Stream(
+                    format!(
+                        "stream idle timeout: no response events for {}s",
+                        stream_idle_timeout.as_secs()
+                    ),
+                    None,
+                ));
+            }
             Err(codex_async_utils::CancelErr::Cancelled) => break Err(CodexErr::TurnAborted),
         };
 

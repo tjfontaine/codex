@@ -751,7 +751,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn apply_runtime_feature_enablement_keeps_cli_overrides_above_config_and_runtime() {
         let codex_home = TempDir::new().expect("create temp dir");
         std::fs::write(
@@ -779,7 +779,7 @@ mod tests {
         assert!(config.features.enabled(Feature::Apps));
     }
 
-    #[tokio::test]
+    #[test]
     async fn apply_runtime_feature_enablement_keeps_cloud_pins_above_cli_and_runtime() {
         let codex_home = TempDir::new().expect("create temp dir");
 
@@ -811,7 +811,7 @@ mod tests {
         assert!(!config.features.enabled(Feature::Apps));
     }
 
-    #[tokio::test]
+    #[test]
     async fn batch_write_reloads_user_config_when_requested() {
         let codex_home = TempDir::new().expect("create temp dir");
         let user_config_path = codex_home.path().join("config.toml");

@@ -71,7 +71,7 @@ fn assert_safe(shell: &Shell, command: &str) {
     )));
 }
 
-#[tokio::test]
+#[test]
 async fn shell_command_handler_to_exec_params_uses_session_shell_and_turn_context() {
     let (session, turn_context) = make_session_and_context().await;
 
@@ -155,7 +155,7 @@ fn shell_command_handler_respects_explicit_login_flag() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn shell_command_handler_defaults_to_non_login_when_disallowed() {
     let (session, turn_context) = make_session_and_context().await;
     let params = ShellCommandToolCallParams {
@@ -199,7 +199,7 @@ fn shell_command_handler_rejects_login_when_disallowed() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn shell_pre_tool_use_payload_uses_joined_command() {
     let payload = ToolPayload::LocalShell {
         params: codex_protocol::models::ShellToolCallParams {
@@ -235,7 +235,7 @@ async fn shell_pre_tool_use_payload_uses_joined_command() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn shell_command_pre_tool_use_payload_uses_raw_command() {
     let payload = ToolPayload::Function {
         arguments: json!({ "command": "printf shell command" }).to_string(),

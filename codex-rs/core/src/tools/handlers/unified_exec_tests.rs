@@ -198,7 +198,7 @@ fn exec_command_args_resolve_relative_additional_permissions_against_workdir() -
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn exec_command_pre_tool_use_payload_uses_raw_command() {
     let payload = ToolPayload::Function {
         arguments: serde_json::json!({ "cmd": "printf exec command" }).to_string(),
@@ -222,7 +222,7 @@ async fn exec_command_pre_tool_use_payload_uses_raw_command() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn exec_command_pre_tool_use_payload_skips_write_stdin() {
     let payload = ToolPayload::Function {
         arguments: serde_json::json!({ "chars": "echo hi" }).to_string(),

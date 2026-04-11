@@ -1,8 +1,8 @@
 [package]
 name = "codex-app-server"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [[bin]]
 name = "codex-app-server"
@@ -16,97 +16,67 @@ path = "src/bin/notify_capture.rs"
 name = "codex_app_server"
 path = "src/lib.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-anyhow = { workspace = true }
-async-trait = { workspace = true }
-base64 = { workspace = true }
-axum = { workspace = true, default-features = false, features = [
-    "http1",
-    "json",
-    "tokio",
-    "ws",
-] }
-codex-analytics = { workspace = true }
-codex-arg0 = { workspace = true }
-codex-cloud-requirements = { workspace = true }
-codex-config = { workspace = true }
-codex-core = { workspace = true }
-codex-exec-server = { workspace = true }
-codex-features = { workspace = true }
-codex-git-utils = { workspace = true }
-codex-otel = { workspace = true }
-codex-shell-command = { workspace = true }
-codex-utils-cli = { workspace = true }
-codex-utils-pty = { workspace = true }
-codex-backend-client = { workspace = true }
-codex-file-search = { workspace = true }
-codex-chatgpt = { workspace = true }
-codex-login = { workspace = true }
-codex-mcp = { workspace = true }
-codex-models-manager = { workspace = true }
-codex-protocol = { workspace = true }
-codex-app-server-protocol = { workspace = true }
-codex-feedback = { workspace = true }
-codex-rmcp-client = { workspace = true }
-codex-rollout = { workspace = true }
-codex-sandboxing = { workspace = true }
-codex-state = { workspace = true }
-codex-tools = { workspace = true }
-codex-utils-absolute-path = { workspace = true }
-codex-utils-json-to-toml = { workspace = true }
-codex-utils-rustls-provider = { workspace = true }
-chrono = { workspace = true }
-clap = { workspace = true, features = ["derive"] }
-constant_time_eq = { workspace = true }
-futures = { workspace = true }
-gethostname = { workspace = true }
-hmac = { workspace = true }
-jsonwebtoken = { workspace = true }
-owo-colors = { workspace = true, features = ["supports-colors"] }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-sha2 = { workspace = true }
-tempfile = { workspace = true }
-time = { workspace = true }
-toml = { workspace = true }
-tokio = { workspace = true, features = [
-    "io-std",
-    "macros",
-    "process",
-    "rt-multi-thread",
-    "signal",
-] }
-tokio-util = { workspace = true }
-tokio-tungstenite = { workspace = true }
-tracing = { workspace = true, features = ["log"] }
-tracing-subscriber = { workspace = true, features = ["env-filter", "fmt", "json"] }
-url = { workspace = true }
-uuid = { workspace = true, features = ["serde", "v7"] }
+anyhow = { version = "1" }
+async-trait = { version = "0.1.89" }
+base64 = { version = "0.22.1" }
+codex-analytics = { path = "../analytics" }
+codex-arg0 = { path = "../arg0" }
+codex-cloud-requirements = { path = "../../../codex-wasm/wasi-codex-cloud-requirements" }
+codex-config = { path = "../config" }
+codex-core = { path = "../core" }
+codex-exec-server = { path = "../../../codex-wasm/wasi-exec-server" }
+codex-features = { path = "../features" }
+codex-git-utils = { path = "../git-utils" }
+codex-otel = { path = "../../../codex-wasm/wasi-codex-otel" }
+codex-shell-command = { path = "../shell-command" }
+codex-utils-cli = { path = "../utils/cli" }
+codex-utils-pty = { path = "../../../codex-wasm/wasi-pty" }
+codex-backend-client = { path = "../../../codex-wasm/wasi-codex-backend-client" }
+codex-file-search = { path = "../file-search" }
+codex-login = { path = "../login" }
+codex-mcp = { path = "../codex-mcp" }
+codex-models-manager = { path = "../models-manager" }
+codex-protocol = { path = "../protocol" }
+codex-app-server-protocol = { path = "../app-server-protocol" }
+codex-rmcp-client = { path = "../../../codex-wasm/wasi-rmcp-client" }
+codex-rollout = { path = "../rollout" }
+codex-sandboxing = { path = "../sandboxing" }
+codex-state = { path = "../state" }
+codex-tools = { path = "../tools" }
+codex-utils-absolute-path = { path = "../utils/absolute-path" }
+codex-utils-json-to-toml = { path = "../utils/json-to-toml" }
+chrono = { version = "0.4.43" }
+clap = { version = "4", features = ["derive"] }
+futures = { version = "0.3", default-features = false , features = ["alloc"] }
+owo-colors = { version = "4.3.0", features = ["supports-colors"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+tempfile = { version = "3.23.0" }
+time = { version = "0.3.47" }
+toml = { version = "0.9.5" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
+tokio-util = { path = "../../../codex-wasm/wasi-tokio-util" }
+tokio-tungstenite = { path = "../../../codex-wasm/wasi-tokio-tungstenite" }
+tracing = { version = "0.1.44", features = ["log"] }
+tracing-subscriber = { version = "0.3.22", features = ["env-filter", "fmt", "json"] }
+url = { version = "2" }
+uuid = { version = "1", features = ["serde", "v7"] }
+console-log = { path = "../../../crates/console-log" }
+codex-feedback = { path = "../../../codex-wasm/wasi-codex-feedback" }
 
 [dev-dependencies]
-app_test_support = { workspace = true }
-base64 = { workspace = true }
-axum = { workspace = true, default-features = false, features = [
-    "http1",
-    "json",
-    "tokio",
-] }
-core_test_support = { workspace = true }
-codex-utils-cargo-bin = { workspace = true }
-opentelemetry = { workspace = true }
-opentelemetry_sdk = { workspace = true }
-pretty_assertions = { workspace = true }
-reqwest = { workspace = true, features = ["rustls-tls"] }
-rmcp = { workspace = true, default-features = false, features = [
-    "elicitation",
-    "server",
-    "transport-streamable-http-server",
-] }
-serial_test = { workspace = true }
-tokio-tungstenite = { workspace = true }
-tracing-opentelemetry = { workspace = true }
-wiremock = { workspace = true }
-shlex = { workspace = true }
+base64 = { version = "0.22.1" }
+codex-utils-cargo-bin = { path = "../utils/cargo-bin" }
+opentelemetry = { version = "0.31.0" }
+opentelemetry_sdk = { version = "0.31.0" }
+pretty_assertions = { version = "1.4.1" }
+reqwest = { path = "../../../codex-wasm/wasi-reqwest" }
+rmcp = { version = "0.15.0", default-features = false, features = ["elicitation", "server"] }
+serial_test = { version = "3.2.0" }
+tokio-tungstenite = { path = "../../../codex-wasm/wasi-tokio-tungstenite" }
+tracing-opentelemetry = { version = "0.32.0" }
+wiremock = { version = "0.6" }
+shlex = { version = "1.3.0" }
+console-log = { path = "../../../crates/console-log" }
+codex-feedback = { path = "../../../codex-wasm/wasi-codex-feedback" }

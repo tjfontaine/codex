@@ -1,3 +1,4 @@
+#![allow(unused_variables, unused_imports)]
 use async_trait::async_trait;
 use std::future::Future;
 use tokio_util::sync::CancellationToken;
@@ -38,7 +39,7 @@ mod tests {
     use tokio::task;
     use tokio::time::sleep;
 
-    #[tokio::test]
+    #[test]
     async fn returns_ok_when_future_completes_first() {
         let token = CancellationToken::new();
         let value = async { 42 };
@@ -48,7 +49,7 @@ mod tests {
         assert_eq!(Ok(42), result);
     }
 
-    #[tokio::test]
+    #[test]
     async fn returns_err_when_token_cancelled_first() {
         let token = CancellationToken::new();
         let token_clone = token.clone();
@@ -69,7 +70,7 @@ mod tests {
         assert_eq!(Err(CancelErr::Cancelled), result);
     }
 
-    #[tokio::test]
+    #[test]
     async fn returns_err_when_token_already_cancelled() {
         let token = CancellationToken::new();
         token.cancel();

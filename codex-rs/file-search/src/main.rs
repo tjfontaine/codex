@@ -8,7 +8,6 @@ use codex_file_search::Reporter;
 use codex_file_search::run_main;
 use serde_json::json;
 
-#[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     let reporter = StdioReporter {

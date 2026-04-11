@@ -52,7 +52,7 @@ fn load_trace_items_supports_jsonl_arrays_and_objects() {
     assert_eq!(loaded, expected);
 }
 
-#[tokio::test]
+#[test]
 async fn load_trace_text_decodes_utf8_sig() {
     let dir = tempdir().expect("tempdir");
     let path = dir.path().join("trace.json");

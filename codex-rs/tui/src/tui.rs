@@ -245,12 +245,7 @@ pub(crate) fn flush_terminal_input_buffer() {}
 
 /// Initialize the terminal (inline viewport; history stays in normal scrollback)
 pub fn init() -> Result<Terminal> {
-    if !stdin().is_terminal() {
-        return Err(std::io::Error::other("stdin is not a terminal"));
-    }
-    if !stdout().is_terminal() {
-        return Err(std::io::Error::other("stdout is not a terminal"));
-    }
+    // [codex-codemod] is_terminal() checks skipped — WASM stdin/stdout are ghostty-web terminal
     set_modes()?;
 
     flush_terminal_input_buffer();
@@ -635,7 +630,8 @@ impl Tui {
             terminal.draw(|frame| {
                 draw_fn(frame);
             })
-        })?
+        })?;
+        Ok(())
     }
 
     fn pending_viewport_area(&mut self) -> Result<Option<Rect>> {

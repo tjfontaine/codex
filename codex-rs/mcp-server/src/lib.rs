@@ -194,7 +194,7 @@ mod tests {
         assert_eq!(DEFAULT_ANALYTICS_ENABLED, true);
     }
 
-    #[tokio::test]
+    #[test]
     async fn mcp_server_builds_otel_provider_with_logs_traces_and_metrics() -> anyhow::Result<()> {
         let codex_home = TempDir::new()?;
         let mut config = ConfigBuilder::default()

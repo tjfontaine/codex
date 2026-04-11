@@ -1,7 +1,7 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-#[tokio::test]
+#[test]
 async fn submission_preserves_text_elements_and_local_images() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -85,7 +85,7 @@ async fn submission_preserves_text_elements_and_local_images() {
     assert!(stored_remote_image_urls.is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn submission_with_remote_and_local_images_keeps_local_placeholder_numbering() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -180,7 +180,7 @@ async fn submission_with_remote_and_local_images_keeps_local_placeholder_numberi
     assert_eq!(stored_remote_image_urls, vec![remote_url]);
 }
 
-#[tokio::test]
+#[test]
 async fn enter_with_only_remote_images_submits_user_turn() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -245,7 +245,7 @@ async fn enter_with_only_remote_images_submits_user_turn() {
     assert_eq!(stored_remote_image_urls, vec![remote_url]);
 }
 
-#[tokio::test]
+#[test]
 async fn shift_enter_with_only_remote_images_does_not_submit_user_turn() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -285,7 +285,7 @@ async fn shift_enter_with_only_remote_images_does_not_submit_user_turn() {
     assert_eq!(chat.remote_image_urls(), vec![remote_url]);
 }
 
-#[tokio::test]
+#[test]
 async fn enter_with_only_remote_images_does_not_submit_when_modal_is_active() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -325,7 +325,7 @@ async fn enter_with_only_remote_images_does_not_submit_when_modal_is_active() {
     assert_no_submit_op(&mut op_rx);
 }
 
-#[tokio::test]
+#[test]
 async fn enter_with_only_remote_images_does_not_submit_when_input_disabled() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -368,7 +368,7 @@ async fn enter_with_only_remote_images_does_not_submit_when_input_disabled() {
     assert_no_submit_op(&mut op_rx);
 }
 
-#[tokio::test]
+#[test]
 async fn submission_prefers_selected_duplicate_skill_path() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -448,7 +448,7 @@ async fn submission_prefers_selected_duplicate_skill_path() {
     assert_eq!(selected_skill_paths, vec![user_skill_path]);
 }
 
-#[tokio::test]
+#[test]
 async fn blocked_image_restore_preserves_mention_bindings() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -502,7 +502,7 @@ async fn blocked_image_restore_preserves_mention_bindings() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn blocked_image_restore_with_remote_images_keeps_local_placeholder_mapping() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -546,7 +546,7 @@ async fn blocked_image_restore_with_remote_images_keeps_local_placeholder_mappin
     assert_eq!(chat.remote_image_urls(), remote_image_urls);
 }
 
-#[tokio::test]
+#[test]
 async fn queued_restore_with_remote_images_keeps_local_placeholder_mapping() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -590,7 +590,7 @@ async fn queued_restore_with_remote_images_keeps_local_placeholder_mapping() {
     assert_eq!(chat.remote_image_urls(), remote_image_urls);
 }
 
-#[tokio::test]
+#[test]
 async fn interrupted_turn_restore_keeps_active_mode_for_resubmission() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(Some("gpt-5")).await;
     chat.thread_id = Some(ThreadId::new());
@@ -642,7 +642,7 @@ async fn interrupted_turn_restore_keeps_active_mode_for_resubmission() {
     assert_eq!(chat.active_collaboration_mode_kind(), expected_mode);
 }
 
-#[tokio::test]
+#[test]
 async fn remap_placeholders_uses_attachment_labels() {
     let placeholder_one = "[Image #1]";
     let placeholder_two = "[Image #2]";
@@ -711,7 +711,7 @@ async fn remap_placeholders_uses_attachment_labels() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn remap_placeholders_uses_byte_ranges_when_placeholder_missing() {
     let placeholder_one = "[Image #1]";
     let placeholder_two = "[Image #2]";
@@ -773,7 +773,7 @@ async fn remap_placeholders_uses_byte_ranges_when_placeholder_missing() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn empty_enter_during_task_does_not_queue() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -787,7 +787,7 @@ async fn empty_enter_during_task_does_not_queue() {
     assert!(chat.queued_user_messages.is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn restore_thread_input_state_syncs_sleep_inhibitor_state() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.set_feature_enabled(Feature::PreventIdleSleep, /*enabled*/ true);
@@ -814,7 +814,7 @@ async fn restore_thread_input_state_syncs_sleep_inhibitor_state() {
     assert!(!chat.bottom_pane.is_task_running());
 }
 
-#[tokio::test]
+#[test]
 async fn alt_up_edits_most_recent_queued_message() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.queued_message_edit_binding = crate::key_hint::alt(KeyCode::Up);
@@ -847,7 +847,7 @@ async fn alt_up_edits_most_recent_queued_message() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn shift_left_edits_most_recent_queued_message_in_apple_terminal() {
     assert_shift_left_edits_most_recent_queued_message_for_terminal(TerminalInfo {
         name: TerminalName::AppleTerminal,
@@ -859,7 +859,7 @@ async fn shift_left_edits_most_recent_queued_message_in_apple_terminal() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn shift_left_edits_most_recent_queued_message_in_warp_terminal() {
     assert_shift_left_edits_most_recent_queued_message_for_terminal(TerminalInfo {
         name: TerminalName::WarpTerminal,
@@ -871,7 +871,7 @@ async fn shift_left_edits_most_recent_queued_message_in_warp_terminal() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn shift_left_edits_most_recent_queued_message_in_vscode_terminal() {
     assert_shift_left_edits_most_recent_queued_message_for_terminal(TerminalInfo {
         name: TerminalName::VsCode,
@@ -883,7 +883,7 @@ async fn shift_left_edits_most_recent_queued_message_in_vscode_terminal() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn shift_left_edits_most_recent_queued_message_in_tmux() {
     assert_shift_left_edits_most_recent_queued_message_for_terminal(TerminalInfo {
         name: TerminalName::Iterm2,
@@ -952,7 +952,7 @@ fn queued_message_edit_binding_mapping_covers_special_terminals_and_tmux() {
 /// Pressing Up to recall the most recent history entry and immediately queuing
 /// it while a task is running should always enqueue the same text, even when it
 /// is queued repeatedly.
-#[tokio::test]
+#[test]
 async fn enqueueing_history_prompt_multiple_times_is_stable() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -1022,7 +1022,7 @@ fn rendered_user_message_event_from_inputs_matches_flattened_user_message_shape(
     );
 }
 
-#[tokio::test]
+#[test]
 async fn interrupt_restores_queued_messages_into_composer() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1064,7 +1064,7 @@ async fn interrupt_restores_queued_messages_into_composer() {
     let _ = drain_insert_history(&mut rx);
 }
 
-#[tokio::test]
+#[test]
 async fn interrupt_prepends_queued_messages_before_existing_composer_text() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 

@@ -94,7 +94,7 @@ async fn test_config() -> (TempDir, Config) {
     (home, config)
 }
 
-#[tokio::test]
+#[test]
 async fn child_uses_parent_exec_policy_when_layer_stack_matches() {
     let (_home, parent_config) = test_config().await;
     let child_config = parent_config.clone();
@@ -102,7 +102,7 @@ async fn child_uses_parent_exec_policy_when_layer_stack_matches() {
     assert!(child_uses_parent_exec_policy(&parent_config, &child_config));
 }
 
-#[tokio::test]
+#[test]
 async fn child_uses_parent_exec_policy_when_non_exec_policy_layers_differ() {
     let (_home, parent_config) = test_config().await;
     let mut child_config = parent_config.clone();
@@ -129,7 +129,7 @@ async fn child_uses_parent_exec_policy_when_non_exec_policy_layers_differ() {
     assert!(child_uses_parent_exec_policy(&parent_config, &child_config));
 }
 
-#[tokio::test]
+#[test]
 async fn child_does_not_use_parent_exec_policy_when_requirements_exec_policy_differs() {
     let (_home, parent_config) = test_config().await;
     let mut child_config = parent_config.clone();
@@ -170,7 +170,7 @@ async fn child_does_not_use_parent_exec_policy_when_requirements_exec_policy_dif
     ));
 }
 
-#[tokio::test]
+#[test]
 async fn returns_empty_policy_when_no_policy_files_exist() {
     let temp_dir = tempdir().expect("create temp dir");
     let config_stack = config_stack_for_dot_codex_folder(temp_dir.path());
@@ -194,7 +194,7 @@ async fn returns_empty_policy_when_no_policy_files_exist() {
     assert!(!temp_dir.path().join(RULES_DIR_NAME).exists());
 }
 
-#[tokio::test]
+#[test]
 async fn collect_policy_files_returns_empty_when_dir_missing() {
     let temp_dir = tempdir().expect("create temp dir");
 
@@ -206,7 +206,7 @@ async fn collect_policy_files_returns_empty_when_dir_missing() {
     assert!(files.is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn format_exec_policy_error_with_source_renders_range() {
     let temp_dir = tempdir().expect("create temp dir");
     let config_stack = config_stack_for_dot_codex_folder(temp_dir.path());
@@ -251,7 +251,7 @@ fn parse_starlark_line_from_message_rejects_zero_line() {
     assert_eq!(parsed, None);
 }
 
-#[tokio::test]
+#[test]
 async fn loads_policies_from_policy_subdirectory() {
     let temp_dir = tempdir().expect("create temp dir");
     let config_stack = config_stack_for_dot_codex_folder(temp_dir.path());
@@ -281,7 +281,7 @@ async fn loads_policies_from_policy_subdirectory() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn merges_requirements_exec_policy_network_rules() -> anyhow::Result<()> {
     let temp_dir = tempdir()?;
 
@@ -316,7 +316,7 @@ async fn merges_requirements_exec_policy_network_rules() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn preserves_host_executables_when_requirements_overlay_is_present() -> anyhow::Result<()> {
     let temp_dir = tempdir()?;
     let policy_dir = temp_dir.path().join(RULES_DIR_NAME);
@@ -368,7 +368,7 @@ host_executable(name = "git", paths = ["{git_path_literal}"])
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn ignores_policies_outside_policy_dir() {
     let temp_dir = tempdir().expect("create temp dir");
     let config_stack = config_stack_for_dot_codex_folder(temp_dir.path());
@@ -394,7 +394,7 @@ async fn ignores_policies_outside_policy_dir() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn ignores_rules_from_untrusted_project_layers() -> anyhow::Result<()> {
     let project_dir = tempdir()?;
     let policy_dir = project_dir.path().join(RULES_DIR_NAME);
@@ -433,7 +433,7 @@ async fn ignores_rules_from_untrusted_project_layers() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn loads_policies_from_multiple_config_layers() -> anyhow::Result<()> {
     let user_dir = tempdir()?;
     let project_dir = tempdir()?;
@@ -504,7 +504,7 @@ async fn loads_policies_from_multiple_config_layers() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn evaluates_bash_lc_inner_commands() {
     assert_exec_approval_requirement_for_command(
         ExecApprovalRequirementScenario {
@@ -545,7 +545,7 @@ fn commands_for_exec_policy_falls_back_for_whitespace_shell_script() {
     assert_eq!(commands_for_exec_policy(&command), (vec![command], false));
 }
 
-#[tokio::test]
+#[test]
 async fn evaluates_heredoc_script_against_prefix_rules() {
     let command = vec![
         "bash".to_string(),
@@ -571,7 +571,7 @@ async fn evaluates_heredoc_script_against_prefix_rules() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn omits_auto_amendment_for_heredoc_fallback_prompts() {
     assert_exec_approval_requirement_for_command(
         ExecApprovalRequirementScenario {
@@ -595,7 +595,7 @@ async fn omits_auto_amendment_for_heredoc_fallback_prompts() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn drops_requested_amendment_for_heredoc_fallback_prompts_when_it_wont_match() {
     assert_exec_approval_requirement_for_command(
         ExecApprovalRequirementScenario {
@@ -623,7 +623,7 @@ async fn drops_requested_amendment_for_heredoc_fallback_prompts_when_it_wont_mat
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn justification_is_included_in_forbidden_exec_approval_requirement() {
     assert_exec_approval_requirement_for_command(
         ExecApprovalRequirementScenario {
@@ -655,7 +655,7 @@ prefix_rule(
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn exec_approval_requirement_prefers_execpolicy_match() {
     assert_exec_approval_requirement_for_command(
         ExecApprovalRequirementScenario {
@@ -675,7 +675,7 @@ async fn exec_approval_requirement_prefers_execpolicy_match() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn absolute_path_exec_approval_requirement_matches_host_executable_rules() {
     let git_path = host_program_path("git");
     let git_path_literal = starlark_string(&git_path);
@@ -703,7 +703,7 @@ prefix_rule(pattern=["git"], decision="allow")
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn absolute_path_exec_approval_requirement_ignores_disallowed_host_executable_paths() {
     let allowed_git_path = host_program_path("git");
     let disallowed_git_path = host_absolute_path(&[
@@ -740,7 +740,7 @@ prefix_rule(pattern=["git"], decision="prompt")
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn requested_prefix_rule_can_approve_absolute_path_commands() {
     assert_exec_approval_requirement_for_command(
         ExecApprovalRequirementScenario {
@@ -767,7 +767,7 @@ async fn requested_prefix_rule_can_approve_absolute_path_commands() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn exec_approval_requirement_respects_approval_policy() {
     assert_exec_approval_requirement_for_command(
         ExecApprovalRequirementScenario {
@@ -827,7 +827,7 @@ fn unmatched_on_request_uses_split_filesystem_policy_for_escalation_prompts() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn exec_approval_requirement_prompts_for_inline_additional_permissions_under_on_request() {
     assert_exec_approval_requirement_for_command(
         ExecApprovalRequirementScenario {
@@ -854,7 +854,7 @@ async fn exec_approval_requirement_prompts_for_inline_additional_permissions_und
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn exec_approval_requirement_rejects_unmatched_sandbox_escalation_when_granular_sandbox_is_disabled()
  {
     assert_exec_approval_requirement_for_command(
@@ -880,7 +880,7 @@ async fn exec_approval_requirement_rejects_unmatched_sandbox_escalation_when_gra
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn mixed_rule_and_sandbox_prompt_prioritizes_rule_for_rejection_decision() {
     let policy_src = r#"prefix_rule(pattern=["git"], decision="prompt")"#;
     let mut parser = PolicyParser::new();
@@ -917,7 +917,7 @@ async fn mixed_rule_and_sandbox_prompt_prioritizes_rule_for_rejection_decision()
     ));
 }
 
-#[tokio::test]
+#[test]
 async fn mixed_rule_and_sandbox_prompt_rejects_when_granular_rules_are_disabled() {
     let policy_src = r#"prefix_rule(pattern=["git"], decision="prompt")"#;
     let mut parser = PolicyParser::new();
@@ -956,7 +956,7 @@ async fn mixed_rule_and_sandbox_prompt_rejects_when_granular_rules_are_disabled(
     );
 }
 
-#[tokio::test]
+#[test]
 async fn exec_approval_requirement_falls_back_to_heuristics() {
     let command = vec!["cargo".to_string(), "build".to_string()];
 
@@ -981,7 +981,7 @@ async fn exec_approval_requirement_falls_back_to_heuristics() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn empty_bash_lc_script_falls_back_to_original_command() {
     let command = vec!["bash".to_string(), "-lc".to_string(), "".to_string()];
 
@@ -1006,7 +1006,7 @@ async fn empty_bash_lc_script_falls_back_to_original_command() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn whitespace_bash_lc_script_falls_back_to_original_command() {
     let command = vec![
         "bash".to_string(),
@@ -1035,7 +1035,7 @@ async fn whitespace_bash_lc_script_falls_back_to_original_command() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn request_rule_uses_prefix_rule() {
     let command = vec![
         "cargo".to_string(),
@@ -1067,7 +1067,7 @@ async fn request_rule_uses_prefix_rule() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn request_rule_falls_back_when_prefix_rule_does_not_approve_all_commands() {
     let command = vec![
         "bash".to_string(),
@@ -1100,7 +1100,7 @@ async fn request_rule_falls_back_when_prefix_rule_does_not_approve_all_commands(
     );
 }
 
-#[tokio::test]
+#[test]
 async fn heuristics_apply_when_other_commands_match_policy() {
     let policy_src = r#"prefix_rule(pattern=["apple"], decision="allow")"#;
     let mut parser = PolicyParser::new();
@@ -1134,7 +1134,7 @@ async fn heuristics_apply_when_other_commands_match_policy() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn append_execpolicy_amendment_updates_policy_and_file() {
     let codex_home = tempdir().expect("create temp dir");
     let prefix = vec!["echo".to_string(), "hello".to_string()];
@@ -1167,7 +1167,7 @@ async fn append_execpolicy_amendment_updates_policy_and_file() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn append_execpolicy_amendment_rejects_empty_prefix() {
     let codex_home = tempdir().expect("create temp dir");
     let manager = ExecPolicyManager::default();
@@ -1185,7 +1185,7 @@ async fn append_execpolicy_amendment_rejects_empty_prefix() {
     ));
 }
 
-#[tokio::test]
+#[test]
 async fn proposed_execpolicy_amendment_is_present_for_single_command_without_policy_match() {
     let command = vec!["cargo".to_string(), "build".to_string()];
 
@@ -1207,7 +1207,7 @@ async fn proposed_execpolicy_amendment_is_present_for_single_command_without_pol
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn proposed_execpolicy_amendment_is_omitted_when_policy_prompts() {
     assert_exec_approval_requirement_for_command(
         ExecApprovalRequirementScenario {
@@ -1227,7 +1227,7 @@ async fn proposed_execpolicy_amendment_is_omitted_when_policy_prompts() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn proposed_execpolicy_amendment_is_present_for_multi_command_scripts() {
     assert_exec_approval_requirement_for_command(
         ExecApprovalRequirementScenario {
@@ -1254,7 +1254,7 @@ async fn proposed_execpolicy_amendment_is_present_for_multi_command_scripts() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn proposed_execpolicy_amendment_uses_first_no_match_in_multi_command_scripts() {
     let policy_src = r#"prefix_rule(pattern=["cat"], decision="allow")"#;
     let command = vec![
@@ -1283,7 +1283,7 @@ async fn proposed_execpolicy_amendment_uses_first_no_match_in_multi_command_scri
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn proposed_execpolicy_amendment_is_present_when_heuristics_allow() {
     let command = vec!["echo".to_string(), "safe".to_string()];
 
@@ -1305,7 +1305,7 @@ async fn proposed_execpolicy_amendment_is_present_when_heuristics_allow() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn proposed_execpolicy_amendment_is_suppressed_when_policy_matches_allow() {
     assert_exec_approval_requirement_for_command(
         ExecApprovalRequirementScenario {
@@ -1469,7 +1469,7 @@ fn derive_requested_execpolicy_amendment_returns_none_when_policy_matches() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn dangerous_rm_rf_requires_approval_in_danger_full_access() {
     let command = vec_str(&["rm", "-rf", "/tmp/nonexistent"]);
 
@@ -1497,7 +1497,7 @@ fn vec_str(items: &[&str]) -> Vec<String> {
 
 /// Note this test behaves differently on Windows because it exercises an
 /// `if cfg!(windows)` code path in render_decision_for_unmatched_command().
-#[tokio::test]
+#[test]
 async fn verify_approval_requirement_for_unsafe_powershell_command() {
     // `brew install powershell` to run this test on a Mac!
     // Note `pwsh` is required to parse a PowerShell command to see if it
@@ -1597,7 +1597,7 @@ async fn verify_approval_requirement_for_unsafe_powershell_command() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn dangerous_command_allowed_when_sandbox_is_explicitly_disabled() {
     let command = vec_str(&["rm", "-rf", "/tmp/nonexistent"]);
     assert_exec_approval_requirement_for_command(
@@ -1622,7 +1622,7 @@ async fn dangerous_command_allowed_when_sandbox_is_explicitly_disabled() {
     .await;
 }
 
-#[tokio::test]
+#[test]
 async fn dangerous_command_forbidden_in_external_sandbox_when_policy_matches() {
     let command = vec_str(&["rm", "-rf", "/tmp/nonexistent"]);
     assert_exec_approval_requirement_for_command(

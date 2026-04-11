@@ -20,7 +20,7 @@ use tokio::time::timeout;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn turn_start_forwards_client_metadata_to_responses_request_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -97,7 +97,7 @@ async fn turn_start_forwards_client_metadata_to_responses_request_v2() -> Result
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_steer_updates_client_metadata_on_follow_up_responses_request_v2() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -221,7 +221,7 @@ async fn turn_steer_updates_client_metadata_on_follow_up_responses_request_v2() 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn turn_start_forwards_client_metadata_to_responses_websocket_request_body_v2() -> Result<()>
 {
     skip_if_no_network!(Ok(()));

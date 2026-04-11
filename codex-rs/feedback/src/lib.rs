@@ -1,3 +1,4 @@
+#![allow(dead_code, unused_imports)]
 use std::collections::BTreeMap;
 use std::collections::VecDeque;
 use std::collections::btree_map::Entry;

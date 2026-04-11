@@ -434,7 +434,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn sqlite_feedback_logs_match_feedback_formatter_shape() {
         let codex_home =
             std::env::temp_dir().join(format!("codex-state-log-db-{}", Uuid::new_v4()));
@@ -497,7 +497,7 @@ mod tests {
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
 
-    #[tokio::test]
+    #[test]
     async fn flush_persists_logs_for_query() {
         let codex_home =
             std::env::temp_dir().join(format!("codex-state-log-db-{}", Uuid::new_v4()));

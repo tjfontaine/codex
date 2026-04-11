@@ -1,3 +1,4 @@
+#![allow(unused_imports)]
 //! Rollout persistence and discovery for Codex session files.
 
 use std::sync::LazyLock;

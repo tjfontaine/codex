@@ -47,7 +47,7 @@ fn tool_by_name<'a>(body: &'a Value, name: &str) -> &'a Value {
         .unwrap_or_else(|| panic!("missing tool {name} in /v1/responses request: {body:?}"))
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn codex_apps_file_params_upload_local_paths_before_mcp_tool_call() -> Result<()> {
     let server = start_mock_server().await;
     let apps_server = AppsTestServer::mount(&server).await?;

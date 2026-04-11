@@ -216,7 +216,7 @@ async fn insert_state_db_thread(
 //     );
 // }
 
-#[tokio::test]
+#[test]
 async fn find_thread_path_falls_back_when_db_path_is_stale() {
     let temp = TempDir::new().unwrap();
     let home = temp.path();
@@ -251,7 +251,7 @@ async fn find_thread_path_falls_back_when_db_path_is_stale() {
     assert_state_db_rollout_path(home, thread_id, Some(fs_rollout_path.as_path())).await;
 }
 
-#[tokio::test]
+#[test]
 async fn find_thread_path_repairs_missing_db_row_after_filesystem_fallback() {
     let temp = TempDir::new().unwrap();
     let home = temp.path();
@@ -496,7 +496,7 @@ fn write_session_file_with_meta_payload(
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn test_list_conversations_latest_first() {
     let temp = TempDir::new().unwrap();
     let home = temp.path();
@@ -627,7 +627,7 @@ async fn test_list_conversations_latest_first() {
     assert_eq!(page, expected);
 }
 
-#[tokio::test]
+#[test]
 async fn test_pagination_cursor() {
     let temp = TempDir::new().unwrap();
     let home = temp.path();
@@ -861,7 +861,7 @@ async fn test_pagination_cursor() {
     assert_eq!(page3, expected_page3);
 }
 
-#[tokio::test]
+#[test]
 async fn test_list_threads_scans_past_head_for_user_event() {
     let temp = TempDir::new().unwrap();
     let home = temp.path();
@@ -888,7 +888,7 @@ async fn test_list_threads_scans_past_head_for_user_event() {
     assert_eq!(page.items[0].thread_id, Some(thread_id_from_uuid(uuid)));
 }
 
-#[tokio::test]
+#[test]
 async fn test_get_thread_contents() {
     let temp = TempDir::new().unwrap();
     let home = temp.path();
@@ -976,7 +976,7 @@ async fn test_get_thread_contents() {
     assert_eq!(content, expected_content);
 }
 
-#[tokio::test]
+#[test]
 async fn test_base_instructions_missing_in_meta_defaults_to_null() {
     let temp = TempDir::new().unwrap();
     let home = temp.path();
@@ -1017,7 +1017,7 @@ async fn test_base_instructions_missing_in_meta_defaults_to_null() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn test_base_instructions_present_in_meta_is_preserved() {
     let temp = TempDir::new().unwrap();
     let home = temp.path();
@@ -1061,7 +1061,7 @@ async fn test_base_instructions_present_in_meta_is_preserved() {
     assert_eq!(base, Some(base_text));
 }
 
-#[tokio::test]
+#[test]
 async fn test_created_at_sort_uses_file_mtime_for_updated_at() -> Result<()> {
     let temp = TempDir::new().unwrap();
     let home = temp.path();
@@ -1114,7 +1114,7 @@ async fn test_created_at_sort_uses_file_mtime_for_updated_at() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn test_updated_at_uses_file_mtime() -> Result<()> {
     let temp = TempDir::new().unwrap();
     let home = temp.path();
@@ -1206,7 +1206,7 @@ async fn test_updated_at_uses_file_mtime() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn test_stable_ordering_same_second_pagination() {
     let temp = TempDir::new().unwrap();
     let home = temp.path();
@@ -1353,7 +1353,7 @@ async fn test_stable_ordering_same_second_pagination() {
     assert_eq!(page2, expected_page2);
 }
 
-#[tokio::test]
+#[test]
 async fn test_source_filter_excludes_non_matching_sessions() {
     let temp = TempDir::new().unwrap();
     let home = temp.path();
@@ -1426,7 +1426,7 @@ async fn test_source_filter_excludes_non_matching_sessions() {
     }));
 }
 
-#[tokio::test]
+#[test]
 async fn test_model_provider_filter_selects_only_matching_sessions() -> Result<()> {
     let temp = TempDir::new().unwrap();
     let home = temp.path();

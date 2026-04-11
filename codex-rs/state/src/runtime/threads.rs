@@ -1030,7 +1030,7 @@ mod tests {
     use pretty_assertions::assert_eq;
     use std::path::PathBuf;
 
-    #[tokio::test]
+    #[test]
     async fn upsert_thread_keeps_creation_memory_mode_for_existing_rows() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1068,7 +1068,7 @@ mod tests {
         assert_eq!(memory_mode, "disabled");
     }
 
-    #[tokio::test]
+    #[test]
     async fn apply_rollout_items_restores_memory_mode_from_session_meta() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1124,7 +1124,7 @@ mod tests {
         assert_eq!(memory_mode.as_deref(), Some("polluted"));
     }
 
-    #[tokio::test]
+    #[test]
     async fn apply_rollout_items_preserves_existing_git_branch_and_fills_missing_git_fields() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1192,7 +1192,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn update_thread_git_info_preserves_newer_non_git_metadata() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1251,7 +1251,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn insert_thread_if_absent_preserves_existing_metadata() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1296,7 +1296,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn update_thread_git_info_can_clear_fields() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1330,7 +1330,7 @@ mod tests {
         assert_eq!(persisted.git_origin_url, None);
     }
 
-    #[tokio::test]
+    #[test]
     async fn touch_thread_updated_at_updates_only_updated_at() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1367,7 +1367,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn apply_rollout_items_uses_override_updated_at_when_provided() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home.clone(), "test-provider".to_string())
@@ -1426,7 +1426,7 @@ mod tests {
         assert_eq!(persisted.updated_at, override_updated_at);
     }
 
-    #[tokio::test]
+    #[test]
     async fn thread_spawn_edges_track_directional_status() {
         let codex_home = unique_temp_dir();
         let runtime = StateRuntime::init(codex_home, "test-provider".to_string())

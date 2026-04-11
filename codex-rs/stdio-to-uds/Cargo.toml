@@ -1,8 +1,8 @@
 [package]
 name = "codex-stdio-to-uds"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [[bin]]
 name = "codex-stdio-to-uds"
@@ -12,16 +12,10 @@ path = "src/main.rs"
 name = "codex_stdio_to_uds"
 path = "src/lib.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-anyhow = { workspace = true }
-
-[target.'cfg(target_os = "windows")'.dependencies]
-uds_windows = { workspace = true }
+anyhow = { version = "1" }
 
 [dev-dependencies]
-codex-utils-cargo-bin = { workspace = true }
-pretty_assertions = { workspace = true }
-tempfile = { workspace = true }
+codex-utils-cargo-bin = { path = "../utils/cargo-bin" }
+pretty_assertions = { version = "1.4.1" }
+tempfile = { version = "3.23.0" }

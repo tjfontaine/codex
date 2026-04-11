@@ -154,6 +154,9 @@ fn append_locked_line(policy_path: &Path, line: &str) -> Result<(), AmendError> 
             path: policy_path.to_path_buf(),
             source,
         })?;
+    // Skip file locking on WASM — WASI descriptor.lock() is not supported.
+    // Safe: single-threaded WASM has no contention on policy files.
+    #[cfg(not(target_arch = "wasm32"))]
     file.lock().map_err(|source| AmendError::LockPolicyFile {
         path: policy_path.to_path_buf(),
         source,

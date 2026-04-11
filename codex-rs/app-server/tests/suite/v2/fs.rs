@@ -59,7 +59,7 @@ fn absolute_path(path: PathBuf) -> AbsolutePathBuf {
     AbsolutePathBuf::try_from(path).expect("path should be absolute")
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_get_metadata_returns_only_used_fields() -> Result<()> {
     let codex_home = TempDir::new()?;
     let file_path = codex_home.path().join("note.txt");
@@ -111,7 +111,7 @@ async fn fs_get_metadata_returns_only_used_fields() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_methods_cover_current_fs_utils_surface() -> Result<()> {
     let codex_home = TempDir::new()?;
     let source_dir = codex_home.path().join("source");
@@ -262,7 +262,7 @@ async fn fs_methods_cover_current_fs_utils_surface() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_write_file_accepts_base64_bytes() -> Result<()> {
     let codex_home = TempDir::new()?;
     let file_path = codex_home.path().join("blob.bin");
@@ -304,7 +304,7 @@ async fn fs_write_file_accepts_base64_bytes() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_write_file_rejects_invalid_base64() -> Result<()> {
     let codex_home = TempDir::new()?;
     let file_path = codex_home.path().join("blob.bin");
@@ -333,7 +333,7 @@ async fn fs_write_file_rejects_invalid_base64() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_methods_reject_relative_paths() -> Result<()> {
     let codex_home = TempDir::new()?;
     let absolute_file = codex_home.path().join("absolute.txt");
@@ -457,7 +457,7 @@ async fn fs_methods_reject_relative_paths() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_copy_rejects_directory_without_recursive() -> Result<()> {
     let codex_home = TempDir::new()?;
     let source_dir = codex_home.path().join("source");
@@ -484,7 +484,7 @@ async fn fs_copy_rejects_directory_without_recursive() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_copy_rejects_copying_directory_into_descendant() -> Result<()> {
     let codex_home = TempDir::new()?;
     let source_dir = codex_home.path().join("source");
@@ -512,7 +512,7 @@ async fn fs_copy_rejects_copying_directory_into_descendant() -> Result<()> {
 }
 
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_copy_preserves_symlinks_in_recursive_copy() -> Result<()> {
     let codex_home = TempDir::new()?;
     let source_dir = codex_home.path().join("source");
@@ -544,7 +544,7 @@ async fn fs_copy_preserves_symlinks_in_recursive_copy() -> Result<()> {
 }
 
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_copy_ignores_unknown_special_files_in_recursive_copy() -> Result<()> {
     let codex_home = TempDir::new()?;
     let source_dir = codex_home.path().join("source");
@@ -585,7 +585,7 @@ async fn fs_copy_ignores_unknown_special_files_in_recursive_copy() -> Result<()>
 }
 
 #[cfg(unix)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_copy_rejects_standalone_fifo_source() -> Result<()> {
     let codex_home = TempDir::new()?;
     let fifo_path = codex_home.path().join("named-pipe");
@@ -616,7 +616,7 @@ async fn fs_copy_rejects_standalone_fifo_source() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_watch_directory_reports_changed_child_paths_and_unwatch_stops_notifications()
 -> Result<()> {
     let codex_home = TempDir::new()?;
@@ -685,7 +685,7 @@ async fn fs_watch_directory_reports_changed_child_paths_and_unwatch_stops_notifi
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_watch_file_reports_atomic_replace_events() -> Result<()> {
     let codex_home = TempDir::new()?;
     let git_dir = codex_home.path().join("repo").join(".git");
@@ -725,7 +725,7 @@ async fn fs_watch_file_reports_atomic_replace_events() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_watch_allows_missing_file_targets() -> Result<()> {
     let codex_home = TempDir::new()?;
     let git_dir = codex_home.path().join("repo").join(".git");
@@ -764,7 +764,7 @@ async fn fs_watch_allows_missing_file_targets() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fs_watch_rejects_relative_paths() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mut mcp = initialized_mcp(&codex_home).await?;

@@ -663,8 +663,8 @@ impl BottomPane {
         } else {
             // In tests (and other non-Tokio contexts), fall back to a thread so
             // the hint can still expire without requiring an explicit draw.
-            std::thread::spawn(move || {
-                std::thread::sleep(QUIT_SHORTCUT_TIMEOUT);
+            tokio::thread_spawn::spawn(move || {
+                tokio::thread_spawn::sleep(QUIT_SHORTCUT_TIMEOUT);
                 frame_requester.schedule_frame();
             });
         }
@@ -1370,7 +1370,7 @@ mod tests {
 
         // Render and ensure the top row includes the Working header and a composer line below.
         // Give the animation thread a moment to tick.
-        std::thread::sleep(Duration::from_millis(120));
+        tokio::thread_spawn::sleep(Duration::from_millis(120));
         let area = Rect::new(0, 0, 40, 6);
         let mut buf = Buffer::empty(area);
         pane.render(area, &mut buf);

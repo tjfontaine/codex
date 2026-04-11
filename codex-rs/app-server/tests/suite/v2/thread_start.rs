@@ -45,7 +45,7 @@ use super::analytics::wait_for_analytics_payload;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn thread_start_creates_thread_and_emits_started() -> Result<()> {
     // Provide a mock server and config so model wiring is valid.
     let server = create_mock_responses_server_repeating_assistant("Done").await;
@@ -162,7 +162,7 @@ async fn thread_start_creates_thread_and_emits_started() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_tracks_thread_initialized_analytics() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -195,7 +195,7 @@ async fn thread_start_tracks_thread_initialized_analytics() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_does_not_track_thread_initialized_analytics_without_feature() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -229,7 +229,7 @@ async fn thread_start_does_not_track_thread_initialized_analytics_without_featur
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_respects_project_config_from_cwd() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -270,7 +270,7 @@ model_reasoning_effort = "high"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_accepts_flex_service_tier() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -298,7 +298,7 @@ async fn thread_start_accepts_flex_service_tier() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_accepts_metrics_service_name() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -326,7 +326,7 @@ async fn thread_start_accepts_metrics_service_name() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_ephemeral_remains_pathless() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
@@ -371,7 +371,7 @@ async fn thread_start_ephemeral_remains_pathless() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_fails_when_required_mcp_server_fails_to_initialize() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -407,7 +407,7 @@ async fn thread_start_fails_when_required_mcp_server_fails_to_initialize() -> Re
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_emits_mcp_server_status_updated_notifications() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -504,7 +504,7 @@ async fn thread_start_emits_mcp_server_status_updated_notifications() -> Result<
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_surfaces_cloud_requirements_load_errors() -> Result<()> {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
@@ -587,7 +587,7 @@ async fn thread_start_surfaces_cloud_requirements_load_errors() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_with_elevated_sandbox_trusts_project_and_followup_loads_project_config()
 -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
@@ -650,7 +650,7 @@ model_reasoning_effort = "high"
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_with_nested_git_cwd_trusts_repo_root() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -687,7 +687,7 @@ async fn thread_start_with_nested_git_cwd_trusts_repo_root() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_with_read_only_sandbox_does_not_persist_project_trust() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 
@@ -718,7 +718,7 @@ async fn thread_start_with_read_only_sandbox_does_not_persist_project_trust() ->
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_start_skips_trust_write_when_project_is_already_trusted() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
 

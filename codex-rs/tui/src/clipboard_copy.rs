@@ -157,7 +157,7 @@ fn arboard_copy(text: &str) -> Result<Option<ClipboardLease>, String> {
     let mut clipboard =
         arboard::Clipboard::new().map_err(|e| format!("clipboard unavailable: {e}"))?;
     clipboard
-        .set_text(text)
+        .set_text(text.to_string())
         .map_err(|e| format!("failed to set clipboard text: {e}"))?;
     Ok(None)
 }
@@ -173,7 +173,7 @@ fn arboard_copy(text: &str) -> Result<Option<ClipboardLease>, String> {
     let mut clipboard =
         arboard::Clipboard::new().map_err(|e| format!("clipboard unavailable: {e}"))?;
     clipboard
-        .set_text(text)
+        .set_text(text.to_string())
         .map_err(|e| format!("failed to set clipboard text: {e}"))?;
     Ok(Some(ClipboardLease::native_linux(clipboard)))
 }

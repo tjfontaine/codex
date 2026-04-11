@@ -198,11 +198,11 @@ async fn run_command_under_sandbox(
                 Ok(Ok(v)) => v,
                 Ok(Err(err)) => {
                     eprintln!("windows sandbox failed: {err}");
-                    std::process::exit(1);
+                    panic!("process::exit(1) called — cannot exit in WASM");
                 }
                 Err(join_err) => {
                     eprintln!("windows sandbox join error: {join_err}");
-                    std::process::exit(1);
+                    panic!("process::exit(1) called — cannot exit in WASM");
                 }
             };
 
@@ -215,7 +215,7 @@ async fn run_command_under_sandbox(
                 let _ = std::io::stderr().write_all(&capture.stderr);
             }
 
-            std::process::exit(capture.exit_code);
+            panic!("process::exit(capture.exit_code) called — cannot exit in WASM");
         }
         #[cfg(not(target_os = "windows"))]
         {
@@ -483,7 +483,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn debug_sandbox_honors_active_permission_profiles() -> anyhow::Result<()> {
         let codex_home = TempDir::new()?;
         let sandbox_paths = TempDir::new()?;
@@ -534,7 +534,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn debug_sandbox_rejects_full_auto_for_permission_profiles() -> anyhow::Result<()> {
         let codex_home = TempDir::new()?;
         let sandbox_paths = TempDir::new()?;

@@ -74,7 +74,7 @@ fn assert_no_matched_rules_invariant(output_item: &Value) {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn execpolicy_blocks_shell_invocation() -> Result<()> {
     // TODO execpolicy doesn't parse powershell commands yet
     if cfg!(windows) {
@@ -165,7 +165,7 @@ async fn execpolicy_blocks_shell_invocation() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn shell_command_empty_script_with_collaboration_mode_does_not_panic() -> Result<()> {
     let server = start_mock_server().await;
     let mut builder = test_codex().with_model("gpt-5").with_config(|config| {
@@ -220,7 +220,7 @@ async fn shell_command_empty_script_with_collaboration_mode_does_not_panic() -> 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn unified_exec_empty_script_with_collaboration_mode_does_not_panic() -> Result<()> {
     let server = start_mock_server().await;
     let mut builder = test_codex().with_model("gpt-5").with_config(|config| {
@@ -279,7 +279,7 @@ async fn unified_exec_empty_script_with_collaboration_mode_does_not_panic() -> R
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn shell_command_whitespace_script_with_collaboration_mode_does_not_panic() -> Result<()> {
     let server = start_mock_server().await;
     let mut builder = test_codex().with_model("gpt-5").with_config(|config| {
@@ -334,7 +334,7 @@ async fn shell_command_whitespace_script_with_collaboration_mode_does_not_panic(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn unified_exec_whitespace_script_with_collaboration_mode_does_not_panic() -> Result<()> {
     let server = start_mock_server().await;
     let mut builder = test_codex().with_model("gpt-5").with_config(|config| {

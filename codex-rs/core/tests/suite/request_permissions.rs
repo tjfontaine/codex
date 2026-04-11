@@ -311,7 +311,7 @@ fn normalized_directory_write_permissions(path: &Path) -> Result<RequestPermissi
     })
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn with_additional_permissions_requires_approval_under_on_request() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -399,7 +399,7 @@ async fn with_additional_permissions_requires_approval_under_on_request() -> Res
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn request_permissions_tool_is_auto_denied_when_granular_request_permissions_is_disabled()
 -> Result<()> {
     skip_if_no_network!(Ok(()));
@@ -488,7 +488,7 @@ async fn request_permissions_tool_is_auto_denied_when_granular_request_permissio
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn relative_additional_permissions_resolve_against_tool_workdir() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -587,7 +587,7 @@ async fn relative_additional_permissions_resolve_against_tool_workdir() -> Resul
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 #[cfg(target_os = "macos")]
 async fn read_only_with_additional_permissions_does_not_widen_to_unrequested_cwd_write()
 -> Result<()> {
@@ -687,7 +687,7 @@ async fn read_only_with_additional_permissions_does_not_widen_to_unrequested_cwd
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 #[cfg(target_os = "macos")]
 async fn read_only_with_additional_permissions_does_not_widen_to_unrequested_tmp_write()
 -> Result<()> {
@@ -788,7 +788,7 @@ async fn read_only_with_additional_permissions_does_not_widen_to_unrequested_tmp
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn workspace_write_with_additional_permissions_can_write_outside_cwd() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -894,7 +894,7 @@ async fn workspace_write_with_additional_permissions_can_write_outside_cwd() -> 
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn with_additional_permissions_denied_approval_blocks_execution() -> Result<()> {
     skip_if_no_network!(Ok(()));
     let server = start_mock_server().await;
@@ -997,7 +997,7 @@ async fn with_additional_permissions_denied_approval_blocks_execution() -> Resul
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn request_permissions_grants_apply_to_later_exec_command_calls() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -1119,7 +1119,7 @@ async fn request_permissions_grants_apply_to_later_exec_command_calls() -> Resul
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn request_permissions_preapprove_explicit_exec_permissions_outside_on_request() -> Result<()>
 {
     skip_if_no_network!(Ok(()));
@@ -1237,7 +1237,7 @@ async fn request_permissions_preapprove_explicit_exec_permissions_outside_on_req
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn request_permissions_grants_apply_to_later_shell_command_calls() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -1347,7 +1347,7 @@ async fn request_permissions_grants_apply_to_later_shell_command_calls() -> Resu
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn request_permissions_grants_apply_to_later_shell_command_calls_without_inline_permission_feature()
 -> Result<()> {
     skip_if_no_network!(Ok(()));
@@ -1459,7 +1459,7 @@ async fn request_permissions_grants_apply_to_later_shell_command_calls_without_i
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn partial_request_permissions_grants_do_not_preapprove_new_permissions() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -1618,7 +1618,7 @@ async fn partial_request_permissions_grants_do_not_preapprove_new_permissions() 
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn request_permissions_grants_do_not_carry_across_turns() -> Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
@@ -1729,7 +1729,7 @@ async fn request_permissions_grants_do_not_carry_across_turns() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 #[cfg(target_os = "macos")]
 async fn request_permissions_session_grants_carry_across_turns() -> Result<()> {
     skip_if_no_network!(Ok(()));

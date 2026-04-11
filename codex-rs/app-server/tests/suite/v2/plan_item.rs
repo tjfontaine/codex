@@ -35,7 +35,7 @@ use wiremock::MockServer;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[test]
 async fn plan_mode_uses_proposed_plan_block_for_plan_item() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -97,7 +97,7 @@ async fn plan_mode_uses_proposed_plan_block_for_plan_item() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[test]
 async fn plan_mode_without_proposed_plan_does_not_emit_plan_item() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

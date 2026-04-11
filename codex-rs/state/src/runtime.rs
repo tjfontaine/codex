@@ -158,7 +158,7 @@ async fn open_state_sqlite(path: &Path, migrator: &Migrator) -> anyhow::Result<S
         .connect_with(options)
         .await?;
     migrator.run(&pool).await?;
-    let auto_vacuum = sqlx::query_scalar::<_, i64>("PRAGMA auto_vacuum")
+    let auto_vacuum = sqlx::query_scalar::<i64>("PRAGMA auto_vacuum")
         .fetch_one(&pool)
         .await?;
     if auto_vacuum != SqliteAutoVacuum::Incremental as i64 {
@@ -296,7 +296,7 @@ mod tests {
         .expect("open sqlite pool")
     }
 
-    #[tokio::test]
+    #[test]
     async fn open_state_sqlite_tolerates_newer_applied_migrations() {
         let codex_home = unique_temp_dir();
         tokio::fs::create_dir_all(&codex_home)

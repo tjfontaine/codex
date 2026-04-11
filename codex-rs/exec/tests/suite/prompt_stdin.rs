@@ -5,7 +5,7 @@ use core_test_support::responses;
 use core_test_support::test_codex_exec::test_codex_exec;
 use predicates::str::contains;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn exec_appends_piped_stdin_to_prompt_argument() -> anyhow::Result<()> {
     let test = test_codex_exec();
     let server = responses::start_mock_server().await;
@@ -39,7 +39,7 @@ async fn exec_appends_piped_stdin_to_prompt_argument() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn exec_ignores_empty_piped_stdin_when_prompt_argument_is_present() -> anyhow::Result<()> {
     let test = test_codex_exec();
     let server = responses::start_mock_server().await;
@@ -72,7 +72,7 @@ async fn exec_ignores_empty_piped_stdin_when_prompt_argument_is_present() -> any
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn exec_dash_prompt_reads_stdin_as_the_prompt() -> anyhow::Result<()> {
     let test = test_codex_exec();
     let server = responses::start_mock_server().await;
@@ -106,7 +106,7 @@ async fn exec_dash_prompt_reads_stdin_as_the_prompt() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn exec_without_prompt_argument_reads_piped_stdin_as_the_prompt() -> anyhow::Result<()> {
     let test = test_codex_exec();
     let server = responses::start_mock_server().await;

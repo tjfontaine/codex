@@ -47,13 +47,13 @@ fn init_login_file_logging(config: &Config) -> Option<WorkerGuard> {
     let log_dir = match codex_core::config::log_dir(config) {
         Ok(log_dir) => log_dir,
         Err(err) => {
-            eprintln!("Warning: failed to resolve login log directory: {err}");
+            tracing::error!("Warning: failed to resolve login log directory: {err}");
             return None;
         }
     };
 
     if let Err(err) = std::fs::create_dir_all(&log_dir) {
-        eprintln!(
+        tracing::error!(
             "Warning: failed to create login log directory {}: {err}",
             log_dir.display()
         );
@@ -73,7 +73,7 @@ fn init_login_file_logging(config: &Config) -> Option<WorkerGuard> {
     let log_file = match log_file_opts.open(&log_path) {
         Ok(log_file) => log_file,
         Err(err) => {
-            eprintln!(
+            tracing::error!(
                 "Warning: failed to open login log file {}: {err}",
                 log_path.display()
             );
@@ -94,7 +94,7 @@ fn init_login_file_logging(config: &Config) -> Option<WorkerGuard> {
     // Persist the same login targets to a file so support can inspect auth failures
     // without reproducing them through TUI or app-server.
     if let Err(err) = tracing_subscriber::registry().with(file_layer).try_init() {
-        eprintln!(
+        tracing::error!(
             "Warning: failed to initialize login log file {}: {err}",
             log_path.display()
         );
@@ -105,7 +105,7 @@ fn init_login_file_logging(config: &Config) -> Option<WorkerGuard> {
 }
 
 fn print_login_server_start(actual_port: u16, auth_url: &str) {
-    eprintln!(
+    tracing::error!(
         "Starting local login server on http://localhost:{actual_port}.\nIf your browser did not open, navigate to this URL to authenticate:\n\n{auth_url}\n\nOn a remote or headless machine? Use `codex login --device-auth` instead."
     );
 }
@@ -134,8 +134,8 @@ pub async fn run_login_with_chatgpt(cli_config_overrides: CliConfigOverrides) ->
     tracing::info!("starting browser login flow");
 
     if matches!(config.forced_login_method, Some(ForcedLoginMethod::Api)) {
-        eprintln!("{CHATGPT_LOGIN_DISABLED_MESSAGE}");
-        std::process::exit(1);
+        tracing::error!("{CHATGPT_LOGIN_DISABLED_MESSAGE}");
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
 
     let forced_chatgpt_workspace_id = config.forced_chatgpt_workspace_id.clone();
@@ -148,12 +148,12 @@ pub async fn run_login_with_chatgpt(cli_config_overrides: CliConfigOverrides) ->
     .await
     {
         Ok(_) => {
-            eprintln!("{LOGIN_SUCCESS_MESSAGE}");
-            std::process::exit(0);
+            tracing::error!("{LOGIN_SUCCESS_MESSAGE}");
+            panic!("process::exit(0) called — cannot exit in WASM");
         }
         Err(e) => {
-            eprintln!("Error logging in: {e}");
-            std::process::exit(1);
+            tracing::error!("Error logging in: {e}");
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     }
 }
@@ -167,8 +167,8 @@ pub async fn run_login_with_api_key(
     tracing::info!("starting api key login flow");
 
     if matches!(config.forced_login_method, Some(ForcedLoginMethod::Chatgpt)) {
-        eprintln!("{API_KEY_LOGIN_DISABLED_MESSAGE}");
-        std::process::exit(1);
+        tracing::error!("{API_KEY_LOGIN_DISABLED_MESSAGE}");
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
 
     match login_with_api_key(
@@ -177,12 +177,12 @@ pub async fn run_login_with_api_key(
         config.cli_auth_credentials_store_mode,
     ) {
         Ok(_) => {
-            eprintln!("{LOGIN_SUCCESS_MESSAGE}");
-            std::process::exit(0);
+            tracing::error!("{LOGIN_SUCCESS_MESSAGE}");
+            panic!("process::exit(0) called — cannot exit in WASM");
         }
         Err(e) => {
-            eprintln!("Error logging in: {e}");
-            std::process::exit(1);
+            tracing::error!("Error logging in: {e}");
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     }
 }
@@ -191,24 +191,24 @@ pub fn read_api_key_from_stdin() -> String {
     let mut stdin = std::io::stdin();
 
     if stdin.is_terminal() {
-        eprintln!(
+        tracing::error!(
             "--with-api-key expects the API key on stdin. Try piping it, e.g. `printenv OPENAI_API_KEY | codex login --with-api-key`."
         );
-        std::process::exit(1);
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
 
-    eprintln!("Reading API key from stdin...");
+    tracing::error!("Reading API key from stdin...");
 
     let mut buffer = String::new();
     if let Err(err) = stdin.read_to_string(&mut buffer) {
-        eprintln!("Failed to read API key from stdin: {err}");
-        std::process::exit(1);
+        tracing::error!("Failed to read API key from stdin: {err}");
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
 
     let api_key = buffer.trim().to_string();
     if api_key.is_empty() {
-        eprintln!("No API key provided via stdin.");
-        std::process::exit(1);
+        tracing::error!("No API key provided via stdin.");
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
 
     api_key
@@ -224,8 +224,8 @@ pub async fn run_login_with_device_code(
     let _login_log_guard = init_login_file_logging(&config);
     tracing::info!("starting device code login flow");
     if matches!(config.forced_login_method, Some(ForcedLoginMethod::Api)) {
-        eprintln!("{CHATGPT_LOGIN_DISABLED_MESSAGE}");
-        std::process::exit(1);
+        tracing::error!("{CHATGPT_LOGIN_DISABLED_MESSAGE}");
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
     let forced_chatgpt_workspace_id = config.forced_chatgpt_workspace_id.clone();
     let mut opts = ServerOptions::new(
@@ -239,12 +239,12 @@ pub async fn run_login_with_device_code(
     }
     match run_device_code_login(opts).await {
         Ok(()) => {
-            eprintln!("{LOGIN_SUCCESS_MESSAGE}");
-            std::process::exit(0);
+            tracing::error!("{LOGIN_SUCCESS_MESSAGE}");
+            panic!("process::exit(0) called — cannot exit in WASM");
         }
         Err(e) => {
-            eprintln!("Error logging in with device code: {e}");
-            std::process::exit(1);
+            tracing::error!("Error logging in with device code: {e}");
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     }
 }
@@ -262,8 +262,8 @@ pub async fn run_login_with_device_code_fallback_to_browser(
     let _login_log_guard = init_login_file_logging(&config);
     tracing::info!("starting login flow with device code fallback");
     if matches!(config.forced_login_method, Some(ForcedLoginMethod::Api)) {
-        eprintln!("{CHATGPT_LOGIN_DISABLED_MESSAGE}");
-        std::process::exit(1);
+        tracing::error!("{CHATGPT_LOGIN_DISABLED_MESSAGE}");
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
 
     let forced_chatgpt_workspace_id = config.forced_chatgpt_workspace_id.clone();
@@ -280,34 +280,34 @@ pub async fn run_login_with_device_code_fallback_to_browser(
 
     match run_device_code_login(opts.clone()).await {
         Ok(()) => {
-            eprintln!("{LOGIN_SUCCESS_MESSAGE}");
-            std::process::exit(0);
+            tracing::error!("{LOGIN_SUCCESS_MESSAGE}");
+            panic!("process::exit(0) called — cannot exit in WASM");
         }
         Err(e) => {
             if e.kind() == std::io::ErrorKind::NotFound {
-                eprintln!("Device code login is not enabled; falling back to browser login.");
+                tracing::error!("Device code login is not enabled; falling back to browser login.");
                 match run_login_server(opts) {
                     Ok(server) => {
                         print_login_server_start(server.actual_port, &server.auth_url);
                         match server.block_until_done().await {
                             Ok(()) => {
-                                eprintln!("{LOGIN_SUCCESS_MESSAGE}");
-                                std::process::exit(0);
+                                tracing::error!("{LOGIN_SUCCESS_MESSAGE}");
+                                panic!("process::exit(0) called — cannot exit in WASM");
                             }
                             Err(e) => {
-                                eprintln!("Error logging in: {e}");
-                                std::process::exit(1);
+                                tracing::error!("Error logging in: {e}");
+                                panic!("process::exit(1) called — cannot exit in WASM");
                             }
                         }
                     }
                     Err(e) => {
-                        eprintln!("Error logging in: {e}");
-                        std::process::exit(1);
+                        tracing::error!("Error logging in: {e}");
+                        panic!("process::exit(1) called — cannot exit in WASM");
                     }
                 }
             } else {
-                eprintln!("Error logging in with device code: {e}");
-                std::process::exit(1);
+                tracing::error!("Error logging in with device code: {e}");
+                panic!("process::exit(1) called — cannot exit in WASM");
             }
         }
     }
@@ -320,26 +320,26 @@ pub async fn run_login_status(cli_config_overrides: CliConfigOverrides) -> ! {
         Ok(Some(auth)) => match auth.auth_mode() {
             AuthMode::ApiKey => match auth.get_token() {
                 Ok(api_key) => {
-                    eprintln!("Logged in using an API key - {}", safe_format_key(&api_key));
-                    std::process::exit(0);
+                    tracing::error!("Logged in using an API key - {}", safe_format_key(&api_key));
+                    panic!("process::exit(0) called — cannot exit in WASM");
                 }
                 Err(e) => {
-                    eprintln!("Unexpected error retrieving API key: {e}");
-                    std::process::exit(1);
+                    tracing::error!("Unexpected error retrieving API key: {e}");
+                    panic!("process::exit(1) called — cannot exit in WASM");
                 }
             },
             AuthMode::Chatgpt | AuthMode::ChatgptAuthTokens => {
-                eprintln!("Logged in using ChatGPT");
-                std::process::exit(0);
+                tracing::error!("Logged in using ChatGPT");
+                panic!("process::exit(0) called — cannot exit in WASM");
             }
         },
         Ok(None) => {
-            eprintln!("Not logged in");
-            std::process::exit(1);
+            tracing::error!("Not logged in");
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
         Err(e) => {
-            eprintln!("Error checking login status: {e}");
-            std::process::exit(1);
+            tracing::error!("Error checking login status: {e}");
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     }
 }
@@ -349,16 +349,16 @@ pub async fn run_logout(cli_config_overrides: CliConfigOverrides) -> ! {
 
     match logout(&config.codex_home, config.cli_auth_credentials_store_mode) {
         Ok(true) => {
-            eprintln!("Successfully logged out");
-            std::process::exit(0);
+            tracing::error!("Successfully logged out");
+            panic!("process::exit(0) called — cannot exit in WASM");
         }
         Ok(false) => {
-            eprintln!("Not logged in");
-            std::process::exit(0);
+            tracing::error!("Not logged in");
+            panic!("process::exit(0) called — cannot exit in WASM");
         }
         Err(e) => {
-            eprintln!("Error logging out: {e}");
-            std::process::exit(1);
+            tracing::error!("Error logging out: {e}");
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     }
 }
@@ -367,16 +367,16 @@ async fn load_config_or_exit(cli_config_overrides: CliConfigOverrides) -> Config
     let cli_overrides = match cli_config_overrides.parse_overrides() {
         Ok(v) => v,
         Err(e) => {
-            eprintln!("Error parsing -c overrides: {e}");
-            std::process::exit(1);
+            tracing::error!("Error parsing -c overrides: {e}");
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     };
 
     match Config::load_with_cli_overrides(cli_overrides).await {
         Ok(config) => config,
         Err(e) => {
-            eprintln!("Error loading configuration: {e}");
-            std::process::exit(1);
+            tracing::error!("Error loading configuration: {e}");
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     }
 }

@@ -1,8 +1,8 @@
 [package]
 name = "codex-cli"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 build = "build.rs"
 
 [[bin]]
@@ -13,63 +13,42 @@ path = "src/main.rs"
 name = "codex_cli"
 path = "src/lib.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-anyhow = { workspace = true }
-clap = { workspace = true, features = ["derive"] }
-clap_complete = { workspace = true }
-codex-app-server = { workspace = true }
-codex-app-server-protocol = { workspace = true }
-codex-app-server-test-client = { workspace = true }
-codex-arg0 = { workspace = true }
-codex-chatgpt = { workspace = true }
-codex-cloud-tasks = { path = "../cloud-tasks" }
-codex-utils-cli = { workspace = true }
-codex-config = { workspace = true }
-codex-core = { workspace = true }
-codex-exec = { workspace = true }
-codex-exec-server = { workspace = true }
-codex-execpolicy = { workspace = true }
-codex-features = { workspace = true }
-codex-login = { workspace = true }
-codex-mcp = { workspace = true }
-codex-mcp-server = { workspace = true }
-codex-protocol = { workspace = true }
-codex-responses-api-proxy = { workspace = true }
-codex-rmcp-client = { workspace = true }
-codex-sandboxing = { workspace = true }
-codex-state = { workspace = true }
-codex-stdio-to-uds = { workspace = true }
-codex-terminal-detection = { workspace = true }
-codex-tui = { workspace = true }
-codex-utils-path = { workspace = true }
-libc = { workspace = true }
-owo-colors = { workspace = true }
-regex-lite = { workspace = true }
-serde_json = { workspace = true }
-supports-color = { workspace = true }
-tempfile = { workspace = true }
-tokio = { workspace = true, features = [
-    "io-std",
-    "macros",
-    "process",
-    "rt-multi-thread",
-    "signal",
-] }
-toml = { workspace = true }
-tracing = { workspace = true }
-tracing-appender = { workspace = true }
-tracing-subscriber = { workspace = true }
-
-[target.'cfg(target_os = "windows")'.dependencies]
-codex_windows_sandbox = { package = "codex-windows-sandbox", path = "../windows-sandbox-rs" }
+anyhow = { version = "1" }
+clap = { version = "4", features = ["derive"] }
+clap_complete = { version = "4" }
+codex-app-server = { path = "../app-server" }
+codex-app-server-protocol = { path = "../app-server-protocol" }
+codex-arg0 = { path = "../arg0" }
+codex-utils-cli = { path = "../utils/cli" }
+codex-config = { path = "../config" }
+codex-core = { path = "../core" }
+codex-exec-server = { path = "../../../codex-wasm/wasi-exec-server" }
+codex-execpolicy = { path = "../execpolicy" }
+codex-features = { path = "../features" }
+codex-login = { path = "../login" }
+codex-mcp = { path = "../codex-mcp" }
+codex-protocol = { path = "../protocol" }
+codex-rmcp-client = { path = "../../../codex-wasm/wasi-rmcp-client" }
+codex-sandboxing = { path = "../sandboxing" }
+codex-state = { path = "../state" }
+codex-terminal-detection = { path = "../../../codex-wasm/wasi-terminal-detection" }
+codex-utils-path = { path = "../utils/path-utils" }
+libc = { version = "0.2.182" }
+owo-colors = { version = "4.3.0" }
+regex-lite = { version = "0.1.8" }
+serde_json = { version = "1" }
+supports-color = { version = "3.0.2" }
+tempfile = { version = "3.23.0" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
+toml = { version = "0.9.5" }
+tracing = { version = "0.1.44" }
+tracing-appender = { version = "0.2.3" }
+tracing-subscriber = { version = "0.3.22" }
 
 [dev-dependencies]
-assert_cmd = { workspace = true }
-assert_matches = { workspace = true }
-codex-utils-cargo-bin = { workspace = true }
-predicates = { workspace = true }
-pretty_assertions = { workspace = true }
-sqlx = { workspace = true }
+assert_cmd = { version = "2" }
+assert_matches = { version = "1.5.0" }
+codex-utils-cargo-bin = { path = "../utils/cargo-bin" }
+predicates = { version = "3" }
+pretty_assertions = { version = "1.4.1" }

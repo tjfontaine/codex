@@ -164,7 +164,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn summarize_input_posts_expected_payload_and_parses_output() {
         let transport = CapturingTransport::new(
             serde_json::to_vec(&json!({

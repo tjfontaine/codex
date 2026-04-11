@@ -302,7 +302,7 @@ async fn run_session_picker_with_loader(
             Some(event) = background_events.next() => {
                 state.handle_background_event(event).await?;
             }
-            else => break,
+            _ = async {} => break,
         }
     }
 
@@ -2211,7 +2211,7 @@ mod tests {
     //     assert_snapshot!("resume_picker_screen", snapshot);
     // }
 
-    #[tokio::test]
+    #[test]
     async fn resume_picker_thread_names_snapshot() {
         use crate::custom_terminal::Terminal;
         use crate::test_backend::VT100Backend;
@@ -2310,7 +2310,7 @@ mod tests {
         assert_snapshot!("resume_picker_thread_names", snapshot);
     }
 
-    #[tokio::test]
+    #[test]
     async fn update_thread_names_prefers_local_session_index_names() {
         let tempdir = tempfile::tempdir().expect("tempdir");
         let thread_id =
@@ -2506,7 +2506,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn toggle_sort_key_reloads_with_new_sort() {
         let recorded_requests: Arc<Mutex<Vec<PageLoadRequest>>> = Arc::new(Mutex::new(Vec::new()));
         let request_sink = recorded_requests.clone();
@@ -2541,7 +2541,7 @@ mod tests {
         assert_eq!(guard[1].sort_key, ThreadSortKey::CreatedAt);
     }
 
-    #[tokio::test]
+    #[test]
     async fn page_navigation_uses_view_rows() {
         let loader: PageLoader = Arc::new(|_| {});
         let mut state = PickerState::new(
@@ -2589,7 +2589,7 @@ mod tests {
         assert_eq!(state.selected, 5);
     }
 
-    #[tokio::test]
+    #[test]
     async fn enter_on_row_without_resolvable_thread_id_shows_inline_error() {
         let loader: PageLoader = Arc::new(|_| {});
         let mut state = PickerState::new(
@@ -2629,7 +2629,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn enter_on_pathless_thread_uses_thread_id() {
         let loader: PageLoader = Arc::new(|_| {});
         let mut state = PickerState::new(
@@ -2699,7 +2699,7 @@ mod tests {
         assert_eq!(row.thread_name, Some(String::from("Named thread")));
     }
 
-    #[tokio::test]
+    #[test]
     async fn up_at_bottom_does_not_scroll_when_visible() {
         let loader: PageLoader = Arc::new(|_| {});
         let mut state = PickerState::new(
@@ -2742,7 +2742,7 @@ mod tests {
         assert_eq!(state.selected, state.filtered_rows.len().saturating_sub(2));
     }
 
-    #[tokio::test]
+    #[test]
     async fn set_query_loads_until_match_and_respects_scan_cap() {
         let recorded_requests: Arc<Mutex<Vec<PageLoadRequest>>> = Arc::new(Mutex::new(Vec::new()));
         let request_sink = recorded_requests.clone();

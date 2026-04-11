@@ -36,7 +36,7 @@ use tokio::time::Duration;
 use tracing_subscriber::prelude::*;
 use uuid::Uuid;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn new_thread_is_recorded_in_state_db() -> Result<()> {
     let server = start_mock_server().await;
     let mut builder = test_codex().with_config(|config| {
@@ -92,7 +92,7 @@ async fn new_thread_is_recorded_in_state_db() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn backfill_scans_existing_rollouts() -> Result<()> {
     let server = start_mock_server().await;
 
@@ -226,7 +226,7 @@ async fn backfill_scans_existing_rollouts() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn user_messages_persist_in_state_db() -> Result<()> {
     let server = start_mock_server().await;
     mount_sse_sequence(
@@ -279,7 +279,7 @@ async fn user_messages_persist_in_state_db() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn web_search_marks_thread_memory_mode_polluted_when_configured() -> Result<()> {
     let server = start_mock_server().await;
     mount_sse_sequence(
@@ -318,7 +318,7 @@ async fn web_search_marks_thread_memory_mode_polluted_when_configured() -> Resul
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn mcp_call_marks_thread_memory_mode_polluted_when_configured() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -430,7 +430,7 @@ async fn mcp_call_marks_thread_memory_mode_polluted_when_configured() -> Result<
     Ok(())
 }
 
-#[tokio::test(flavor = "current_thread")]
+#[test]
 async fn tool_call_logs_include_thread_id() -> Result<()> {
     let server = start_mock_server().await;
     let call_id = "call-1";

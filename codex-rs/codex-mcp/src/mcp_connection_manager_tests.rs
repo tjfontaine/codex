@@ -177,7 +177,7 @@ fn elicitation_granular_policy_respects_never_and_config() {
     )));
 }
 
-#[tokio::test]
+#[test]
 async fn full_access_auto_accepts_elicitation_with_empty_form_schema() {
     let manager =
         ElicitationRequestManager::new(AskForApproval::Never, SandboxPolicy::DangerFullAccess);
@@ -207,7 +207,7 @@ async fn full_access_auto_accepts_elicitation_with_empty_form_schema() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn full_access_does_not_auto_accept_elicitation_with_requested_fields() {
     let manager =
         ElicitationRequestManager::new(AskForApproval::Never, SandboxPolicy::DangerFullAccess);
@@ -616,7 +616,7 @@ fn startup_cached_codex_apps_tools_loads_from_disk_cache() {
     assert_eq!(startup_tools[0].callable_name, "calendar_search");
 }
 
-#[tokio::test]
+#[test]
 async fn list_all_tools_uses_startup_snapshot_while_client_is_pending() {
     let startup_tools = vec![create_test_tool(
         CODEX_APPS_MCP_SERVER_NAME,
@@ -646,7 +646,7 @@ async fn list_all_tools_uses_startup_snapshot_while_client_is_pending() {
     assert_eq!(tool.callable_name, "calendar_create_event");
 }
 
-#[tokio::test]
+#[test]
 async fn list_all_tools_blocks_while_client_is_pending_without_startup_snapshot() {
     let pending_client = futures::future::pending::<Result<ManagedClient, StartupOutcomeError>>()
         .boxed()
@@ -669,7 +669,7 @@ async fn list_all_tools_blocks_while_client_is_pending_without_startup_snapshot(
     assert!(timeout_result.is_err());
 }
 
-#[tokio::test]
+#[test]
 async fn list_all_tools_does_not_block_when_startup_snapshot_cache_hit_is_empty() {
     let pending_client = futures::future::pending::<Result<ManagedClient, StartupOutcomeError>>()
         .boxed()
@@ -693,7 +693,7 @@ async fn list_all_tools_does_not_block_when_startup_snapshot_cache_hit_is_empty(
     assert!(tools.is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn list_all_tools_uses_startup_snapshot_when_client_startup_fails() {
     let startup_tools = vec![create_test_tool(
         CODEX_APPS_MCP_SERVER_NAME,

@@ -1,9 +1,9 @@
 [package]
 build = "build.rs"
-edition.workspace = true
-license.workspace = true
+edition = "2024"
+license = "Apache-2.0"
 name = "codex-windows-sandbox"
-version.workspace = true
+version = "0.0.0"
 
 [lib]
 name = "codex_windows_sandbox"
@@ -17,24 +17,21 @@ path = "src/bin/setup_main.rs"
 name = "codex-command-runner"
 path = "src/bin/command_runner.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
 anyhow = "1.0"
-base64 = { workspace = true }
+base64 = { version = "0.22.1" }
 chrono = { version = "0.4.42", default-features = false, features = [
     "clock",
     "std",
 ] }
-codex-utils-pty = { workspace = true }
-codex-utils-absolute-path = { workspace = true }
-codex-utils-string = { workspace = true }
+codex-utils-pty = { path = "../../../codex-wasm/wasi-pty" }
+codex-utils-absolute-path = { path = "../utils/absolute-path" }
+codex-utils-string = { path = "../utils/string" }
 dunce = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tempfile = "3"
-tokio = { workspace = true, features = ["sync", "rt"] }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
 windows = { version = "0.58", features = [
     "Win32_Foundation",
     "Win32_NetworkManagement_WindowsFirewall",
@@ -54,40 +51,8 @@ version = "0.8"
 [dependencies.dirs-next]
 version = "2.0"
 
-[target.'cfg(windows)'.dependencies.windows-sys]
-features = [
-    "Win32_Foundation",
-    "Win32_System_Diagnostics_Debug",
-    "Win32_Security",
-    "Win32_Security_Authorization",
-    "Win32_System_Threading",
-    "Win32_System_JobObjects",
-    "Win32_System_SystemServices",
-    "Win32_System_Environment",
-    "Win32_System_Pipes",
-    "Win32_System_WindowsProgramming",
-    "Win32_System_IO",
-    "Win32_System_Memory",
-    "Win32_System_Kernel",
-    "Win32_System_Console",
-    "Win32_Storage_FileSystem",
-    "Win32_System_Diagnostics_ToolHelp",
-    "Win32_NetworkManagement_NetManagement",
-    "Win32_Networking_WinSock",
-    "Win32_System_LibraryLoader",
-    "Win32_System_Com",
-    "Win32_Security_Cryptography",
-    "Win32_Security_Authentication_Identity",
-    "Win32_Graphics_Gdi",
-    "Win32_System_StationsAndDesktops",
-    "Win32_UI_WindowsAndMessaging",
-    "Win32_UI_Shell",
-    "Win32_System_Registry",
-]
-version = "0.52"
-
 [dev-dependencies]
-pretty_assertions = { workspace = true }
+pretty_assertions = { version = "1.4.1" }
 
 [build-dependencies]
 winres = "0.1"

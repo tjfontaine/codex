@@ -1,3 +1,4 @@
+#![allow(unused_variables, unused_mut, unused_assignments)]
 //! Shared in-process app-server client facade for CLI surfaces.
 //!
 //! This crate wraps [`codex_app_server::in_process`] behind a single async API
@@ -457,7 +458,7 @@ impl InProcessAppServerClient {
                             }
                         }
                     }
-                    event = handle.next_event(), if event_stream_enabled => {
+                    event = handle.next_event() => {
                         let Some(event) = event else {
                             break;
                         };
@@ -745,6 +746,85 @@ impl InProcessAppServerRequestHandle {
         })?;
         serde_json::from_value(result)
             .map_err(|source| TypedRequestError::Deserialize { method, source })
+    }
+}
+
+impl InProcessAppServerRequestHandle {
+    // [codex-codemod] injected for WASM app-server — same channel as client methods
+    pub async fn notify(&self, notification: ClientNotification) -> IoResult<()> {
+        let (response_tx, response_rx) = oneshot::channel();
+        self.command_tx
+            .send(ClientCommand::Notify {
+                notification,
+                response_tx,
+            })
+            .await
+            .map_err(|_| {
+                IoError::new(
+                    ErrorKind::BrokenPipe,
+                    "in-process app-server worker channel is closed",
+                )
+            })?;
+        response_rx.await.map_err(|_| {
+            IoError::new(
+                ErrorKind::BrokenPipe,
+                "in-process app-server notify channel is closed",
+            )
+        })?
+    }
+
+    pub async fn resolve_server_request(
+        &self,
+        request_id: RequestId,
+        result: JsonRpcResult,
+    ) -> IoResult<()> {
+        let (response_tx, response_rx) = oneshot::channel();
+        self.command_tx
+            .send(ClientCommand::ResolveServerRequest {
+                request_id,
+                result,
+                response_tx,
+            })
+            .await
+            .map_err(|_| {
+                IoError::new(
+                    ErrorKind::BrokenPipe,
+                    "in-process app-server worker channel is closed",
+                )
+            })?;
+        response_rx.await.map_err(|_| {
+            IoError::new(
+                ErrorKind::BrokenPipe,
+                "in-process app-server resolve channel is closed",
+            )
+        })?
+    }
+
+    pub async fn reject_server_request(
+        &self,
+        request_id: RequestId,
+        error: JSONRPCErrorError,
+    ) -> IoResult<()> {
+        let (response_tx, response_rx) = oneshot::channel();
+        self.command_tx
+            .send(ClientCommand::RejectServerRequest {
+                request_id,
+                error,
+                response_tx,
+            })
+            .await
+            .map_err(|_| {
+                IoError::new(
+                    ErrorKind::BrokenPipe,
+                    "in-process app-server worker channel is closed",
+                )
+            })?;
+        response_rx.await.map_err(|_| {
+            IoError::new(
+                ErrorKind::BrokenPipe,
+                "in-process app-server reject channel is closed",
+            )
+        })?
     }
 }
 
@@ -1084,7 +1164,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn typed_request_roundtrip_works() {
         let client = start_test_client(SessionSource::Exec).await;
         let _response: ConfigRequirementsReadResponse = client
@@ -1097,7 +1177,7 @@ mod tests {
         client.shutdown().await.expect("shutdown should complete");
     }
 
-    #[tokio::test]
+    #[test]
     async fn typed_request_reports_json_rpc_errors() {
         let client = start_test_client(SessionSource::Exec).await;
         let err = client
@@ -1117,7 +1197,7 @@ mod tests {
         client.shutdown().await.expect("shutdown should complete");
     }
 
-    #[tokio::test]
+    #[test]
     async fn caller_provided_session_source_is_applied() {
         for (session_source, expected_source) in [
             (SessionSource::Exec, ApiSessionSource::Exec),
@@ -1139,7 +1219,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn threads_started_via_app_server_are_visible_through_typed_requests() {
         let client = start_test_client(SessionSource::Cli).await;
 
@@ -1170,7 +1250,7 @@ mod tests {
         client.shutdown().await.expect("shutdown should complete");
     }
 
-    #[tokio::test]
+    #[test]
     async fn tiny_channel_capacity_still_supports_request_roundtrip() {
         let client =
             start_test_client_with_capacity(SessionSource::Exec, /*channel_capacity*/ 1).await;
@@ -1184,7 +1264,7 @@ mod tests {
         client.shutdown().await.expect("shutdown should complete");
     }
 
-    #[tokio::test]
+    #[test]
     async fn forward_in_process_event_preserves_transcript_notifications_under_backpressure() {
         let (event_tx, mut event_rx) = mpsc::channel(1);
         event_tx
@@ -1272,7 +1352,7 @@ mod tests {
         ));
     }
 
-    #[tokio::test]
+    #[test]
     async fn remote_typed_request_roundtrip_works() {
         let websocket_url = start_test_remote_server(|mut websocket| async move {
             expect_remote_initialize(&mut websocket).await;
@@ -1314,7 +1394,7 @@ mod tests {
         client.shutdown().await.expect("shutdown should complete");
     }
 
-    #[tokio::test]
+    #[test]
     async fn remote_connect_includes_auth_header_when_configured() {
         let auth_token = "remote-bearer-token".to_string();
         let websocket_url = start_test_remote_server_with_auth(
@@ -1335,7 +1415,7 @@ mod tests {
         client.shutdown().await.expect("shutdown should complete");
     }
 
-    #[tokio::test]
+    #[test]
     async fn remote_connect_rejects_non_loopback_ws_when_auth_configured() {
         let result = RemoteAppServerClient::connect(RemoteAppServerConnectArgs {
             websocket_url: "ws://example.com:4500".to_string(),
@@ -1367,7 +1447,7 @@ mod tests {
         ));
     }
 
-    #[tokio::test]
+    #[test]
     async fn remote_duplicate_request_id_keeps_original_waiter() {
         let (first_request_seen_tx, first_request_seen_rx) = tokio::sync::oneshot::channel();
         let websocket_url = start_test_remote_server(|mut websocket| async move {
@@ -1455,7 +1535,7 @@ mod tests {
         client.shutdown().await.expect("shutdown should complete");
     }
 
-    #[tokio::test]
+    #[test]
     async fn remote_notifications_arrive_over_websocket() {
         let websocket_url = start_test_remote_server(|mut websocket| async move {
             expect_remote_initialize(&mut websocket).await;
@@ -1490,7 +1570,7 @@ mod tests {
         client.shutdown().await.expect("shutdown should complete");
     }
 
-    #[tokio::test]
+    #[test]
     async fn remote_backpressure_preserves_transcript_notifications() {
         let (done_tx, done_rx) = tokio::sync::oneshot::channel();
         let websocket_url = start_test_remote_server(|mut websocket| async move {
@@ -1592,7 +1672,7 @@ mod tests {
         client.shutdown().await.expect("shutdown should complete");
     }
 
-    #[tokio::test]
+    #[test]
     async fn remote_server_request_resolution_roundtrip_works() {
         let websocket_url = start_test_remote_server(|mut websocket| async move {
             expect_remote_initialize(&mut websocket).await;
@@ -1646,7 +1726,7 @@ mod tests {
         client.shutdown().await.expect("shutdown should complete");
     }
 
-    #[tokio::test]
+    #[test]
     async fn remote_server_request_received_during_initialize_is_delivered() {
         let websocket_url = start_test_remote_server(|mut websocket| async move {
             let JSONRPCMessage::Request(request) = read_websocket_message(&mut websocket).await
@@ -1723,7 +1803,7 @@ mod tests {
         client.shutdown().await.expect("shutdown should complete");
     }
 
-    #[tokio::test]
+    #[test]
     async fn remote_unknown_server_request_is_rejected() {
         let websocket_url = start_test_remote_server(|mut websocket| async move {
             expect_remote_initialize(&mut websocket).await;
@@ -1758,7 +1838,7 @@ mod tests {
         client.shutdown().await.expect("shutdown should complete");
     }
 
-    #[tokio::test]
+    #[test]
     async fn remote_disconnect_surfaces_as_event() {
         let websocket_url = start_test_remote_server(|mut websocket| async move {
             expect_remote_initialize(&mut websocket).await;
@@ -1802,7 +1882,7 @@ mod tests {
         assert_eq!(std::error::Error::source(&deserialize).is_some(), true);
     }
 
-    #[tokio::test]
+    #[test]
     async fn next_event_surfaces_lagged_markers() {
         let (command_tx, _command_rx) = mpsc::channel(1);
         let (event_tx, event_rx) = mpsc::channel(1);
@@ -1895,7 +1975,7 @@ mod tests {
         ));
     }
 
-    #[tokio::test]
+    #[test]
     async fn runtime_start_args_forward_environment_manager() {
         let config = Arc::new(build_test_config().await);
         let environment_manager = Arc::new(EnvironmentManager::new(Some(
@@ -1929,7 +2009,7 @@ mod tests {
         assert!(runtime_args.environment_manager.is_remote());
     }
 
-    #[tokio::test]
+    #[test]
     async fn shutdown_completes_promptly_without_retained_managers() {
         let client = start_test_client(SessionSource::Cli).await;
 

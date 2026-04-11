@@ -55,11 +55,8 @@ where
 
 const COMMON_CORE_VARS: &[&str] = &["PATH", "SHELL", "TMPDIR", "TEMP", "TMP"];
 
-#[cfg(target_os = "windows")]
-const PLATFORM_CORE_VARS: &[&str] = &["PATHEXT", "USERNAME", "USERPROFILE"];
-
-#[cfg(unix)]
-const PLATFORM_CORE_VARS: &[&str] = &["HOME", "LANG", "LC_ALL", "LC_CTYPE", "LOGNAME", "USER"];
+// [codex-codemod] Single unconditional definition for WASM.
+const PLATFORM_CORE_VARS: &[&str] = &["HOME"];
 
 fn populate_env<I>(
     vars: I,

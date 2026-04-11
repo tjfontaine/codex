@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-#[tokio::test]
+#[test]
 async fn replace_mcp_servers_serializes_per_tool_approval_overrides() -> anyhow::Result<()> {
     let unique_suffix = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let codex_home = std::env::temp_dir().join(format!(

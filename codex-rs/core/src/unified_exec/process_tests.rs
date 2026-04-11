@@ -81,7 +81,7 @@ async fn remote_process(write_status: WriteStatus) -> UnifiedExecProcess {
         .expect("remote process should start")
 }
 
-#[tokio::test]
+#[test]
 async fn remote_write_unknown_process_marks_process_exited() {
     let process = remote_process(WriteStatus::UnknownProcess).await;
 
@@ -94,7 +94,7 @@ async fn remote_write_unknown_process_marks_process_exited() {
     assert!(process.has_exited());
 }
 
-#[tokio::test]
+#[test]
 async fn remote_write_closed_stdin_marks_process_exited() {
     let process = remote_process(WriteStatus::StdinClosed).await;
 
@@ -107,7 +107,7 @@ async fn remote_write_closed_stdin_marks_process_exited() {
     assert!(process.has_exited());
 }
 
-#[tokio::test]
+#[test]
 async fn remote_process_waits_for_early_exit_event() {
     let (wake_tx, _wake_rx) = watch::channel(0);
     let started = StartedExecProcess {

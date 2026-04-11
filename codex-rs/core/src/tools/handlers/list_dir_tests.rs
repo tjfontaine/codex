@@ -2,7 +2,7 @@ use super::*;
 use pretty_assertions::assert_eq;
 use tempfile::tempdir;
 
-#[tokio::test]
+#[test]
 async fn lists_directory_entries() {
     let temp = tempdir().expect("create tempdir");
     let dir_path = temp.path();
@@ -62,7 +62,7 @@ async fn lists_directory_entries() {
     assert_eq!(entries, expected);
 }
 
-#[tokio::test]
+#[test]
 async fn errors_when_offset_exceeds_entries() {
     let temp = tempdir().expect("create tempdir");
     let dir_path = temp.path();
@@ -81,7 +81,7 @@ async fn errors_when_offset_exceeds_entries() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn respects_depth_parameter() {
     let temp = tempdir().expect("create tempdir");
     let dir_path = temp.path();
@@ -141,7 +141,7 @@ async fn respects_depth_parameter() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn paginates_in_sorted_order() {
     let temp = tempdir().expect("create tempdir");
     let dir_path = temp.path();
@@ -183,7 +183,7 @@ async fn paginates_in_sorted_order() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn handles_large_limit_without_overflow() {
     let temp = tempdir().expect("create tempdir");
     let dir_path = temp.path();
@@ -206,7 +206,7 @@ async fn handles_large_limit_without_overflow() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn indicates_truncated_results() {
     let temp = tempdir().expect("create tempdir");
     let dir_path = temp.path();
@@ -230,7 +230,7 @@ async fn indicates_truncated_results() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn truncation_respects_sorted_order() -> anyhow::Result<()> {
     let temp = tempdir()?;
     let dir_path = temp.path();

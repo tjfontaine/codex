@@ -466,7 +466,7 @@ fn thread_initialized_event_serializes_expected_shape() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn initialize_caches_client_and_thread_lifecycle_publishes_once_initialized() {
     let mut reducer = AnalyticsReducer::default();
     let mut events = Vec::new();
@@ -569,7 +569,7 @@ async fn initialize_caches_client_and_thread_lifecycle_publishes_once_initialize
     assert_eq!(payload[0]["event_params"]["parent_thread_id"], json!(null));
 }
 
-#[tokio::test]
+#[test]
 async fn compaction_event_ingests_custom_fact() {
     let mut reducer = AnalyticsReducer::default();
     let mut events = Vec::new();
@@ -827,7 +827,7 @@ fn subagent_thread_started_other_serializes_explicit_parent_thread_id() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn subagent_thread_started_publishes_without_initialize() {
     let mut reducer = AnalyticsReducer::default();
     let mut events = Vec::new();
@@ -948,7 +948,7 @@ fn plugin_used_dedupe_is_keyed_by_turn_and_plugin() {
     assert_eq!(queue.should_enqueue_plugin_used(&turn_2, &plugin), true);
 }
 
-#[tokio::test]
+#[test]
 async fn reducer_ingests_skill_invoked_fact() {
     let mut reducer = AnalyticsReducer::default();
     let mut events = Vec::new();
@@ -999,7 +999,7 @@ async fn reducer_ingests_skill_invoked_fact() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn reducer_ingests_app_and_plugin_facts() {
     let mut reducer = AnalyticsReducer::default();
     let mut events = Vec::new();
@@ -1052,7 +1052,7 @@ async fn reducer_ingests_app_and_plugin_facts() {
     assert_eq!(payload[2]["event_type"], "codex_plugin_used");
 }
 
-#[tokio::test]
+#[test]
 async fn reducer_ingests_plugin_state_changed_fact() {
     let mut reducer = AnalyticsReducer::default();
     let mut events = Vec::new();

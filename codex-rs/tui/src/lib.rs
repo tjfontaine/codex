@@ -1,3 +1,4 @@
+#![allow(unexpected_cfgs, unused_imports, unused_variables, unused_mut, dead_code, unused_assignments, unused_attributes)]
 // Forbid accidental stdout/stderr writes in the *library* portion of the TUI.
 // The standalone `codex-tui` binary prints a short help message before the
 // alternate‑screen mode starts; that file opts‑out locally via `allow`.
@@ -705,8 +706,7 @@ pub async fn run_main(
         Ok(v) => v,
         #[allow(clippy::print_stderr)]
         Err(e) => {
-            eprintln!("Error parsing -c overrides: {e}");
-            std::process::exit(1);
+            return Err(std::io::Error::other(format!("Error parsing -c overrides: {e}")));
         }
     };
 
@@ -715,8 +715,7 @@ pub async fn run_main(
     let codex_home = match find_codex_home() {
         Ok(codex_home) => codex_home.to_path_buf(),
         Err(err) => {
-            eprintln!("Error finding codex home: {err}");
-            std::process::exit(1);
+            return Err(std::io::Error::other(format!("Error finding codex home: {err}")));
         }
     };
 
@@ -740,14 +739,14 @@ pub async fn run_main(
                 .and_then(|err| err.downcast_ref::<ConfigLoadError>())
                 .map(ConfigLoadError::config_error);
             if let Some(config_error) = config_error {
-                eprintln!(
+                tracing::error!(
                     "Error loading config.toml:\n{}",
                     format_config_error_with_source(config_error)
                 );
             } else {
-                eprintln!("Error loading config.toml: {err}");
+                tracing::error!("Error loading config.toml: {err}");
             }
-            std::process::exit(1);
+            return Err(std::io::Error::other("Error loading config.toml"));
         }
     };
 
@@ -837,11 +836,7 @@ pub async fn run_main(
     match check_execpolicy_for_warnings(&config.config_layer_stack).await {
         Ok(None) => {}
         Ok(Some(err)) | Err(err) => {
-            eprintln!(
-                "Error loading rules:\n{}",
-                format_exec_policy_error_with_source(&err)
-            );
-            std::process::exit(1);
+            return Err(std::io::Error::other(format!("Error loading rules:\n{}", format_exec_policy_error_with_source(&err))));
         }
     }
 
@@ -852,8 +847,7 @@ pub async fn run_main(
     {
         #[allow(clippy::print_stderr)]
         {
-            eprintln!("Error adding directories: {warning}");
-            std::process::exit(1);
+            return Err(std::io::Error::other(format!("Error adding directories: {warning}")));
         }
     }
 
@@ -865,8 +859,7 @@ pub async fn run_main(
             forced_login_method: config.forced_login_method,
             forced_chatgpt_workspace_id: config.forced_chatgpt_workspace_id.clone(),
         }) {
-            eprintln!("{err}");
-            std::process::exit(1);
+            return Err(std::io::Error::other(format!("{err}")));
         }
     }
 
@@ -889,17 +882,17 @@ pub async fn run_main(
     let log_file = log_file_opts.open(log_dir.join("codex-tui.log"))?;
 
     // Wrap file in non‑blocking writer.
-    let (non_blocking, _guard) = non_blocking(log_file);
+    // [codex-codemod] non_blocking replaced with console_log (no thread spawning in WASM)
+    let _guard = ();
 
-    // use RUST_LOG env var, default to info for codex crates.
     let env_filter = || {
         EnvFilter::try_from_default_env().unwrap_or_else(|_| {
-            EnvFilter::new("codex_core=info,codex_tui=info,codex_rmcp_client=info")
+            EnvFilter::new("codex_core=warn,codex_tui=warn")
         })
     };
 
     let file_layer = tracing_subscriber::fmt::layer()
-        .with_writer(non_blocking)
+        .with_writer(console_log::MakeConsoleWriter)
         // `with_target(true)` is the default, but we previously disabled it for file output.
         // Keep it enabled so we can selectively enable targets via `RUST_LOG=...` and then
         // grep for a specific module/target while troubleshooting.
@@ -942,14 +935,14 @@ pub async fn run_main(
         Ok(Err(e)) => {
             #[allow(clippy::print_stderr)]
             {
-                eprintln!("Could not create otel exporter: {e}");
+                tracing::error!("Could not create otel exporter: {e}");
             }
             None
         }
         Err(_) => {
             #[allow(clippy::print_stderr)]
             {
-                eprintln!("Could not create otel exporter: panicked during initialization");
+                tracing::error!("Could not create otel exporter: panicked during initialization");
             }
             None
         }
@@ -1568,7 +1561,7 @@ pub(crate) async fn resolve_cwd_for_resume_or_fork(
 )]
 fn restore() {
     if let Err(err) = tui::restore() {
-        eprintln!(
+        tracing::error!(
             "failed to restore terminal. Run `reset` or restart your terminal to recover: {err}"
         );
     }
@@ -1696,8 +1689,8 @@ async fn load_config_or_exit_with_fallback_cwd(
     {
         Ok(config) => config,
         Err(err) => {
-            eprintln!("Error loading configuration: {err}");
-            std::process::exit(1);
+            tracing::error!("Error loading configuration: {err}");
+            panic!("Fatal: Error loading configuration: {err}");
         }
     }
 }
@@ -1862,7 +1855,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn latest_session_lookup_params_keep_local_filters_for_embedded_sessions()
     -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
@@ -1881,7 +1874,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn latest_session_lookup_params_omit_local_filters_for_remote_sessions()
     -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
@@ -1897,7 +1890,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn latest_session_lookup_params_keep_explicit_cwd_filter_for_remote_sessions()
     -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
@@ -1986,7 +1979,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn read_session_cwd_returns_none_without_sqlite_or_rollout_path() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -1997,7 +1990,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     #[serial]
     async fn windows_shows_trust_prompt_without_sandbox() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
@@ -2013,7 +2006,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn embedded_app_server_supports_thread_start_rpc() -> color_eyre::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -2034,7 +2027,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn lookup_session_target_by_name_uses_backend_title_search() -> color_eyre::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -2096,7 +2089,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn lookup_session_target_by_name_falls_back_to_legacy_index() -> color_eyre::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -2148,7 +2141,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn embedded_app_server_start_failure_is_returned() -> color_eyre::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -2175,7 +2168,7 @@ mod tests {
         );
         Ok(())
     }
-    #[tokio::test]
+    #[test]
     #[serial]
     async fn windows_shows_trust_prompt_with_sandbox() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
@@ -2197,7 +2190,7 @@ mod tests {
         }
         Ok(())
     }
-    #[tokio::test]
+    #[test]
     async fn untrusted_project_skips_trust_prompt() -> std::io::Result<()> {
         use codex_protocol::config_types::TrustLevel;
         let temp_dir = TempDir::new()?;
@@ -2243,7 +2236,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn read_session_cwd_prefers_latest_turn_context() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -2277,7 +2270,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn should_prompt_when_meta_matches_current_but_latest_turn_differs() -> std::io::Result<()>
     {
         let temp_dir = TempDir::new()?;
@@ -2320,7 +2313,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn config_rebuild_changes_trust_defaults_with_cwd() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let codex_home = temp_dir.path().to_path_buf();
@@ -2384,7 +2377,7 @@ trust_level = "untrusted"
     /// pure validation core of `set_theme_override`) must be called with
     /// the *final* config's theme, and its warning must land in the
     /// final config's `startup_warnings`.
-    #[tokio::test]
+    #[test]
     async fn theme_warning_uses_final_config() -> std::io::Result<()> {
         use crate::render::highlight::validate_theme_name;
 
@@ -2416,7 +2409,7 @@ trust_level = "untrusted"
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn read_session_cwd_falls_back_to_session_meta() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let config = build_config(&temp_dir).await?;
@@ -2448,7 +2441,7 @@ trust_level = "untrusted"
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn read_session_cwd_prefers_sqlite_when_thread_id_present() -> std::io::Result<()> {
         let temp_dir = TempDir::new()?;
         let mut config = build_config(&temp_dir).await?;

@@ -26,7 +26,7 @@ use tokio::time::timeout;
 
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn experimental_feature_list_returns_feature_metadata_with_stage() -> Result<()> {
     let codex_home = TempDir::new()?;
     let config = ConfigBuilder::default()
@@ -85,7 +85,7 @@ async fn experimental_feature_list_returns_feature_metadata_with_stage() -> Resu
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn experimental_feature_enablement_set_applies_to_global_and_thread_config_reads()
 -> Result<()> {
     let codex_home = TempDir::new()?;
@@ -120,7 +120,7 @@ async fn experimental_feature_enablement_set_applies_to_global_and_thread_config
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn experimental_feature_enablement_set_does_not_override_user_config() -> Result<()> {
     let codex_home = TempDir::new()?;
     std::fs::write(
@@ -153,7 +153,7 @@ async fn experimental_feature_enablement_set_does_not_override_user_config() -> 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn experimental_feature_enablement_set_only_updates_named_features() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mut mcp = McpProcess::new(codex_home.path()).await?;
@@ -225,7 +225,7 @@ async fn experimental_feature_enablement_set_only_updates_named_features() -> Re
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn experimental_feature_enablement_set_empty_map_is_no_op() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mut mcp = McpProcess::new(codex_home.path()).await?;
@@ -255,7 +255,7 @@ async fn experimental_feature_enablement_set_empty_map_is_no_op() -> Result<()> 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn experimental_feature_enablement_set_rejects_non_allowlisted_feature() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mut mcp = McpProcess::new(codex_home.path()).await?;

@@ -83,7 +83,7 @@ fn workspace_write_sandbox_policy(writable_root: std::path::PathBuf) -> SandboxP
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_get_metadata_returns_expected_fields(use_remote: bool) -> Result<()> {
     let context = create_file_system_context(use_remote).await?;
     let file_system = context.file_system;
@@ -105,7 +105,7 @@ async fn file_system_get_metadata_returns_expected_fields(use_remote: bool) -> R
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_methods_cover_surface_area(use_remote: bool) -> Result<()> {
     let context = create_file_system_context(use_remote).await?;
     let file_system = context.file_system;
@@ -214,7 +214,7 @@ async fn file_system_methods_cover_surface_area(use_remote: bool) -> Result<()> 
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_copy_rejects_directory_without_recursive(use_remote: bool) -> Result<()> {
     let context = create_file_system_context(use_remote).await?;
     let file_system = context.file_system;
@@ -245,7 +245,7 @@ async fn file_system_copy_rejects_directory_without_recursive(use_remote: bool) 
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_read_with_sandbox_policy_allows_readable_root(use_remote: bool) -> Result<()> {
     let context = create_file_system_context(use_remote).await?;
     let file_system = context.file_system;
@@ -268,7 +268,7 @@ async fn file_system_read_with_sandbox_policy_allows_readable_root(use_remote: b
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_write_with_sandbox_policy_rejects_unwritable_path(
     use_remote: bool,
 ) -> Result<()> {
@@ -307,7 +307,7 @@ async fn file_system_write_with_sandbox_policy_rejects_unwritable_path(
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_read_with_sandbox_policy_rejects_symlink_escape(
     use_remote: bool,
 ) -> Result<()> {
@@ -348,7 +348,7 @@ async fn file_system_read_with_sandbox_policy_rejects_symlink_escape(
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_read_with_sandbox_policy_rejects_symlink_parent_dotdot_escape(
     use_remote: bool,
 ) -> Result<()> {
@@ -380,7 +380,7 @@ async fn file_system_read_with_sandbox_policy_rejects_symlink_parent_dotdot_esca
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_write_with_sandbox_policy_rejects_symlink_escape(
     use_remote: bool,
 ) -> Result<()> {
@@ -422,7 +422,7 @@ async fn file_system_write_with_sandbox_policy_rejects_symlink_escape(
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_create_directory_with_sandbox_policy_rejects_symlink_escape(
     use_remote: bool,
 ) -> Result<()> {
@@ -464,7 +464,7 @@ async fn file_system_create_directory_with_sandbox_policy_rejects_symlink_escape
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_get_metadata_with_sandbox_policy_rejects_symlink_escape(
     use_remote: bool,
 ) -> Result<()> {
@@ -505,7 +505,7 @@ async fn file_system_get_metadata_with_sandbox_policy_rejects_symlink_escape(
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_read_directory_with_sandbox_policy_rejects_symlink_escape(
     use_remote: bool,
 ) -> Result<()> {
@@ -546,7 +546,7 @@ async fn file_system_read_directory_with_sandbox_policy_rejects_symlink_escape(
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_copy_with_sandbox_policy_rejects_symlink_escape_destination(
     use_remote: bool,
 ) -> Result<()> {
@@ -590,7 +590,7 @@ async fn file_system_copy_with_sandbox_policy_rejects_symlink_escape_destination
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_remove_with_sandbox_policy_removes_symlink_not_target(
     use_remote: bool,
 ) -> Result<()> {
@@ -629,7 +629,7 @@ async fn file_system_remove_with_sandbox_policy_removes_symlink_not_target(
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_copy_with_sandbox_policy_preserves_symlink_source(
     use_remote: bool,
 ) -> Result<()> {
@@ -667,7 +667,7 @@ async fn file_system_copy_with_sandbox_policy_preserves_symlink_source(
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_remove_with_sandbox_policy_rejects_symlink_escape(
     use_remote: bool,
 ) -> Result<()> {
@@ -714,7 +714,7 @@ async fn file_system_remove_with_sandbox_policy_rejects_symlink_escape(
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_copy_with_sandbox_policy_rejects_symlink_escape_source(
     use_remote: bool,
 ) -> Result<()> {
@@ -760,7 +760,7 @@ async fn file_system_copy_with_sandbox_policy_rejects_symlink_escape_source(
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_copy_rejects_copying_directory_into_descendant(
     use_remote: bool,
 ) -> Result<()> {
@@ -793,7 +793,7 @@ async fn file_system_copy_rejects_copying_directory_into_descendant(
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_copy_preserves_symlinks_in_recursive_copy(use_remote: bool) -> Result<()> {
     let context = create_file_system_context(use_remote).await?;
     let file_system = context.file_system;
@@ -827,7 +827,7 @@ async fn file_system_copy_preserves_symlinks_in_recursive_copy(use_remote: bool)
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_copy_ignores_unknown_special_files_in_recursive_copy(
     use_remote: bool,
 ) -> Result<()> {
@@ -870,7 +870,7 @@ async fn file_system_copy_ignores_unknown_special_files_in_recursive_copy(
 
 #[test_case(false ; "local")]
 #[test_case(true ; "remote")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn file_system_copy_rejects_standalone_fifo_source(use_remote: bool) -> Result<()> {
     let context = create_file_system_context(use_remote).await?;
     let file_system = context.file_system;

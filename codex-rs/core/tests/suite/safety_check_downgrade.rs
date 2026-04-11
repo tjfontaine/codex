@@ -24,7 +24,7 @@ use pretty_assertions::assert_eq;
 const SERVER_MODEL: &str = "gpt-5.2";
 const REQUESTED_MODEL: &str = "gpt-5.3-codex";
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn openai_model_header_mismatch_emits_warning_event_and_warning_item() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -112,7 +112,7 @@ async fn openai_model_header_mismatch_emits_warning_event_and_warning_item() -> 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn response_model_field_mismatch_emits_warning_when_header_matches_requested() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -190,7 +190,7 @@ async fn response_model_field_mismatch_emits_warning_when_header_matches_request
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn openai_model_header_mismatch_only_emits_one_warning_per_turn() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -258,7 +258,7 @@ async fn openai_model_header_mismatch_only_emits_one_warning_per_turn() -> Resul
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn openai_model_header_casing_only_mismatch_does_not_warn() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

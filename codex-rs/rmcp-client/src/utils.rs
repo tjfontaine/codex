@@ -175,7 +175,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn create_env_honors_overrides() {
         let value = "custom".to_string();
         let expected = OsString::from(&value);

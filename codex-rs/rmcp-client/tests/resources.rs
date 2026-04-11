@@ -53,7 +53,7 @@ fn init_params() -> InitializeRequestParams {
     }
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+#[test]
 async fn rmcp_client_can_list_and_read_resources() -> anyhow::Result<()> {
     let client = RmcpClient::new_stdio_client(
         stdio_server_bin()?.into(),

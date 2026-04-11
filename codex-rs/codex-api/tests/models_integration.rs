@@ -46,7 +46,7 @@ fn provider(base_url: &str) -> Provider {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn models_client_hits_models_endpoint() {
     let server = MockServer::start().await;
     let base_url = format!("{}/api/codex", server.uri());

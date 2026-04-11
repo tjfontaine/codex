@@ -183,7 +183,7 @@ fn get_shell_path(
         return Some(default_shell_path);
     }
 
-    if let Ok(path) = which::which(binary_name) {
+    if let Ok(path) = (|| -> Result<std::path::PathBuf, ()> { Err(()) })() {
         return Some(path);
     }
 

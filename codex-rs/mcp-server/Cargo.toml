@@ -1,8 +1,8 @@
 [package]
 name = "codex-mcp-server"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [[bin]]
 name = "codex-mcp-server"
@@ -12,41 +12,30 @@ path = "src/main.rs"
 name = "codex_mcp_server"
 path = "src/lib.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-anyhow = { workspace = true }
-codex-arg0 = { workspace = true }
-codex-config = { workspace = true }
-codex-core = { workspace = true }
-codex-exec-server = { workspace = true }
-codex-features = { workspace = true }
-codex-login = { workspace = true }
-codex-models-manager = { workspace = true }
-codex-protocol = { workspace = true }
-codex-utils-cli = { workspace = true }
-codex-utils-json-to-toml = { workspace = true }
-rmcp = { workspace = true }
-schemars = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-shlex = { workspace = true }
-tokio = { workspace = true, features = [
-    "io-std",
-    "macros",
-    "process",
-    "rt-multi-thread",
-    "signal",
-] }
-tracing = { workspace = true, features = ["log"] }
-tracing-subscriber = { workspace = true, features = ["env-filter", "fmt"] }
+anyhow = { version = "1" }
+codex-arg0 = { path = "../arg0" }
+codex-config = { path = "../config" }
+codex-core = { path = "../core" }
+codex-exec-server = { path = "../../../codex-wasm/wasi-exec-server" }
+codex-features = { path = "../features" }
+codex-login = { path = "../login" }
+codex-models-manager = { path = "../models-manager" }
+codex-protocol = { path = "../protocol" }
+codex-utils-cli = { path = "../utils/cli" }
+codex-utils-json-to-toml = { path = "../utils/json-to-toml" }
+rmcp = { version = "0.15.0", default-features = false }
+schemars = { version = "0.8.22" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+shlex = { version = "1.3.0" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
+tracing = { version = "0.1.44", features = ["log"] }
+tracing-subscriber = { version = "0.3.22", features = ["env-filter", "fmt"] }
 
 [dev-dependencies]
-codex-shell-command = { workspace = true }
-core_test_support = { workspace = true }
-mcp_test_support = { workspace = true }
-os_info = { workspace = true }
-pretty_assertions = { workspace = true }
-tempfile = { workspace = true }
-wiremock = { workspace = true }
+codex-shell-command = { path = "../shell-command" }
+os_info = { path = "../../../codex-wasm/wasi-os-info" }
+pretty_assertions = { version = "1.4.1" }
+tempfile = { version = "3.23.0" }
+wiremock = { version = "0.6" }

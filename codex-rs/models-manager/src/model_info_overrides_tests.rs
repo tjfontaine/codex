@@ -8,7 +8,7 @@ use codex_protocol::openai_models::TruncationPolicyConfig;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn offline_model_info_without_tool_output_override() {
     let codex_home = TempDir::new().expect("create temp dir");
     let config = ModelsManagerConfig::default();
@@ -29,7 +29,7 @@ async fn offline_model_info_without_tool_output_override() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn offline_model_info_with_tool_output_override() {
     let codex_home = TempDir::new().expect("create temp dir");
     let config = ModelsManagerConfig {

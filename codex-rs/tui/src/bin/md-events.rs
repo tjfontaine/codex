@@ -5,7 +5,7 @@ fn main() {
     let mut input = String::new();
     if let Err(err) = io::stdin().read_to_string(&mut input) {
         eprintln!("failed to read stdin: {err}");
-        std::process::exit(1);
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
 
     let parser = pulldown_cmark::Parser::new(&input);

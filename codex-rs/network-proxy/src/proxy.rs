@@ -711,7 +711,7 @@ mod tests {
     use std::net::IpAddr;
     use std::net::Ipv4Addr;
 
-    #[tokio::test]
+    #[test]
     async fn managed_proxy_builder_uses_loopback_ports() {
         let state = Arc::new(network_proxy_state_for_policy(NetworkProxySettings {
             proxy_url: "http://127.0.0.1:43128".to_string(),
@@ -751,7 +751,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn non_codex_managed_proxy_builder_uses_configured_ports() {
         let settings = NetworkProxySettings {
             proxy_url: "http://127.0.0.1:43128".to_string(),
@@ -776,7 +776,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn managed_proxy_builder_does_not_reserve_socks_listener_when_disabled() {
         let settings = NetworkProxySettings {
             enable_socks5: false,

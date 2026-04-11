@@ -57,7 +57,7 @@ async fn resume_until_initial_messages(
     }
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn resume_includes_initial_messages_from_rollout_events() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -145,7 +145,7 @@ async fn resume_includes_initial_messages_from_rollout_events() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn resume_includes_initial_messages_from_reasoning_events() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -236,7 +236,7 @@ async fn resume_includes_initial_messages_from_reasoning_events() -> Result<()> 
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn resume_switches_models_preserves_base_instructions() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -362,7 +362,7 @@ async fn resume_switches_models_preserves_base_instructions() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn resume_model_switch_is_not_duplicated_after_pre_turn_override() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

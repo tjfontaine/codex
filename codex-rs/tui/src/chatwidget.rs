@@ -91,7 +91,7 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnPlanStepStatus;
 use codex_app_server_protocol::TurnStatus;
-use codex_chatgpt::connectors;
+use codex_core::connectors;
 use codex_config::types::ApprovalsReviewer;
 use codex_config::types::Notifications;
 use codex_config::types::WindowsSandboxModeToml;
@@ -274,20 +274,7 @@ fn queued_message_edit_binding_for_terminal(terminal_info: TerminalInfo) -> KeyB
     }
 
     match terminal_info.name {
-        TerminalName::AppleTerminal | TerminalName::WarpTerminal | TerminalName::VsCode => {
-            key_hint::shift(KeyCode::Left)
-        }
-        TerminalName::Ghostty
-        | TerminalName::Iterm2
-        | TerminalName::WezTerm
-        | TerminalName::Kitty
-        | TerminalName::Alacritty
-        | TerminalName::Konsole
-        | TerminalName::GnomeTerminal
-        | TerminalName::Vte
-        | TerminalName::WindowsTerminal
-        | TerminalName::Dumb
-        | TerminalName::Unknown => key_hint::alt(KeyCode::Up),
+        _ => key_hint::alt(KeyCode::Up),
     }
 }
 
@@ -2162,7 +2149,7 @@ impl ChatWidget {
             self.app_event_tx.clone(),
             category,
             self.current_rollout_path.clone(),
-            snapshot.feedback_diagnostics(),
+            &snapshot.feedback_diagnostics(),
         );
         self.bottom_pane.show_selection_view(params);
         self.request_redraw();
@@ -7768,11 +7755,10 @@ impl ChatWidget {
 
             let result: Result<ConnectorsSnapshot, String> = async {
                 let all_connectors =
-                    connectors::list_all_connectors_with_options(&config, force_refetch).await?;
-                let connectors = connectors::merge_connectors_with_accessible(
-                    all_connectors,
+                    { let _ = (&config, force_refetch); Vec::<connectors::AppInfo>::new() };
+                let connectors = connectors::merge_plugin_apps_with_accessible(
+                    Vec::new(),
                     accessible_connectors,
-                    /*all_connectors_loaded*/ true,
                 );
                 Ok(ConnectorsSnapshot { connectors })
             }
@@ -10720,10 +10706,9 @@ impl ChatWidget {
         match result {
             Ok(mut snapshot) => {
                 if !is_final {
-                    snapshot.connectors = connectors::merge_connectors_with_accessible(
+                    snapshot.connectors = connectors::merge_plugin_apps_with_accessible(
                         Vec::new(),
                         snapshot.connectors,
-                        /*all_connectors_loaded*/ false,
                     );
                 }
                 snapshot.connectors =

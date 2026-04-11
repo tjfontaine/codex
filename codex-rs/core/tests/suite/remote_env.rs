@@ -8,7 +8,7 @@ use std::path::PathBuf;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn remote_test_env_can_connect_and_use_filesystem() -> Result<()> {
     let Some(_remote_env) = get_remote_test_env() else {
         return Ok(());

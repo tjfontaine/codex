@@ -89,7 +89,7 @@ fn configure_apps_without_search_tool(config: &mut Config, apps_base_url: &str) 
     config.model_catalog = Some(model_catalog);
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn tool_suggest_is_available_without_search_tool_after_discovery_attempts() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

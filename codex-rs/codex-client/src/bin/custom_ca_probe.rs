@@ -23,7 +23,7 @@ fn main() {
         }
         Err(error) => {
             eprintln!("{error}");
-            process::exit(1);
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     }
 }

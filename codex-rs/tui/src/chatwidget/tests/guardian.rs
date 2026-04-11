@@ -1,7 +1,7 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-#[tokio::test]
+#[test]
 async fn guardian_denied_exec_renders_warning_and_denied_request() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;
@@ -72,7 +72,7 @@ async fn guardian_denied_exec_renders_warning_and_denied_request() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn guardian_approved_exec_renders_approved_request() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;
@@ -121,7 +121,7 @@ async fn guardian_approved_exec_renders_approved_request() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn app_server_guardian_review_started_sets_review_status() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     let action = AppServerGuardianApprovalReviewAction::Command {
@@ -161,7 +161,7 @@ async fn app_server_guardian_review_started_sets_review_status() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn app_server_guardian_review_denied_renders_denied_request_snapshot() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;
@@ -236,7 +236,7 @@ async fn app_server_guardian_review_denied_renders_denied_request_snapshot() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn guardian_parallel_reviews_render_aggregate_status_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.on_task_started();
@@ -272,7 +272,7 @@ async fn guardian_parallel_reviews_render_aggregate_status_snapshot() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn guardian_parallel_reviews_keep_remaining_review_visible_after_denial() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.on_task_started();

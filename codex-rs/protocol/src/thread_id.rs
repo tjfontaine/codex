@@ -5,11 +5,9 @@ use schemars::r#gen::SchemaGenerator;
 use schemars::schema::Schema;
 use serde::Deserialize;
 use serde::Serialize;
-use ts_rs::TS;
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, TS, Hash)]
-#[ts(type = "string")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct ThreadId {
     uuid: Uuid,
 }

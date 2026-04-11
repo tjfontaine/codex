@@ -978,6 +978,52 @@ fn format_connector_label(name: &str, _id: &str) -> String {
     name.to_string()
 }
 
+// [codex-codemod-connector-stubs] — injected stubs for WASM build
+/// List all connectors with options — stub for WASM (no ChatGPT auth).
+/// Previously in codex_chatgpt::connectors, moved to core after codemod.
+pub async fn list_all_connectors_with_options(
+    _config: &crate::config::Config,
+    _force_refetch: bool,
+) -> anyhow::Result<Vec<AppInfo>> {
+    Ok(Vec::new())
+}
+
+/// List cached connectors — stub for WASM (no ChatGPT auth).
+/// Previously in codex_chatgpt::connectors, moved to core after codemod.
+pub async fn list_cached_all_connectors(
+    _config: &crate::config::Config,
+) -> Option<Vec<AppInfo>> {
+    Some(Vec::new())
+}
+
+/// Filter connectors for plugin apps — stub for WASM.
+/// Previously in codex_chatgpt::connectors, moved to core after codemod.
+pub fn connectors_for_plugin_apps(
+    connectors: Vec<AppInfo>,
+    plugin_apps: &[crate::plugins::AppConnectorId],
+) -> Vec<AppInfo> {
+    let plugin_app_ids: std::collections::HashSet<&str> = plugin_apps
+        .iter()
+        .map(|connector_id| connector_id.0.as_str())
+        .collect();
+    filter_disallowed_connectors(merge_plugin_apps(connectors, plugin_apps.to_vec()))
+        .into_iter()
+        .filter(|connector| plugin_app_ids.contains(connector.id.as_str()))
+        .collect()
+}
+
+/// Merge connectors with accessible connectors — 3-arg version for app-server.
+/// The app-server code calls this as connectors::merge_connectors_with_accessible(3 args).
+/// The 2-arg merge_plugin_apps_with_accessible is the upstream version used by codex-core.
+pub fn merge_connectors_with_accessible(
+    connectors: Vec<AppInfo>,
+    accessible_connectors: Vec<AppInfo>,
+    _all_connectors_loaded: bool,
+) -> Vec<AppInfo> {
+    let merged = merge_connectors(connectors, accessible_connectors);
+    filter_disallowed_connectors(merged)
+}
+
 #[cfg(test)]
 #[path = "connectors_tests.rs"]
 mod tests;
