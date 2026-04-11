@@ -254,7 +254,7 @@ fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<()> {
 
     // `updated_at` is second-granularity, so ensure the touch lands in a later second
     // than the initial session creation on fast CI (especially Windows).
-    std::thread::sleep(std::time::Duration::from_millis(1100));
+    tokio::thread_spawn::sleep(std::time::Duration::from_millis(1100));
 
     // Make thread B deterministically newest according to rollout metadata.
     let session_id_b = extract_conversation_id(&path_b);
@@ -274,7 +274,7 @@ fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<()> {
     // `resume --last` sorts by `updated_at`, which is second-granularity. Sleep so
     // the upcoming `resume --last --all` write lands in a later second and becomes
     // deterministically newest (instead of tying and falling back to UUID order).
-    std::thread::sleep(std::time::Duration::from_millis(1100));
+    tokio::thread_spawn::sleep(std::time::Duration::from_millis(1100));
 
     let marker_b2 = format!("resume-cwd-b-2-{}", Uuid::new_v4());
     let prompt_b2 = format!("echo {marker_b2}");

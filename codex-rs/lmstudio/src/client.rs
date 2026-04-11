@@ -167,7 +167,7 @@ impl LMStudioClient {
 
     pub async fn download_model(&self, model: &str) -> std::io::Result<()> {
         let lms = Self::find_lms()?;
-        eprintln!("Downloading model: {model}");
+        tracing::error!("Downloading model: {model}");
 
         let status = std::process::Command::new(&lms)
             .args(["get", "--yes", model])
@@ -208,7 +208,7 @@ mod tests {
     #![allow(clippy::expect_used, clippy::unwrap_used)]
     use super::*;
 
-    #[tokio::test]
+    #[test]
     async fn test_fetch_models_happy_path() {
         if std::env::var(codex_core::spawn::CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR).is_ok() {
             tracing::info!(
@@ -240,7 +240,7 @@ mod tests {
         assert!(models.contains(&"openai/gpt-oss-20b".to_string()));
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_fetch_models_no_data_array() {
         if std::env::var(codex_core::spawn::CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR).is_ok() {
             tracing::info!(
@@ -271,7 +271,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_fetch_models_server_error() {
         if std::env::var(codex_core::spawn::CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR).is_ok() {
             tracing::info!(
@@ -299,7 +299,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_check_server_happy_path() {
         if std::env::var(codex_core::spawn::CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR).is_ok() {
             tracing::info!(
@@ -323,7 +323,7 @@ mod tests {
             .expect("server check should pass");
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_check_server_error() {
         if std::env::var(codex_core::spawn::CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR).is_ok() {
             tracing::info!(

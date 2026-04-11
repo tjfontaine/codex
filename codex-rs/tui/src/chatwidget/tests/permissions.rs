@@ -1,7 +1,7 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-#[tokio::test]
+#[test]
 async fn approvals_selection_popup_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -19,7 +19,7 @@ async fn approvals_selection_popup_snapshot() {
 }
 
 #[cfg(target_os = "windows")]
-#[tokio::test]
+#[test]
 #[serial]
 async fn approvals_selection_popup_snapshot_windows_degraded_sandbox() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
@@ -45,7 +45,7 @@ async fn approvals_selection_popup_snapshot_windows_degraded_sandbox() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn preset_matching_accepts_workspace_write_with_extra_roots() {
     let preset = builtin_approval_presets()
         .into_iter()
@@ -69,7 +69,7 @@ async fn preset_matching_accepts_workspace_write_with_extra_roots() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn full_access_confirmation_popup_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -84,7 +84,7 @@ async fn full_access_confirmation_popup_snapshot() {
 }
 
 #[cfg(target_os = "windows")]
-#[tokio::test]
+#[test]
 async fn windows_auto_mode_prompt_requests_enabling_sandbox_feature() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -106,7 +106,7 @@ async fn windows_auto_mode_prompt_requests_enabling_sandbox_feature() {
 }
 
 #[cfg(target_os = "windows")]
-#[tokio::test]
+#[test]
 async fn startup_prompts_for_windows_sandbox_when_agent_requested() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -135,7 +135,7 @@ async fn startup_prompts_for_windows_sandbox_when_agent_requested() {
 }
 
 #[cfg(target_os = "windows")]
-#[tokio::test]
+#[test]
 async fn startup_does_not_prompt_for_windows_sandbox_when_not_requested() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -149,7 +149,7 @@ async fn startup_does_not_prompt_for_windows_sandbox_when_not_requested() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn approvals_popup_shows_disabled_presets() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -185,7 +185,7 @@ async fn approvals_popup_shows_disabled_presets() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn approvals_popup_navigation_skips_disabled() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -256,7 +256,7 @@ async fn approvals_popup_navigation_skips_disabled() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn permissions_selection_emits_history_cell_when_selection_changes() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     #[cfg(target_os = "windows")]
@@ -283,7 +283,7 @@ async fn permissions_selection_emits_history_cell_when_selection_changes() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn permissions_selection_history_snapshot_after_mode_switch() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     #[cfg(target_os = "windows")]
@@ -308,7 +308,7 @@ async fn permissions_selection_history_snapshot_after_mode_switch() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn permissions_selection_history_snapshot_full_access_to_default() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     #[cfg(target_os = "windows")]
@@ -349,7 +349,7 @@ async fn permissions_selection_history_snapshot_full_access_to_default() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn permissions_selection_emits_history_cell_when_current_is_selected() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     #[cfg(target_os = "windows")]
@@ -384,7 +384,7 @@ async fn permissions_selection_emits_history_cell_when_current_is_selected() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn permissions_selection_hides_guardian_approvals_when_feature_disabled() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     #[cfg(target_os = "windows")]
@@ -404,7 +404,7 @@ async fn permissions_selection_hides_guardian_approvals_when_feature_disabled() 
     );
 }
 
-#[tokio::test]
+#[test]
 async fn permissions_selection_hides_guardian_approvals_when_feature_disabled_even_if_auto_review_is_active()
  {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
@@ -436,7 +436,7 @@ async fn permissions_selection_hides_guardian_approvals_when_feature_disabled_ev
     );
 }
 
-#[tokio::test]
+#[test]
 async fn permissions_selection_marks_guardian_approvals_current_after_session_configured() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     #[cfg(target_os = "windows")]
@@ -481,7 +481,7 @@ async fn permissions_selection_marks_guardian_approvals_current_after_session_co
     );
 }
 
-#[tokio::test]
+#[test]
 async fn permissions_selection_marks_guardian_approvals_current_with_custom_workspace_write_details()
  {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
@@ -535,7 +535,7 @@ async fn permissions_selection_marks_guardian_approvals_current_with_custom_work
     );
 }
 
-#[tokio::test]
+#[test]
 async fn permissions_selection_can_disable_guardian_approvals() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     #[cfg(target_os = "windows")]
@@ -576,7 +576,7 @@ async fn permissions_selection_can_disable_guardian_approvals() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn permissions_selection_sends_approvals_reviewer_in_override_turn_context() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     #[cfg(target_os = "windows")]
@@ -642,7 +642,7 @@ async fn permissions_selection_sends_approvals_reviewer_in_override_turn_context
     );
 }
 
-#[tokio::test]
+#[test]
 async fn permissions_full_access_history_cell_emitted_only_after_confirmation() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     #[cfg(target_os = "windows")]

@@ -58,7 +58,7 @@ async fn wait_for_process_exit(pid: u32) -> Result<()> {
     anyhow::bail!("process {pid} still running after timeout");
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+#[test]
 async fn drop_kills_wrapper_process_group() -> Result<()> {
     let temp_dir = tempfile::tempdir()?;
     let child_pid_file = temp_dir.path().join("child.pid");

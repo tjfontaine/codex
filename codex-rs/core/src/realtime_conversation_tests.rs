@@ -54,7 +54,7 @@ fn ignores_empty_handoff_request_input_transcript() {
     assert_eq!(realtime_text_from_handoff_request(&handoff), None);
 }
 
-#[tokio::test]
+#[test]
 async fn clears_active_handoff_explicitly() {
     let (tx, _rx) = bounded(1);
     let state = RealtimeHandoffState::new(tx, RealtimeSessionKind::V1);

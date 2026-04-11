@@ -72,7 +72,7 @@ fn expected_visible_models() -> Vec<Model> {
         .collect()
 }
 
-#[tokio::test]
+#[test]
 async fn list_models_returns_all_models_with_large_limit() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_models_cache(codex_home.path())?;
@@ -106,7 +106,7 @@ async fn list_models_returns_all_models_with_large_limit() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn list_models_includes_hidden_models() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_models_cache(codex_home.path())?;
@@ -138,7 +138,7 @@ async fn list_models_includes_hidden_models() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn list_models_pagination_works() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_models_cache(codex_home.path())?;
@@ -187,7 +187,7 @@ async fn list_models_pagination_works() -> Result<()> {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn list_models_rejects_invalid_cursor() -> Result<()> {
     let codex_home = TempDir::new()?;
     write_models_cache(codex_home.path())?;

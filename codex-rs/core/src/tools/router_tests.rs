@@ -11,7 +11,7 @@ use super::ToolCallSource;
 use super::ToolRouter;
 use super::ToolRouterParams;
 
-#[tokio::test]
+#[test]
 async fn js_repl_tools_only_blocks_direct_tool_calls() -> anyhow::Result<()> {
     let (session, mut turn) = make_session_and_context().await;
     turn.tools_config.js_repl_tools_only = true;
@@ -64,7 +64,7 @@ async fn js_repl_tools_only_blocks_direct_tool_calls() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn js_repl_tools_only_allows_js_repl_source_calls() -> anyhow::Result<()> {
     let (session, mut turn) = make_session_and_context().await;
     turn.tools_config.js_repl_tools_only = true;
@@ -118,7 +118,7 @@ async fn js_repl_tools_only_allows_js_repl_source_calls() -> anyhow::Result<()> 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn build_tool_call_uses_namespace_for_registry_name() -> anyhow::Result<()> {
     let (session, _) = make_session_and_context().await;
     let session = Arc::new(session);

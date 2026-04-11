@@ -1,7 +1,7 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-#[tokio::test]
+#[test]
 async fn realtime_error_closes_without_followup_closed_info() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.realtime_conversation.phase = RealtimeConversationPhase::Active;
@@ -23,7 +23,7 @@ async fn realtime_error_closes_without_followup_closed_info() {
 }
 
 #[cfg(not(target_os = "linux"))]
-#[tokio::test]
+#[test]
 async fn deleted_realtime_meter_uses_shared_stop_path() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.realtime_conversation.phase = RealtimeConversationPhase::Active;
@@ -40,7 +40,7 @@ async fn deleted_realtime_meter_uses_shared_stop_path() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn experimental_mode_plan_is_ignored_on_startup() {
     let codex_home = tempdir().expect("tempdir");
     let cfg = ConfigBuilder::default()
@@ -84,7 +84,7 @@ async fn experimental_mode_plan_is_ignored_on_startup() {
     assert_eq!(chat.current_model(), resolved_model);
 }
 
-#[tokio::test]
+#[test]
 async fn plugins_popup_loading_state_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.set_feature_enabled(Feature::Plugins, /*enabled*/ true);
@@ -99,7 +99,7 @@ async fn plugins_popup_loading_state_snapshot() {
     assert_chatwidget_snapshot!("plugins_popup_loading_state", popup);
 }
 
-#[tokio::test]
+#[test]
 async fn plugins_popup_snapshot_shows_all_marketplaces_and_sorts_installed_then_name() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.set_feature_enabled(Feature::Plugins, /*enabled*/ true);
@@ -163,7 +163,7 @@ async fn plugins_popup_snapshot_shows_all_marketplaces_and_sorts_installed_then_
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_detail_popup_snapshot_shows_install_actions_and_capability_summaries() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.set_feature_enabled(Feature::Plugins, /*enabled*/ true);
@@ -203,7 +203,7 @@ async fn plugin_detail_popup_snapshot_shows_install_actions_and_capability_summa
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plugin_detail_popup_hides_disclosure_for_installed_plugins() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.set_feature_enabled(Feature::Plugins, /*enabled*/ true);
@@ -247,7 +247,7 @@ async fn plugin_detail_popup_hides_disclosure_for_installed_plugins() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plugins_popup_refresh_replaces_selection_with_first_row() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.set_feature_enabled(Feature::Plugins, /*enabled*/ true);
@@ -324,7 +324,7 @@ async fn plugins_popup_refresh_replaces_selection_with_first_row() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plugins_popup_refreshes_installed_counts_after_install() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.set_feature_enabled(Feature::Plugins, /*enabled*/ true);
@@ -393,7 +393,7 @@ async fn plugins_popup_refreshes_installed_counts_after_install() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plugins_popup_search_filters_visible_rows_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.set_feature_enabled(Feature::Plugins, /*enabled*/ true);
@@ -441,7 +441,7 @@ async fn plugins_popup_search_filters_visible_rows_snapshot() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn plugins_popup_search_no_matches_and_backspace_restores_results() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.set_feature_enabled(Feature::Plugins, /*enabled*/ true);
@@ -497,7 +497,7 @@ async fn plugins_popup_search_no_matches_and_backspace_restores_results() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn apps_popup_stays_loading_until_final_snapshot_updates() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     set_chatgpt_auth(&mut chat);
@@ -591,7 +591,7 @@ async fn apps_popup_stays_loading_until_final_snapshot_updates() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn apps_refresh_failure_keeps_existing_full_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     set_chatgpt_auth(&mut chat);
@@ -680,7 +680,7 @@ async fn apps_refresh_failure_keeps_existing_full_snapshot() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn apps_popup_preserves_selected_app_across_refresh() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     set_chatgpt_auth(&mut chat);
@@ -800,7 +800,7 @@ async fn apps_popup_preserves_selected_app_across_refresh() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn apps_refresh_failure_with_cached_snapshot_triggers_pending_force_refetch() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     set_chatgpt_auth(&mut chat);
@@ -844,7 +844,7 @@ async fn apps_refresh_failure_with_cached_snapshot_triggers_pending_force_refetc
     );
 }
 
-#[tokio::test]
+#[test]
 async fn apps_popup_keeps_existing_full_snapshot_while_partial_refresh_loads() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     set_chatgpt_auth(&mut chat);
@@ -948,7 +948,7 @@ async fn apps_popup_keeps_existing_full_snapshot_while_partial_refresh_loads() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn apps_refresh_failure_without_full_snapshot_falls_back_to_installed_apps() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     set_chatgpt_auth(&mut chat);
@@ -1007,7 +1007,7 @@ async fn apps_refresh_failure_without_full_snapshot_falls_back_to_installed_apps
     );
 }
 
-#[tokio::test]
+#[test]
 async fn apps_popup_shows_disabled_status_for_installed_but_disabled_apps() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     set_chatgpt_auth(&mut chat);
@@ -1050,7 +1050,7 @@ async fn apps_popup_shows_disabled_status_for_installed_but_disabled_apps() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn apps_initial_load_applies_enabled_state_from_config() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     set_chatgpt_auth(&mut chat);
@@ -1103,7 +1103,7 @@ async fn apps_initial_load_applies_enabled_state_from_config() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn apps_initial_load_applies_enabled_state_from_requirements_with_user_override() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     set_chatgpt_auth(&mut chat);
@@ -1176,7 +1176,7 @@ async fn apps_initial_load_applies_enabled_state_from_requirements_with_user_ove
     );
 }
 
-#[tokio::test]
+#[test]
 async fn apps_initial_load_applies_enabled_state_from_requirements_without_user_entry() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     set_chatgpt_auth(&mut chat);
@@ -1240,7 +1240,7 @@ async fn apps_initial_load_applies_enabled_state_from_requirements_without_user_
     );
 }
 
-#[tokio::test]
+#[test]
 async fn apps_refresh_preserves_toggled_enabled_state() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     set_chatgpt_auth(&mut chat);
@@ -1311,7 +1311,7 @@ async fn apps_refresh_preserves_toggled_enabled_state() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn apps_popup_for_not_installed_app_uses_install_only_selected_description() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     set_chatgpt_auth(&mut chat);
@@ -1354,7 +1354,7 @@ async fn apps_popup_for_not_installed_app_uses_install_only_selected_description
     );
 }
 
-#[tokio::test]
+#[test]
 async fn experimental_features_popup_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1379,7 +1379,7 @@ async fn experimental_features_popup_snapshot() {
     assert_chatwidget_snapshot!("experimental_features_popup", popup);
 }
 
-#[tokio::test]
+#[test]
 async fn experimental_features_toggle_saves_on_exit() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1419,7 +1419,7 @@ async fn experimental_features_toggle_saves_on_exit() {
     assert_eq!(updates, vec![(expected_feature, true)]);
 }
 
-#[tokio::test]
+#[test]
 async fn experimental_popup_shows_js_repl_node_requirement() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1443,7 +1443,7 @@ async fn experimental_popup_shows_js_repl_node_requirement() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn experimental_popup_includes_guardian_approval() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     let guardian_stage = FEATURES
@@ -1472,7 +1472,7 @@ async fn experimental_popup_includes_guardian_approval() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn multi_agent_enable_prompt_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1482,7 +1482,7 @@ async fn multi_agent_enable_prompt_snapshot() {
     assert_chatwidget_snapshot!("multi_agent_enable_prompt", popup);
 }
 
-#[tokio::test]
+#[test]
 async fn multi_agent_enable_prompt_updates_feature_and_emits_notice() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1501,7 +1501,7 @@ async fn multi_agent_enable_prompt_updates_feature_and_emits_notice() {
     assert!(rendered.contains("Subagents will be enabled in the next session."));
 }
 
-#[tokio::test]
+#[test]
 async fn model_selection_popup_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5-codex")).await;
     chat.thread_id = Some(ThreadId::new());
@@ -1511,7 +1511,7 @@ async fn model_selection_popup_snapshot() {
     assert_chatwidget_snapshot!("model_selection_popup", popup);
 }
 
-#[tokio::test]
+#[test]
 async fn personality_selection_popup_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.2-codex")).await;
     chat.thread_id = Some(ThreadId::new());
@@ -1522,7 +1522,7 @@ async fn personality_selection_popup_snapshot() {
 }
 
 #[cfg(not(target_os = "linux"))]
-#[tokio::test]
+#[test]
 async fn realtime_audio_selection_popup_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.2-codex")).await;
     chat.open_realtime_audio_popup();
@@ -1532,7 +1532,7 @@ async fn realtime_audio_selection_popup_snapshot() {
 }
 
 #[cfg(not(target_os = "linux"))]
-#[tokio::test]
+#[test]
 async fn realtime_audio_selection_popup_narrow_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.2-codex")).await;
     chat.open_realtime_audio_popup();
@@ -1542,7 +1542,7 @@ async fn realtime_audio_selection_popup_narrow_snapshot() {
 }
 
 #[cfg(not(target_os = "linux"))]
-#[tokio::test]
+#[test]
 async fn realtime_microphone_picker_popup_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.2-codex")).await;
     chat.config.realtime_audio.microphone = Some("Studio Mic".to_string());
@@ -1556,7 +1556,7 @@ async fn realtime_microphone_picker_popup_snapshot() {
 }
 
 #[cfg(not(target_os = "linux"))]
-#[tokio::test]
+#[test]
 async fn realtime_audio_picker_emits_persist_event() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.2-codex")).await;
     chat.open_realtime_audio_device_selection_with_names(
@@ -1577,7 +1577,7 @@ async fn realtime_audio_picker_emits_persist_event() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn model_picker_hides_show_in_picker_false_models_from_cache() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("test-visible-model")).await;
     chat.thread_id = Some(ThreadId::new());
@@ -1617,7 +1617,7 @@ async fn model_picker_hides_show_in_picker_false_models_from_cache() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn server_overloaded_error_does_not_switch_models() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(Some("gpt-5.2-codex")).await;
     chat.set_model("gpt-5.2-codex");
@@ -1651,7 +1651,7 @@ async fn server_overloaded_error_does_not_switch_models() {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn model_reasoning_selection_popup_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
 
@@ -1665,7 +1665,7 @@ async fn model_reasoning_selection_popup_snapshot() {
     assert_chatwidget_snapshot!("model_reasoning_selection_popup", popup);
 }
 
-#[tokio::test]
+#[test]
 async fn model_reasoning_selection_popup_extra_high_warning_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
 
@@ -1679,7 +1679,7 @@ async fn model_reasoning_selection_popup_extra_high_warning_snapshot() {
     assert_chatwidget_snapshot!("model_reasoning_selection_popup_extra_high_warning", popup);
 }
 
-#[tokio::test]
+#[test]
 async fn reasoning_popup_shows_extra_high_with_space() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
 
@@ -1699,7 +1699,7 @@ async fn reasoning_popup_shows_extra_high_with_space() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn single_reasoning_option_skips_selection() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1744,7 +1744,7 @@ async fn single_reasoning_option_skips_selection() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn feedback_selection_popup_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1755,7 +1755,7 @@ async fn feedback_selection_popup_snapshot() {
     assert_chatwidget_snapshot!("feedback_selection_popup", popup);
 }
 
-#[tokio::test]
+#[test]
 async fn feedback_upload_consent_popup_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1774,7 +1774,7 @@ async fn feedback_upload_consent_popup_snapshot() {
     assert_chatwidget_snapshot!("feedback_upload_consent_popup", popup);
 }
 
-#[tokio::test]
+#[test]
 async fn feedback_good_result_consent_popup_includes_connectivity_diagnostics_filename() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1793,7 +1793,7 @@ async fn feedback_good_result_consent_popup_includes_connectivity_diagnostics_fi
     assert_chatwidget_snapshot!("feedback_good_result_consent_popup", popup);
 }
 
-#[tokio::test]
+#[test]
 async fn reasoning_popup_escape_returns_to_model_popup() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(Some("gpt-5.1-codex-max")).await;
     chat.thread_id = Some(ThreadId::new());

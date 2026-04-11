@@ -145,7 +145,7 @@ async fn expect_failed_undo(codex: &Arc<CodexThread>) -> Result<UndoCompletedEve
     Ok(event)
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn undo_removes_new_file_created_during_turn() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -168,7 +168,7 @@ async fn undo_removes_new_file_created_during_turn() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn undo_restores_tracked_file_edit() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -207,7 +207,7 @@ async fn undo_restores_tracked_file_edit() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn undo_restores_untracked_file_edit() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -242,7 +242,7 @@ async fn undo_restores_untracked_file_edit() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn undo_reverts_only_latest_turn() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -269,7 +269,7 @@ async fn undo_reverts_only_latest_turn() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn undo_does_not_touch_unrelated_files() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -322,7 +322,7 @@ async fn undo_does_not_touch_unrelated_files() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn undo_sequential_turns_consumes_snapshots() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -379,7 +379,7 @@ async fn undo_sequential_turns_consumes_snapshots() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn undo_without_snapshot_reports_failure() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -391,7 +391,7 @@ async fn undo_without_snapshot_reports_failure() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn undo_restores_moves_and_renames() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -419,7 +419,7 @@ async fn undo_restores_moves_and_renames() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn undo_does_not_touch_ignored_directory_contents() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -457,7 +457,7 @@ async fn undo_does_not_touch_ignored_directory_contents() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn undo_overwrites_manual_edits_after_turn() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -490,7 +490,7 @@ async fn undo_overwrites_manual_edits_after_turn() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn undo_preserves_unrelated_staged_changes() -> Result<()> {
     skip_if_no_network!(Ok(()));
 

@@ -133,7 +133,7 @@ fn build_ws_client_metadata_includes_window_lineage_and_turn_metadata() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn summarize_memories_returns_empty_for_empty_input() {
     let client = test_model_client(SessionSource::Cli);
     let model_info = test_model_info();

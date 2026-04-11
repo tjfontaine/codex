@@ -102,7 +102,7 @@ async fn wait_for_model_available(manager: &Arc<ModelsManager>, slug: &str) {
     }
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn spawn_agent_description_lists_visible_models_and_reasoning_efforts() -> Result<()> {
     let server = start_mock_server().await;
     mount_models_once(

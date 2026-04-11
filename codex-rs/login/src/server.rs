@@ -21,7 +21,6 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::LazyLock;
-use std::thread;
 use std::time::Duration;
 
 use crate::auth::AuthDotJson;
@@ -146,7 +145,8 @@ pub fn run_login_server(opts: ServerOptions) -> io::Result<LoginServer> {
     };
     let server = Arc::new(server);
 
-    let redirect_uri = format!("http://localhost:{actual_port}/auth/callback");
+    let redirect_uri = std::env::var("CODEX_REDIRECT_URI")
+            .unwrap_or_else(|_| format!("http://localhost:{actual_port}/auth/callback"));
     let auth_url = build_authorize_url(
         &opts.issuer,
         &opts.client_id,
@@ -164,17 +164,20 @@ pub fn run_login_server(opts: ServerOptions) -> io::Result<LoginServer> {
     let (tx, mut rx) = tokio::sync::mpsc::channel::<Request>(16);
     let _server_handle = {
         let server = server.clone();
-        thread::spawn(move || -> io::Result<()> {
-            while let Ok(request) = server.recv() {
-                match tx.blocking_send(request) {
-                    Ok(()) => {}
-                    Err(error) => {
-                        eprintln!("Failed to send request to channel: {error}");
-                        return Err(io::Error::other("Failed to send request to channel"));
+        tokio::spawn(async move {
+            loop {
+                match server.try_recv() {
+                    Ok(Some(request)) => {
+                        if tx.send(request).await.is_err() {
+                            break;
+                        }
                     }
+                    Ok(None) => {
+                        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                    }
+                    Err(_) => break,
                 }
             }
-            Ok(())
         })
     };
 
@@ -264,7 +267,7 @@ async fn process_request(
     let parsed_url = match url::Url::parse(&format!("http://localhost{url_raw}")) {
         Ok(u) => u,
         Err(e) => {
-            eprintln!("URL parse error: {e}");
+            tracing::error!("URL parse error: {e}");
             return HandledRequest::Response(
                 Response::from_string("Bad Request").with_status_code(400),
             );
@@ -303,7 +306,7 @@ async fn process_request(
             if let Some(error_code) = params.get("error") {
                 let error_description = params.get("error_description").map(String::as_str);
                 let message = oauth_callback_error_message(error_code, error_description);
-                eprintln!("OAuth callback error: {message}");
+                tracing::error!("OAuth callback error: {message}");
                 warn!(
                     error_code,
                     has_error_description = error_description.is_some_and(|s| !s.trim().is_empty()),
@@ -336,7 +339,7 @@ async fn process_request(
                         opts.forced_chatgpt_workspace_id.as_deref(),
                         &tokens.id_token,
                     ) {
-                        eprintln!("Workspace restriction error: {message}");
+                        tracing::error!("Workspace restriction error: {message}");
                         return login_error_response(
                             &message,
                             io::ErrorKind::PermissionDenied,
@@ -358,7 +361,7 @@ async fn process_request(
                     )
                     .await
                     {
-                        eprintln!("Persist error: {err}");
+                        tracing::error!("Persist error: {err}");
                         return login_error_response(
                             "Sign-in completed but credentials could not be saved locally.",
                             io::ErrorKind::Other,
@@ -384,7 +387,7 @@ async fn process_request(
                     }
                 }
                 Err(err) => {
-                    eprintln!("Token exchange error: {err}");
+                    tracing::error!("Token exchange error: {err}");
                     error!("login callback token exchange failed");
                     login_error_response(
                         &format!("Token exchange failed: {err}"),
@@ -549,11 +552,11 @@ fn bind_server(port: u16) -> io::Result<Server> {
                     if !cancel_attempted {
                         cancel_attempted = true;
                         if let Err(cancel_err) = send_cancel_request(port) {
-                            eprintln!("Failed to cancel previous login server: {cancel_err}");
+                            tracing::error!("Failed to cancel previous login server: {cancel_err}");
                         }
                     }
 
-                    thread::sleep(RETRY_DELAY);
+                    tokio::thread_spawn::sleep(RETRY_DELAY);
 
                     if attempts >= MAX_ATTEMPTS {
                         return Err(io::Error::new(
@@ -841,7 +844,7 @@ fn jwt_auth_claims(jwt: &str) -> serde_json::Map<String, serde_json::Value> {
     let (_h, payload_b64, _s) = match (parts.next(), parts.next(), parts.next()) {
         (Some(h), Some(p), Some(s)) if !h.is_empty() && !p.is_empty() && !s.is_empty() => (h, p, s),
         _ => {
-            eprintln!("Invalid JWT format while extracting claims");
+            tracing::error!("Invalid JWT format while extracting claims");
             return serde_json::Map::new();
         }
     };
@@ -854,14 +857,14 @@ fn jwt_auth_claims(jwt: &str) -> serde_json::Map<String, serde_json::Value> {
                 {
                     return obj.clone();
                 }
-                eprintln!("JWT payload missing expected 'https://api.openai.com/auth' object");
+                tracing::error!("JWT payload missing expected 'https://api.openai.com/auth' object");
             }
             Err(e) => {
-                eprintln!("Failed to parse JWT JSON payload: {e}");
+                tracing::error!("Failed to parse JWT JSON payload: {e}");
             }
         },
         Err(e) => {
-            eprintln!("Failed to base64url-decode JWT payload: {e}");
+            tracing::error!("Failed to base64url-decode JWT payload: {e}");
         }
     }
     serde_json::Map::new()

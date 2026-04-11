@@ -48,13 +48,11 @@ pub use platform::create_symlink;
 use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
-use ts_rs::TS;
 
 type CommitID = String;
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema, TS)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(transparent)]
-#[ts(type = "string")]
 pub struct GitSha(pub String);
 
 impl GitSha {
@@ -64,7 +62,7 @@ impl GitSha {
 }
 
 /// Details of a ghost commit created from a repository state.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema, TS)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct GhostCommit {
     id: CommitID,
     parent: Option<CommitID>,

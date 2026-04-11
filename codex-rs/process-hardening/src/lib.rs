@@ -50,7 +50,7 @@ pub(crate) fn pre_main_hardening_linux() {
             "ERROR: prctl(PR_SET_DUMPABLE, 0) failed: {}",
             std::io::Error::last_os_error()
         );
-        std::process::exit(PRCTL_FAILED_EXIT_CODE);
+        panic!("process::exit(PRCTL_FAILED_EXIT_CODE) called — cannot exit in WASM");
     }
 
     // For "defense in depth," set the core file size limit to 0.
@@ -78,7 +78,7 @@ pub(crate) fn pre_main_hardening_macos() {
             "ERROR: ptrace(PT_DENY_ATTACH) failed: {}",
             std::io::Error::last_os_error()
         );
-        std::process::exit(PTRACE_DENY_ATTACH_FAILED_EXIT_CODE);
+        panic!("process::exit(PTRACE_DENY_ATTACH_FAILED_EXIT_CODE) called — cannot exit in WASM");
     }
 
     // Set the core file size limit to 0 to prevent core dumps.
@@ -108,7 +108,7 @@ fn set_core_file_size_limit_to_zero() {
             "ERROR: setrlimit(RLIMIT_CORE) failed: {}",
             std::io::Error::last_os_error()
         );
-        std::process::exit(SET_RLIMIT_CORE_FAILED_EXIT_CODE);
+        panic!("process::exit(SET_RLIMIT_CORE_FAILED_EXIT_CODE) called — cannot exit in WASM");
     }
 }
 

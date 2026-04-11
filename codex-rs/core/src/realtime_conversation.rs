@@ -923,7 +923,7 @@ pub(crate) async fn handle_close(sess: &Arc<Session>, sub_id: String) {
 fn spawn_realtime_input_task(input: RealtimeInputTask) -> JoinHandle<()> {
     let RealtimeInputTask {
         writer,
-        events,
+        mut events,
         user_text_rx,
         handoff_output_rx,
         audio_rx,

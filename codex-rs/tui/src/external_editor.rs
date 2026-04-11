@@ -152,7 +152,7 @@ mod tests {
         ));
     }
 
-    #[tokio::test]
+    #[test]
     #[cfg(unix)]
     async fn run_editor_returns_updated_content() {
         use std::os::unix::fs::PermissionsExt;

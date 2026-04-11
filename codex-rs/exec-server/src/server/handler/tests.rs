@@ -83,7 +83,7 @@ async fn initialized_handler() -> Arc<ExecServerHandler> {
     handler
 }
 
-#[tokio::test]
+#[test]
 async fn duplicate_process_ids_allow_only_one_successful_start() {
     let handler = initialized_handler().await;
     let first_handler = Arc::clone(&handler);
@@ -111,7 +111,7 @@ async fn duplicate_process_ids_allow_only_one_successful_start() {
     handler.shutdown().await;
 }
 
-#[tokio::test]
+#[test]
 async fn terminate_reports_false_after_process_exit() {
     let handler = initialized_handler().await;
     handler
@@ -140,7 +140,7 @@ async fn terminate_reports_false_after_process_exit() {
     handler.shutdown().await;
 }
 
-#[tokio::test]
+#[test]
 async fn long_poll_read_fails_after_session_resume() {
     let (first_tx, _first_rx) = mpsc::channel(16);
     let registry = SessionRegistry::new();
@@ -212,7 +212,7 @@ async fn long_poll_read_fails_after_session_resume() {
     second_handler.shutdown().await;
 }
 
-#[tokio::test]
+#[test]
 async fn active_session_resume_is_rejected() {
     let (first_tx, _first_rx) = mpsc::channel(16);
     let registry = SessionRegistry::new();
@@ -253,7 +253,7 @@ async fn active_session_resume_is_rejected() {
     first_handler.shutdown().await;
 }
 
-#[tokio::test]
+#[test]
 async fn output_and_exit_are_retained_after_notification_receiver_closes() {
     let (outgoing_tx, outgoing_rx) = mpsc::channel(16);
     let handler = Arc::new(ExecServerHandler::new(

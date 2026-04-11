@@ -32,7 +32,7 @@ fn is_first_party_chat_originator_matches_known_values() {
     assert_eq!(is_first_party_chat_originator("codex_vscode"), false);
 }
 
-#[tokio::test]
+#[test]
 async fn test_create_client_sets_default_headers() {
     skip_if_no_network!();
 

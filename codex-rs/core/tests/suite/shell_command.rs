@@ -105,7 +105,7 @@ fn assert_shell_command_output(output: &str, expected: &str) -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn shell_command_works() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -127,7 +127,7 @@ async fn shell_command_works() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn output_with_login() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -143,7 +143,7 @@ async fn output_with_login() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn output_without_login() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -159,7 +159,7 @@ async fn output_without_login() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn multi_line_output_with_login() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -181,7 +181,7 @@ async fn multi_line_output_with_login() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pipe_output_with_login() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_windows!(Ok(()));
@@ -204,7 +204,7 @@ async fn pipe_output_with_login() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn pipe_output_without_login() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
     skip_if_windows!(Ok(()));
@@ -221,7 +221,7 @@ async fn pipe_output_without_login() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn shell_command_times_out_with_timeout_ms() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -259,7 +259,7 @@ async fn shell_command_times_out_with_timeout_ms() -> anyhow::Result<()> {
 /// This test verifies that a shell, particularly PowerShell, can correctly
 /// handle unicode output when the UTF-8 BOM is used. See
 /// https://github.com/openai/codex/pull/7902 for more context.
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 #[test_case(true ; "with_login")]
 #[test_case(false ; "without_login")]
 async fn unicode_output(login: bool) -> anyhow::Result<()> {
@@ -286,7 +286,7 @@ async fn unicode_output(login: bool) -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 #[test_case(true ; "with_login")]
 #[test_case(false ; "without_login")]
 async fn unicode_output_with_newlines(login: bool) -> anyhow::Result<()> {

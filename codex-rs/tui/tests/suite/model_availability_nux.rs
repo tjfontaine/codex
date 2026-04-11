@@ -10,7 +10,7 @@ use tokio::select;
 use tokio::time::sleep;
 use tokio::time::timeout;
 
-#[tokio::test]
+#[test]
 async fn resume_startup_does_not_consume_model_availability_nux_count() -> Result<()> {
     // run_codex_cli() does not work on Windows due to PTY limitations.
     if cfg!(windows) {

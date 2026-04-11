@@ -37,7 +37,7 @@ use tokio::time::timeout;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
-#[tokio::test]
+#[test]
 async fn thread_shell_command_runs_as_standalone_turn_and_persists_history() -> Result<()> {
     let tmp = TempDir::new()?;
     let codex_home = tmp.path().join("codex_home");
@@ -157,7 +157,7 @@ async fn thread_shell_command_runs_as_standalone_turn_and_persists_history() -> 
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn thread_shell_command_uses_existing_active_turn() -> Result<()> {
     let tmp = TempDir::new()?;
     let codex_home = tmp.path().join("codex_home");

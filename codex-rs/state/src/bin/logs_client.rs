@@ -79,7 +79,6 @@ struct LogFilter {
     include_threadless: bool,
 }
 
-#[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
     let db_path = resolve_db_path(&args)?;

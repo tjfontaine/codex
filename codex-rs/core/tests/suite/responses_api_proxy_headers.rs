@@ -76,7 +76,7 @@ impl ResponsesApiProxy {
             if Instant::now() >= deadline {
                 return Err(anyhow!("timed out waiting for responses-api-proxy"));
             }
-            std::thread::sleep(PROXY_POLL_INTERVAL);
+            tokio::thread_spawn::sleep(PROXY_POLL_INTERVAL);
         }
     }
 
@@ -92,7 +92,7 @@ impl Drop for ResponsesApiProxy {
     }
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn responses_api_proxy_dumps_parent_and_subagent_identity_headers() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -199,7 +199,7 @@ fn wait_for_proxy_request_dumps(dump_dir: &Path) -> Result<Vec<Value>> {
                 dumps.len()
             ));
         }
-        std::thread::sleep(PROXY_POLL_INTERVAL);
+        tokio::thread_spawn::sleep(PROXY_POLL_INTERVAL);
     }
 }
 

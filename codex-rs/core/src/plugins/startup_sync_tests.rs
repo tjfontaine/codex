@@ -371,7 +371,7 @@ fn sync_openai_plugins_repo_via_git_succeeds_with_local_rewritten_remote() {
     assert!(!has_plugins_clone_dirs(tmp.path()));
 }
 
-#[tokio::test]
+#[test]
 async fn sync_openai_plugins_repo_falls_back_to_http_when_git_is_unavailable() {
     let tmp = tempdir().expect("tempdir");
     let server = MockServer::start().await;
@@ -396,7 +396,7 @@ async fn sync_openai_plugins_repo_falls_back_to_http_when_git_is_unavailable() {
 }
 
 #[cfg(unix)]
-#[tokio::test]
+#[test]
 async fn sync_openai_plugins_repo_falls_back_to_http_when_git_sync_fails() {
     let tmp = tempdir().expect("tempdir");
     let bin_dir = tempfile::Builder::new()
@@ -471,7 +471,7 @@ exit 1
     assert!(!has_plugins_clone_dirs(tmp.path()));
 }
 
-#[tokio::test]
+#[test]
 async fn sync_openai_plugins_repo_via_http_cleans_up_staged_dir_on_extract_failure() {
     let tmp = tempdir().expect("tempdir");
     let server = MockServer::start().await;
@@ -488,7 +488,7 @@ async fn sync_openai_plugins_repo_via_http_cleans_up_staged_dir_on_extract_failu
     assert!(!has_plugins_clone_dirs(tmp.path()));
 }
 
-#[tokio::test]
+#[test]
 async fn sync_openai_plugins_repo_skips_archive_download_when_sha_matches() {
     let tmp = tempdir().expect("tempdir");
     let repo_path = curated_plugins_repo_path(tmp.path());
@@ -518,7 +518,7 @@ async fn sync_openai_plugins_repo_skips_archive_download_when_sha_matches() {
     assert!(repo_path.join(".agents/plugins/marketplace.json").is_file());
 }
 
-#[tokio::test]
+#[test]
 async fn sync_openai_plugins_repo_falls_back_to_export_archive_when_no_snapshot_exists() {
     let tmp = tempdir().expect("tempdir");
     let server = MockServer::start().await;
@@ -550,7 +550,7 @@ async fn sync_openai_plugins_repo_falls_back_to_export_archive_when_no_snapshot_
     );
 }
 
-#[tokio::test]
+#[test]
 async fn sync_openai_plugins_repo_skips_export_archive_when_snapshot_exists() {
     let tmp = tempdir().expect("tempdir");
     let curated_root = curated_plugins_repo_path(tmp.path());
@@ -638,7 +638,7 @@ fn read_extracted_backup_archive_git_sha_rejects_path_traversal_ref() {
     assert!(err.contains("invalid path components"));
 }
 
-#[tokio::test]
+#[test]
 async fn startup_remote_plugin_sync_writes_marker_and_reconciles_state() {
     let tmp = tempdir().expect("tempdir");
     let curated_root = curated_plugins_repo_path(tmp.path());

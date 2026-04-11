@@ -1,16 +1,13 @@
 [package]
 name = "codex-utils-cache"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
-
-[lints]
-workspace = true
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
 
 [dependencies]
-lru = { workspace = true }
-sha1 = { workspace = true }
-tokio = { workspace = true, features = ["sync", "rt", "rt-multi-thread"] }
+lru = { version = "0.16.3" }
+sha1 = { version = "0.10.6" }
+tokio = { path = "../../../../codex-wasm/wasi-tokio" }
 
 [dev-dependencies]
-tokio = { workspace = true, features = ["macros", "rt", "rt-multi-thread"] }
+tokio = { path = "../../../../codex-wasm/wasi-tokio" }

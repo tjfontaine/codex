@@ -272,8 +272,8 @@ pub async fn run_main(cli: Cli, arg0_paths: Arg0DispatchPaths) -> anyhow::Result
         Ok(v) => v,
         #[allow(clippy::print_stderr)]
         Err(e) => {
-            eprintln!("Error parsing -c overrides: {e}");
-            std::process::exit(1);
+            tracing::error!("Error parsing -c overrides: {e}");
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     };
 
@@ -290,8 +290,8 @@ pub async fn run_main(cli: Cli, arg0_paths: Arg0DispatchPaths) -> anyhow::Result
     let codex_home = match find_codex_home() {
         Ok(codex_home) => codex_home,
         Err(err) => {
-            eprintln!("Error finding codex home: {err}");
-            std::process::exit(1);
+            tracing::error!("Error finding codex home: {err}");
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     };
 
@@ -310,14 +310,14 @@ pub async fn run_main(cli: Cli, arg0_paths: Arg0DispatchPaths) -> anyhow::Result
                 .and_then(|err| err.downcast_ref::<ConfigLoadError>())
                 .map(ConfigLoadError::config_error);
             if let Some(config_error) = config_error {
-                eprintln!(
+                tracing::error!(
                     "Error loading config.toml:\n{}",
                     format_config_error_with_source(config_error)
                 );
             } else {
-                eprintln!("Error loading config.toml: {err}");
+                tracing::error!("Error loading config.toml: {err}");
             }
-            std::process::exit(1);
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     };
 
@@ -406,11 +406,11 @@ pub async fn run_main(cli: Cli, arg0_paths: Arg0DispatchPaths) -> anyhow::Result
     match check_execpolicy_for_warnings(&config.config_layer_stack).await {
         Ok(None) => {}
         Ok(Some(err)) | Err(err) => {
-            eprintln!(
+            tracing::error!(
                 "Error loading rules:\n{}",
                 format_exec_policy_error_with_source(&err)
             );
-            std::process::exit(1);
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     }
 
@@ -422,8 +422,8 @@ pub async fn run_main(cli: Cli, arg0_paths: Arg0DispatchPaths) -> anyhow::Result
         forced_login_method: config.forced_login_method,
         forced_chatgpt_workspace_id: config.forced_chatgpt_workspace_id.clone(),
     }) {
-        eprintln!("{err}");
-        std::process::exit(1);
+        tracing::error!("{err}");
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
 
     let otel = match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
@@ -436,11 +436,11 @@ pub async fn run_main(cli: Cli, arg0_paths: Arg0DispatchPaths) -> anyhow::Result
     })) {
         Ok(Ok(otel)) => otel,
         Ok(Err(e)) => {
-            eprintln!("Could not create otel exporter: {e}");
+            tracing::error!("Could not create otel exporter: {e}");
             None
         }
         Err(_) => {
-            eprintln!("Could not create otel exporter: panicked during initialization");
+            tracing::error!("Could not create otel exporter: panicked during initialization");
             None
         }
     };
@@ -620,8 +620,8 @@ async fn run_exec_session(args: ExecRunArgs) -> anyhow::Result<()> {
         && !dangerously_bypass_approvals_and_sandbox
         && get_git_repo_root(&default_cwd).is_none()
     {
-        eprintln!("Not inside a trusted directory and --skip-git-repo-check was not specified.");
-        std::process::exit(1);
+        tracing::error!("Not inside a trusted directory and --skip-git-repo-check was not specified.");
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
 
     let mut request_ids = RequestIdSequencer::new();
@@ -778,7 +778,7 @@ async fn run_exec_session(args: ExecRunArgs) -> anyhow::Result<()> {
     let primary_thread_id_for_requests = primary_thread_id.to_string();
     loop {
         let server_event = tokio::select! {
-            maybe_interrupt = interrupt_rx.recv(), if interrupt_channel_open => {
+            maybe_interrupt = interrupt_rx.recv() => {
                 if maybe_interrupt.is_none() {
                     interrupt_channel_open = false;
                     continue;
@@ -874,7 +874,7 @@ async fn run_exec_session(args: ExecRunArgs) -> anyhow::Result<()> {
     }
     event_processor.print_final_output();
     if error_seen {
-        std::process::exit(1);
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
 
     Ok(())
@@ -1529,22 +1529,22 @@ fn load_output_schema(path: Option<PathBuf>) -> Option<Value> {
     let schema_str = match std::fs::read_to_string(&path) {
         Ok(contents) => contents,
         Err(err) => {
-            eprintln!(
+            tracing::error!(
                 "Failed to read output schema file {}: {err}",
                 path.display()
             );
-            std::process::exit(1);
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     };
 
     match serde_json::from_str::<Value>(&schema_str) {
         Ok(value) => Some(value),
         Err(err) => {
-            eprintln!(
+            tracing::error!(
                 "Output schema file {} is not valid JSON: {err}",
                 path.display()
             );
-            std::process::exit(1);
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     }
 }
@@ -1627,32 +1627,32 @@ fn read_prompt_from_stdin(behavior: StdinPromptBehavior) -> Option<String> {
 
     match behavior {
         StdinPromptBehavior::RequiredIfPiped if stdin_is_terminal => {
-            eprintln!(
+            tracing::error!(
                 "No prompt provided. Either specify one as an argument or pipe the prompt into stdin."
             );
-            std::process::exit(1);
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
         StdinPromptBehavior::RequiredIfPiped => {
-            eprintln!("Reading prompt from stdin...");
+            tracing::error!("Reading prompt from stdin...");
         }
         StdinPromptBehavior::Forced => {}
         StdinPromptBehavior::OptionalAppend if stdin_is_terminal => return None,
         StdinPromptBehavior::OptionalAppend => {
-            eprintln!("Reading additional input from stdin...");
+            tracing::error!("Reading additional input from stdin...");
         }
     }
 
     let mut bytes = Vec::new();
     if let Err(e) = std::io::stdin().read_to_end(&mut bytes) {
-        eprintln!("Failed to read prompt from stdin: {e}");
-        std::process::exit(1);
+        tracing::error!("Failed to read prompt from stdin: {e}");
+        panic!("process::exit(1) called — cannot exit in WASM");
     }
 
     let buffer = match decode_prompt_bytes(&bytes) {
         Ok(s) => s,
         Err(e) => {
-            eprintln!("Failed to read prompt from stdin: {e}");
-            std::process::exit(1);
+            tracing::error!("Failed to read prompt from stdin: {e}");
+            panic!("process::exit(1) called — cannot exit in WASM");
         }
     };
 
@@ -1660,8 +1660,8 @@ fn read_prompt_from_stdin(behavior: StdinPromptBehavior) -> Option<String> {
         match behavior {
             StdinPromptBehavior::OptionalAppend => None,
             StdinPromptBehavior::RequiredIfPiped | StdinPromptBehavior::Forced => {
-                eprintln!("No prompt provided via stdin.");
-                std::process::exit(1);
+                tracing::error!("No prompt provided via stdin.");
+                panic!("process::exit(1) called — cannot exit in WASM");
             }
         }
     } else {

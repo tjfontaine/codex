@@ -1,3 +1,4 @@
+#![allow(dead_code, unused_variables, unused_imports)]
 use std::fs::File;
 use std::future::Future;
 use std::path::Path;
@@ -65,7 +66,7 @@ pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
         let _ = args.next();
         let file = match args.next() {
             Some(file) => file,
-            None => std::process::exit(1),
+            None => panic!("process::exit(1) called — cannot exit in WASM"),
         };
         let argv = args.collect::<Vec<_>>();
 
@@ -74,21 +75,23 @@ pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
             .build()
         {
             Ok(runtime) => runtime,
-            Err(_) => std::process::exit(1),
+            Err(_) => panic!("process::exit(1) called — cannot exit in WASM"),
         };
         let exit_code = runtime.block_on(
             codex_shell_escalation::run_shell_escalation_execve_wrapper(file, argv),
         );
         match exit_code {
-            Ok(exit_code) => std::process::exit(exit_code),
-            Err(_) => std::process::exit(1),
+            Ok(exit_code) => panic!("process::exit(exit_code) called — cannot exit in WASM"),
+            Err(_) => panic!("process::exit(1) called — cannot exit in WASM"),
         }
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
     if exe_name == CODEX_LINUX_SANDBOX_ARG0 {
         // Safety: [`run_main`] never returns.
         codex_linux_sandbox::run_main();
-    } else if exe_name == APPLY_PATCH_ARG0 || exe_name == MISSPELLED_APPLY_PATCH_ARG0 {
+    }
+    if exe_name == APPLY_PATCH_ARG0 || exe_name == MISSPELLED_APPLY_PATCH_ARG0 {
         codex_apply_patch::main();
     }
 
@@ -101,14 +104,14 @@ pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
                 let mut stderr = std::io::stderr();
                 let cwd = match codex_utils_absolute_path::AbsolutePathBuf::current_dir() {
                     Ok(cwd) => cwd,
-                    Err(_) => std::process::exit(1),
+                    Err(_) => panic!("process::exit(1) called — cannot exit in WASM"),
                 };
                 let runtime = match tokio::runtime::Builder::new_current_thread()
                     .enable_all()
                     .build()
                 {
                     Ok(runtime) => runtime,
-                    Err(_) => std::process::exit(1),
+                    Err(_) => panic!("process::exit(1) called — cannot exit in WASM"),
                 };
                 match runtime.block_on(codex_apply_patch::apply_patch(
                     &patch_arg,
@@ -126,7 +129,7 @@ pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
                 1
             }
         };
-        std::process::exit(exit_code);
+        panic!("process::exit(exit_code) called — cannot exit in WASM");
     }
 
     // This modifies the environment, which is not thread-safe, so do this
@@ -213,6 +216,8 @@ fn linux_sandbox_exe_path(
 fn build_runtime() -> anyhow::Result<tokio::runtime::Runtime> {
     let mut builder = tokio::runtime::Builder::new_multi_thread();
     builder.enable_all();
+    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_arch = "wasm32"))]
     builder.thread_stack_size(TOKIO_WORKER_STACK_SIZE_BYTES);
     Ok(builder.build()?)
 }
@@ -304,6 +309,7 @@ pub fn prepend_path_entry_for_codex_aliases() -> std::io::Result<Arg0PathEntryGu
         .create(true)
         .truncate(false)
         .open(&lock_path)?;
+    #[cfg(not(target_arch = "wasm32"))]
     lock_file.try_lock()?;
 
     for filename in &[
@@ -337,7 +343,7 @@ pub fn prepend_path_entry_for_codex_aliases() -> std::io::Result<Arg0PathEntryGu
         }
     }
 
-    #[cfg(unix)]
+    #[cfg(any(unix, target_arch = "wasm32"))]
     const PATH_SEPARATOR: &str = ":";
 
     #[cfg(windows)]
@@ -423,6 +429,12 @@ fn try_lock_dir(dir: &Path) -> std::io::Result<Option<File>> {
         Err(err) => return Err(err),
     };
 
+    #[cfg(target_arch = "wasm32")]
+    {
+        return Ok(Some(lock_file));
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
     match lock_file.try_lock() {
         Ok(()) => Ok(Some(lock_file)),
         Err(std::fs::TryLockError::WouldBlock) => Ok(None),
@@ -493,6 +505,7 @@ mod tests {
         let dir = root.path().join("locked");
         fs::create_dir(&dir)?;
         let lock_file = create_lock(&dir)?;
+        #[cfg(not(target_arch = "wasm32"))]
         lock_file.try_lock()?;
 
         janitor_cleanup(root.path())?;

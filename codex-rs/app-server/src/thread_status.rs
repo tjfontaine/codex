@@ -416,7 +416,7 @@ mod tests {
     const INTERACTIVE_THREAD_ID: &str = "00000000-0000-0000-0000-000000000001";
     const NON_INTERACTIVE_THREAD_ID: &str = "00000000-0000-0000-0000-000000000002";
 
-    #[tokio::test]
+    #[test]
     async fn loaded_status_defaults_to_not_loaded_for_untracked_threads() {
         let manager = ThreadWatchManager::new();
 
@@ -428,7 +428,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn tracks_non_interactive_thread_status() {
         let manager = ThreadWatchManager::new();
         manager
@@ -450,7 +450,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn status_updates_track_single_thread() {
         let manager = ThreadWatchManager::new();
         manager
@@ -563,7 +563,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn system_error_sets_idle_flag_until_next_turn() {
         let manager = ThreadWatchManager::new();
         manager
@@ -594,7 +594,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn shutdown_marks_thread_not_loaded() {
         let manager = ThreadWatchManager::new();
         manager
@@ -615,7 +615,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn loaded_statuses_default_to_not_loaded_for_untracked_threads() {
         let manager = ThreadWatchManager::new();
         manager
@@ -645,7 +645,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn has_running_turns_tracks_runtime_running_flag_only() {
         let manager = ThreadWatchManager::new();
         manager
@@ -671,7 +671,7 @@ mod tests {
         assert_eq!(manager.running_turn_count().await, 0);
     }
 
-    #[tokio::test]
+    #[test]
     async fn status_change_emits_notification() {
         let (outgoing_tx, mut outgoing_rx) = mpsc::channel(8);
         let manager = ThreadWatchManager::new_with_outgoing(Arc::new(OutgoingMessageSender::new(
@@ -713,7 +713,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn silent_upsert_skips_initial_notification() {
         let (outgoing_tx, mut outgoing_rx) = mpsc::channel(8);
         let manager = ThreadWatchManager::new_with_outgoing(Arc::new(OutgoingMessageSender::new(

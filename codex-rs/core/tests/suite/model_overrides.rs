@@ -8,7 +8,7 @@ use pretty_assertions::assert_eq;
 
 const CONFIG_TOML: &str = "config.toml";
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn override_turn_context_does_not_persist_when_config_exists() {
     let server = start_mock_server().await;
     let initial_contents = "model = \"gpt-4o\"\n";
@@ -50,7 +50,7 @@ async fn override_turn_context_does_not_persist_when_config_exists() {
     assert_eq!(contents, initial_contents);
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn override_turn_context_does_not_create_config_file() {
     let server = start_mock_server().await;
     let mut builder = test_codex();

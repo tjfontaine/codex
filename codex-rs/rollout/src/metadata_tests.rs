@@ -34,7 +34,7 @@ fn test_config(codex_home: PathBuf) -> RolloutConfig {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn extract_metadata_from_rollout_uses_session_meta() {
     let dir = tempdir().expect("tempdir");
     let uuid = Uuid::new_v4();
@@ -85,7 +85,7 @@ async fn extract_metadata_from_rollout_uses_session_meta() {
     assert_eq!(outcome.parse_errors, 0);
 }
 
-#[tokio::test]
+#[test]
 async fn extract_metadata_from_rollout_returns_latest_memory_mode() {
     let dir = tempdir().expect("tempdir");
     let uuid = Uuid::new_v4();
@@ -175,7 +175,7 @@ fn builder_from_items_falls_back_to_filename() {
     assert_eq!(builder, expected);
 }
 
-#[tokio::test]
+#[test]
 async fn backfill_sessions_resumes_from_watermark_and_marks_complete() {
     let dir = tempdir().expect("tempdir");
     let codex_home = dir.path().to_path_buf();
@@ -245,7 +245,7 @@ async fn backfill_sessions_resumes_from_watermark_and_marks_complete() {
     assert!(state.last_success_at.is_some());
 }
 
-#[tokio::test]
+#[test]
 async fn backfill_sessions_preserves_existing_git_branch_and_fills_missing_git_fields() {
     let dir = tempdir().expect("tempdir");
     let codex_home = dir.path().to_path_buf();
@@ -294,7 +294,7 @@ async fn backfill_sessions_preserves_existing_git_branch_and_fills_missing_git_f
     );
 }
 
-#[tokio::test]
+#[test]
 async fn backfill_sessions_normalizes_cwd_before_upsert() {
     let dir = tempdir().expect("tempdir");
     let codex_home = dir.path().to_path_buf();

@@ -19,7 +19,7 @@ use wiremock::ResponseTemplate;
 use wiremock::matchers::method;
 use wiremock::matchers::path;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn fork_thread_twice_drops_to_first_message() {
     skip_if_no_network!();
 

@@ -62,7 +62,7 @@ fn write_session_file(root: &Path, ts: &str, uuid: Uuid) -> std::io::Result<Path
     Ok(path)
 }
 
-#[tokio::test]
+#[test]
 async fn recorder_materializes_on_flush_with_pending_items() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
     let config = test_config(home.path());
@@ -142,7 +142,7 @@ async fn recorder_materializes_on_flush_with_pending_items() -> std::io::Result<
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn persist_reports_filesystem_error_and_retries_buffered_items() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
     let config = test_config(home.path());
@@ -197,7 +197,7 @@ async fn persist_reports_filesystem_error_and_retries_buffered_items() -> std::i
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn writer_state_retries_write_error_before_reporting_flush_success() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
     let config = test_config(home.path());
@@ -232,7 +232,7 @@ async fn writer_state_retries_write_error_before_reporting_flush_success() -> st
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn metadata_irrelevant_events_touch_state_db_updated_at() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
     let config = test_config(home.path());
@@ -312,7 +312,7 @@ async fn metadata_irrelevant_events_touch_state_db_updated_at() -> std::io::Resu
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn metadata_irrelevant_events_fall_back_to_upsert_when_thread_missing() -> std::io::Result<()>
 {
     let home = TempDir::new().expect("temp dir");
@@ -357,7 +357,7 @@ async fn metadata_irrelevant_events_fall_back_to_upsert_when_thread_missing() ->
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn list_threads_db_disabled_does_not_skip_paginated_items() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
     let config = test_config(home.path());
@@ -398,7 +398,7 @@ async fn list_threads_db_disabled_does_not_skip_paginated_items() -> std::io::Re
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn list_threads_db_enabled_drops_missing_rollout_paths() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
     let config = test_config(home.path());
@@ -459,7 +459,7 @@ async fn list_threads_db_enabled_drops_missing_rollout_paths() -> std::io::Resul
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn list_threads_db_enabled_repairs_stale_rollout_paths() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
     let config = test_config(home.path());
@@ -523,7 +523,7 @@ async fn list_threads_db_enabled_repairs_stale_rollout_paths() -> std::io::Resul
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn resume_candidate_matches_cwd_reads_latest_turn_context() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
     let stale_cwd = home.path().join("stale");

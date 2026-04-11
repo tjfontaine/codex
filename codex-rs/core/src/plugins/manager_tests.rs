@@ -918,7 +918,7 @@ fn load_plugins_rejects_invalid_plugin_keys() {
     assert!(outcome.effective_mcp_servers().is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn install_plugin_updates_config_with_relative_path_and_plugin_key() {
     let tmp = tempfile::tempdir().unwrap();
     let repo_root = tmp.path().join("repo");
@@ -972,7 +972,7 @@ async fn install_plugin_updates_config_with_relative_path_and_plugin_key() {
     assert!(config.contains("enabled = true"));
 }
 
-#[tokio::test]
+#[test]
 async fn install_plugin_uses_manifest_version_for_non_curated_plugins() {
     let tmp = tempfile::tempdir().unwrap();
     let repo_root = tmp.path().join("repo");
@@ -1026,7 +1026,7 @@ async fn install_plugin_uses_manifest_version_for_non_curated_plugins() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn uninstall_plugin_removes_cache_and_config_entry() {
     let tmp = tempfile::tempdir().unwrap();
     write_plugin(
@@ -1063,7 +1063,7 @@ enabled = true
     assert!(!config.contains(r#"[plugins."sample-plugin@debug"]"#));
 }
 
-#[tokio::test]
+#[test]
 async fn list_marketplaces_includes_enabled_state() {
     let tmp = tempfile::tempdir().unwrap();
     let repo_root = tmp.path().join("repo");
@@ -1179,7 +1179,7 @@ enabled = false
     );
 }
 
-#[tokio::test]
+#[test]
 async fn list_marketplaces_returns_empty_when_feature_disabled() {
     let tmp = tempfile::tempdir().unwrap();
     let repo_root = tmp.path().join("repo");
@@ -1220,7 +1220,7 @@ enabled = true
     assert_eq!(marketplaces, Vec::new());
 }
 
-#[tokio::test]
+#[test]
 async fn list_marketplaces_excludes_plugins_with_explicit_empty_products() {
     let tmp = tempfile::tempdir().unwrap();
     let repo_root = tmp.path().join("repo");
@@ -1295,7 +1295,7 @@ plugins = true
     );
 }
 
-#[tokio::test]
+#[test]
 async fn read_plugin_for_config_returns_plugins_disabled_when_feature_disabled() {
     let tmp = tempfile::tempdir().unwrap();
     let repo_root = tmp.path().join("repo");
@@ -1343,7 +1343,7 @@ enabled = true
     assert!(matches!(err, MarketplaceError::PluginsDisabled));
 }
 
-#[tokio::test]
+#[test]
 async fn read_plugin_for_config_uses_user_layer_skill_settings_only() {
     let tmp = tempfile::tempdir().unwrap();
     let repo_root = tmp.path().join("repo");
@@ -1407,7 +1407,7 @@ enabled = false
     assert!(outcome.plugin.disabled_skill_paths.is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn sync_plugins_from_remote_returns_default_when_feature_disabled() {
     let tmp = tempfile::tempdir().unwrap();
     write_file(
@@ -1426,7 +1426,7 @@ plugins = false
     assert_eq!(outcome, RemotePluginSyncResult::default());
 }
 
-#[tokio::test]
+#[test]
 async fn list_marketplaces_includes_curated_repo_marketplace() {
     let tmp = tempfile::tempdir().unwrap();
     let curated_root = curated_plugins_repo_path(tmp.path());
@@ -1504,7 +1504,7 @@ plugins = true
     );
 }
 
-#[tokio::test]
+#[test]
 async fn list_marketplaces_uses_first_duplicate_plugin_entry() {
     let tmp = tempfile::tempdir().unwrap();
     let repo_a_root = tmp.path().join("repo-a");
@@ -1643,7 +1643,7 @@ enabled = false
     assert_eq!(duplicate_plugin_count, 1);
 }
 
-#[tokio::test]
+#[test]
 async fn list_marketplaces_marks_configured_plugin_uninstalled_when_cache_is_missing() {
     let tmp = tempfile::tempdir().unwrap();
     let repo_root = tmp.path().join("repo");
@@ -1720,7 +1720,7 @@ enabled = true
     );
 }
 
-#[tokio::test]
+#[test]
 async fn sync_plugins_from_remote_reconciles_cache_and_config() {
     let tmp = tempfile::tempdir().unwrap();
     let curated_root = curated_plugins_repo_path(tmp.path());
@@ -1840,7 +1840,7 @@ enabled = true
     );
 }
 
-#[tokio::test]
+#[test]
 async fn sync_plugins_from_remote_additive_only_keeps_existing_plugins() {
     let tmp = tempfile::tempdir().unwrap();
     let curated_root = curated_plugins_repo_path(tmp.path());
@@ -1936,7 +1936,7 @@ enabled = true
     assert!(config.contains("enabled = true"));
 }
 
-#[tokio::test]
+#[test]
 async fn sync_plugins_from_remote_ignores_unknown_remote_plugins() {
     let tmp = tempfile::tempdir().unwrap();
     let curated_root = curated_plugins_repo_path(tmp.path());
@@ -1993,7 +1993,7 @@ enabled = false
     );
 }
 
-#[tokio::test]
+#[test]
 async fn sync_plugins_from_remote_keeps_existing_plugins_when_install_fails() {
     let tmp = tempfile::tempdir().unwrap();
     let curated_root = curated_plugins_repo_path(tmp.path());
@@ -2060,7 +2060,7 @@ enabled = false
     assert!(config.contains("enabled = false"));
 }
 
-#[tokio::test]
+#[test]
 async fn sync_plugins_from_remote_uses_first_duplicate_local_plugin_entry() {
     let tmp = tempfile::tempdir().unwrap();
     let curated_root = curated_plugins_repo_path(tmp.path());
@@ -2145,7 +2145,7 @@ plugins = true
     );
 }
 
-#[tokio::test]
+#[test]
 async fn featured_plugin_ids_for_config_uses_restriction_product_query_param() {
     let tmp = tempfile::tempdir().unwrap();
     write_file(
@@ -2183,7 +2183,7 @@ plugins = true
     assert_eq!(featured_plugin_ids, vec!["chat-plugin".to_string()]);
 }
 
-#[tokio::test]
+#[test]
 async fn featured_plugin_ids_for_config_defaults_query_param_to_codex() {
     let tmp = tempfile::tempdir().unwrap();
     write_file(

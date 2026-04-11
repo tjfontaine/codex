@@ -30,7 +30,7 @@ fn list_shows_empty_state() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn list_and_get_render_expected_output() -> Result<()> {
     let codex_home = TempDir::new()?;
 
@@ -138,7 +138,7 @@ async fn list_and_get_render_expected_output() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn get_disabled_server_shows_single_line() -> Result<()> {
     let codex_home = TempDir::new()?;
 

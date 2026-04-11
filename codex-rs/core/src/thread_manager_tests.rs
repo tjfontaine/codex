@@ -194,7 +194,7 @@ fn out_of_range_truncation_drops_pre_user_active_turn_prefix() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn ignores_session_prefix_messages_when_truncating() {
     let (session, turn_context) = make_session_and_context().await;
     let mut items = session.build_initial_context(&turn_context).await;
@@ -233,7 +233,7 @@ async fn ignores_session_prefix_messages_when_truncating() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn shutdown_all_threads_bounded_submits_shutdown_to_every_thread() {
     let temp_dir = tempdir().expect("tempdir");
     let mut config = test_config();
@@ -272,7 +272,7 @@ async fn shutdown_all_threads_bounded_submits_shutdown_to_every_thread() {
     assert!(manager.list_thread_ids().await.is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn new_uses_configured_openai_provider_for_model_refresh() {
     let server = MockServer::start().await;
     let models_mock = mount_models_once(&server, ModelsResponse { models: vec![] }).await;
@@ -418,7 +418,7 @@ fn mixed_response_and_legacy_user_event_history_is_mid_turn() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn interrupted_fork_snapshot_does_not_synthesize_turn_id_for_legacy_history() {
     let temp_dir = tempdir().expect("tempdir");
     let mut config = test_config();
@@ -521,7 +521,7 @@ async fn interrupted_fork_snapshot_does_not_synthesize_turn_id_for_legacy_histor
     );
 }
 
-#[tokio::test]
+#[test]
 async fn interrupted_fork_snapshot_preserves_explicit_turn_id() {
     let temp_dir = tempdir().expect("tempdir");
     let mut config = test_config();
@@ -614,7 +614,7 @@ async fn interrupted_fork_snapshot_preserves_explicit_turn_id() {
     }));
 }
 
-#[tokio::test]
+#[test]
 async fn interrupted_fork_snapshot_uses_persisted_mid_turn_history_without_live_source() {
     let temp_dir = tempdir().expect("tempdir");
     let mut config = test_config();

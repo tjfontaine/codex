@@ -80,7 +80,7 @@ pub(crate) fn build_http_client(
     } else if tokio::runtime::Handle::try_current().is_ok() {
         let tls = tls.clone();
         let timeout_var = timeout_var.to_string();
-        std::thread::spawn(move || {
+        tokio::thread_spawn::spawn(move || {
             build_http_client_inner(&tls, &timeout_var).map_err(|err| err.to_string())
         })
         .join()

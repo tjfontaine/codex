@@ -246,7 +246,7 @@ struct PendingResult {
 struct SessionControlContext {
     cell_id: String,
     runtime_tx: std::sync::mpsc::Sender<RuntimeCommand>,
-    runtime_terminate_handle: v8::IsolateHandle,
+    runtime_terminate_handle: crate::runtime::RuntimeHandle,
 }
 
 fn missing_cell_response(cell_id: String) -> RuntimeResponse {
@@ -509,7 +509,7 @@ mod tests {
         })
     }
 
-    #[tokio::test]
+    #[test]
     async fn synchronous_exit_returns_successfully() {
         let service = CodeModeService::new();
 
@@ -535,7 +535,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn v8_console_is_not_exposed_on_global_this() {
         let service = CodeModeService::new();
 
@@ -561,7 +561,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn output_helpers_return_undefined() {
         let service = CodeModeService::new();
 
@@ -604,7 +604,7 @@ text(JSON.stringify(returnsUndefined));
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn terminate_waits_for_runtime_shutdown_before_responding() {
         let inner = test_inner();
         let (event_tx, event_rx) = mpsc::unbounded_channel();

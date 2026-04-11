@@ -95,7 +95,7 @@ mod tests {
     use tokio::time::Duration;
     use tokio::time::timeout;
 
-    #[tokio::test]
+    #[test]
     async fn forwards_file_watcher_events() {
         let file_watcher = Arc::new(FileWatcher::noop());
         let skills_watcher = SkillsWatcher::new(&file_watcher);

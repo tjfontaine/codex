@@ -194,8 +194,8 @@ use crate::clipboard_paste::pasted_image_format;
 use crate::history_cell;
 use crate::tui::FrameRequester;
 use crate::ui_consts::LIVE_PREFIX_COLS;
-use codex_chatgpt::connectors;
-use codex_chatgpt::connectors::AppInfo;
+use codex_core::connectors;
+use codex_core::connectors::AppInfo;
 use codex_core::plugins::PluginCapabilitySummary;
 use codex_core::skills::model::SkillMetadata;
 use codex_file_search::FileMatch;
@@ -6087,7 +6087,7 @@ mod tests {
     }
 
     fn flush_after_paste_burst(composer: &mut ChatComposer) -> bool {
-        std::thread::sleep(PasteBurst::recommended_active_flush_delay());
+        tokio::thread_spawn::sleep(PasteBurst::recommended_active_flush_delay());
         composer.flush_paste_burst_if_due()
     }
 
@@ -6099,7 +6099,7 @@ mod tests {
         use crossterm::event::KeyModifiers;
         for &ch in chars {
             let _ = composer.handle_key_event(KeyEvent::new(KeyCode::Char(ch), KeyModifiers::NONE));
-            std::thread::sleep(ChatComposer::recommended_paste_flush_delay());
+            tokio::thread_spawn::sleep(ChatComposer::recommended_paste_flush_delay());
             let _ = composer.flush_paste_burst_if_due();
             if ch == ' ' {
                 let _ = composer.handle_key_event(KeyEvent::new_with_kind(
@@ -7666,7 +7666,7 @@ mod tests {
         assert!(composer.is_in_paste_burst());
         assert!(composer.textarea.text().is_empty());
 
-        std::thread::sleep(ChatComposer::recommended_paste_flush_delay());
+        tokio::thread_spawn::sleep(ChatComposer::recommended_paste_flush_delay());
         let flushed = composer.flush_paste_burst_if_due();
         assert!(flushed, "expected pending first char to flush");
         assert_eq!(composer.textarea.text(), "h");

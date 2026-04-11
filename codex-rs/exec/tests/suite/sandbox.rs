@@ -112,7 +112,7 @@ async fn can_apply_linux_sandbox_policy(
         .unwrap_or(false)
 }
 
-#[tokio::test]
+#[test]
 async fn python_multiprocessing_lock_works_under_sandbox() {
     core_test_support::skip_if_sandbox!();
     #[cfg(target_os = "linux")]
@@ -176,7 +176,7 @@ if __name__ == '__main__':
     assert!(status.success(), "python exited with {status:?}");
 }
 
-#[tokio::test]
+#[test]
 async fn python_getpwuid_works_under_sandbox() {
     core_test_support::skip_if_sandbox!();
     #[cfg(target_os = "linux")]
@@ -222,7 +222,7 @@ async fn python_getpwuid_works_under_sandbox() {
     assert!(status.success(), "python exited with {status:?}");
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_distinguishes_command_and_policy_cwds() {
     core_test_support::skip_if_sandbox!();
     #[cfg(target_os = "linux")]
@@ -313,7 +313,7 @@ async fn sandbox_distinguishes_command_and_policy_cwds() {
     assert!(allowed_exists, "allowed path should exist");
 }
 
-#[tokio::test]
+#[test]
 async fn sandbox_blocks_first_time_dot_codex_creation() {
     core_test_support::skip_if_sandbox!();
     #[cfg(target_os = "linux")]
@@ -458,7 +458,7 @@ fn unix_sock_body() {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn allow_unix_socketpair_recvfrom() {
     run_code_under_sandbox(
         "allow_unix_socketpair_recvfrom",

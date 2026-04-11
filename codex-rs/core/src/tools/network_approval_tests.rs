@@ -4,7 +4,7 @@ use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::SandboxPolicy;
 use pretty_assertions::assert_eq;
 
-#[tokio::test]
+#[test]
 async fn pending_approvals_are_deduped_per_host_protocol_and_port() {
     let service = NetworkApprovalService::default();
     let key = HostApprovalKey {
@@ -21,7 +21,7 @@ async fn pending_approvals_are_deduped_per_host_protocol_and_port() {
     assert!(Arc::ptr_eq(&first, &second));
 }
 
-#[tokio::test]
+#[test]
 async fn pending_approvals_do_not_dedupe_across_ports() {
     let service = NetworkApprovalService::default();
     let first_key = HostApprovalKey {
@@ -43,7 +43,7 @@ async fn pending_approvals_do_not_dedupe_across_ports() {
     assert!(!Arc::ptr_eq(&first, &second));
 }
 
-#[tokio::test]
+#[test]
 async fn session_approved_hosts_preserve_protocol_and_port_scope() {
     let source = NetworkApprovalService::default();
     {
@@ -101,7 +101,7 @@ async fn session_approved_hosts_preserve_protocol_and_port_scope() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn sync_session_approved_hosts_to_replaces_existing_target_hosts() {
     let source = NetworkApprovalService::default();
     {
@@ -143,7 +143,7 @@ async fn sync_session_approved_hosts_to_replaces_existing_target_hosts() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn pending_waiters_receive_owner_decision() {
     let pending = Arc::new(PendingHostApproval::new());
 
@@ -207,7 +207,7 @@ fn denied_blocked_request(host: &str) -> BlockedRequest {
     })
 }
 
-#[tokio::test]
+#[test]
 async fn record_blocked_request_sets_policy_outcome_for_owner_call() {
     let service = NetworkApprovalService::default();
     service
@@ -226,7 +226,7 @@ async fn record_blocked_request_sets_policy_outcome_for_owner_call() {
         );
 }
 
-#[tokio::test]
+#[test]
 async fn blocked_request_policy_does_not_override_user_denial_outcome() {
     let service = NetworkApprovalService::default();
     service
@@ -246,7 +246,7 @@ async fn blocked_request_policy_does_not_override_user_denial_outcome() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn record_blocked_request_ignores_ambiguous_unattributed_blocked_requests() {
     let service = NetworkApprovalService::default();
     service

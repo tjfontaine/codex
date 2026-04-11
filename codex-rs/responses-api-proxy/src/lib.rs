@@ -114,10 +114,10 @@ pub fn run_main(args: Args) -> Result<()> {
         let client = client.clone();
         let forward_config = forward_config.clone();
         let dump_dir = dump_dir.clone();
-        std::thread::spawn(move || {
+        tokio::thread_spawn::spawn(move || {
             if http_shutdown && request.method() == &Method::Get && request.url() == "/shutdown" {
                 let _ = request.respond(Response::new_empty(StatusCode(200)));
-                std::process::exit(0);
+                panic!("process::exit(0) called — cannot exit in WASM");
             }
 
             if let Err(e) = forward_request(

@@ -1,3 +1,4 @@
+#![allow(dead_code, unused_imports)]
 mod experimental_api;
 mod export;
 mod jsonrpc_lite;

@@ -1,3 +1,4 @@
+#![allow(dead_code, unused_imports)]
 mod custom_ca;
 mod default_client;
 mod error;

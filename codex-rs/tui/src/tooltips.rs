@@ -136,7 +136,7 @@ pub(crate) mod announcement {
 
     /// Prewarm the cache of the announcement tip.
     pub(crate) fn prewarm() {
-        let _ = thread::spawn(|| ANNOUNCEMENT_TIP.get_or_init(init_announcement_tip_in_thread));
+        let _ = tokio::thread_spawn::spawn(|| ANNOUNCEMENT_TIP.get_or_init(init_announcement_tip_in_thread));
     }
 
     /// Fetch the announcement tip, return None if the prewarm is not done yet.
@@ -199,7 +199,7 @@ pub(crate) mod announcement {
     }
 
     fn init_announcement_tip_in_thread() -> Option<String> {
-        thread::spawn(blocking_init_announcement_tip)
+        tokio::thread_spawn::spawn(blocking_init_announcement_tip)
             .join()
             .ok()
             .flatten()
@@ -207,16 +207,8 @@ pub(crate) mod announcement {
 
     fn blocking_init_announcement_tip() -> Option<String> {
         // Avoid system proxy detection to prevent macOS system-configuration panics (#8912).
-        let client = reqwest::blocking::Client::builder()
-            .no_proxy()
-            .build()
-            .ok()?;
-        let response = client
-            .get(ANNOUNCEMENT_TIP_URL)
-            .timeout(Duration::from_millis(2000))
-            .send()
-            .ok()?;
-        response.error_for_status().ok()?.text().ok()
+        // reqwest::blocking not available in WASM
+        None::<String>
     }
 
     pub(crate) fn parse_announcement_tip_toml(

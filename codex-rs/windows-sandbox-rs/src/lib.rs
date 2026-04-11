@@ -487,7 +487,7 @@ mod windows_impl {
 
         let (tx_out, rx_out) = std::sync::mpsc::channel::<Vec<u8>>();
         let (tx_err, rx_err) = std::sync::mpsc::channel::<Vec<u8>>();
-        let t_out = std::thread::spawn(move || {
+        let t_out = tokio::thread_spawn::spawn(move || {
             let mut buf = Vec::new();
             let mut tmp = [0u8; 8192];
             loop {
@@ -508,7 +508,7 @@ mod windows_impl {
             }
             let _ = tx_out.send(buf);
         });
-        let t_err = std::thread::spawn(move || {
+        let t_err = tokio::thread_spawn::spawn(move || {
             let mut buf = Vec::new();
             let mut tmp = [0u8; 8192];
             loop {

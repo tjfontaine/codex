@@ -1,7 +1,7 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-#[tokio::test]
+#[test]
 async fn mcp_startup_header_booting_snapshot() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;
@@ -26,7 +26,7 @@ async fn mcp_startup_header_booting_snapshot() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn mcp_startup_complete_does_not_clear_running_task() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -55,7 +55,7 @@ async fn mcp_startup_complete_does_not_clear_running_task() {
     assert!(chat.bottom_pane.status_indicator_visible());
 }
 
-#[tokio::test]
+#[test]
 async fn app_server_mcp_startup_failure_renders_warning_history() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;
@@ -145,7 +145,7 @@ async fn app_server_mcp_startup_failure_renders_warning_history() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn app_server_mcp_startup_lag_settles_startup_and_ignores_late_updates() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;
@@ -215,7 +215,7 @@ async fn app_server_mcp_startup_lag_settles_startup_and_ignores_late_updates() {
     assert!(!chat.bottom_pane.is_task_running());
 }
 
-#[tokio::test]
+#[test]
 async fn app_server_mcp_startup_after_lag_can_settle_without_starting_updates() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;
@@ -256,7 +256,7 @@ async fn app_server_mcp_startup_after_lag_can_settle_without_starting_updates() 
     assert!(!chat.bottom_pane.is_task_running());
 }
 
-#[tokio::test]
+#[test]
 async fn app_server_mcp_startup_after_lag_preserves_partial_terminal_only_round() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;
@@ -324,7 +324,7 @@ async fn app_server_mcp_startup_after_lag_preserves_partial_terminal_only_round(
     assert!(!chat.bottom_pane.is_task_running());
 }
 
-#[tokio::test]
+#[test]
 async fn app_server_mcp_startup_next_round_discards_stale_terminal_updates() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;
@@ -411,7 +411,7 @@ async fn app_server_mcp_startup_next_round_discards_stale_terminal_updates() {
     assert!(!chat.bottom_pane.is_task_running());
 }
 
-#[tokio::test]
+#[test]
 async fn app_server_mcp_startup_next_round_keeps_terminal_statuses_after_starting() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;
@@ -472,7 +472,7 @@ async fn app_server_mcp_startup_next_round_keeps_terminal_statuses_after_startin
     assert!(!chat.bottom_pane.is_task_running());
 }
 
-#[tokio::test]
+#[test]
 async fn app_server_mcp_startup_next_round_with_empty_expected_servers_reactivates() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;
@@ -508,7 +508,7 @@ async fn app_server_mcp_startup_next_round_with_empty_expected_servers_reactivat
     assert!(!chat.bottom_pane.is_task_running());
 }
 
-#[tokio::test]
+#[test]
 async fn app_server_mcp_startup_after_lag_with_empty_expected_servers_preserves_failures() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;
@@ -542,7 +542,7 @@ async fn app_server_mcp_startup_after_lag_with_empty_expected_servers_preserves_
     assert!(!chat.bottom_pane.is_task_running());
 }
 
-#[tokio::test]
+#[test]
 async fn app_server_mcp_startup_after_lag_includes_runtime_servers_with_expected_set() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;
@@ -576,7 +576,7 @@ async fn app_server_mcp_startup_after_lag_includes_runtime_servers_with_expected
     assert!(!chat.bottom_pane.is_task_running());
 }
 
-#[tokio::test]
+#[test]
 async fn app_server_mcp_startup_next_round_after_lag_can_settle_without_starting_updates() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.show_welcome_banner = false;

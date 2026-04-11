@@ -20,7 +20,7 @@ fn notify_event(kind: EventKind, paths: Vec<PathBuf>) -> Event {
     event
 }
 
-#[tokio::test]
+#[test]
 async fn throttled_receiver_coalesces_within_interval() {
     let (tx, rx) = watch_channel();
     let mut throttled = ThrottledWatchReceiver::new(rx, TEST_THROTTLE_INTERVAL);
@@ -51,7 +51,7 @@ async fn throttled_receiver_coalesces_within_interval() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn throttled_receiver_flushes_pending_on_shutdown() {
     let (tx, rx) = watch_channel();
     let mut throttled = ThrottledWatchReceiver::new(rx, TEST_THROTTLE_INTERVAL);
@@ -153,7 +153,7 @@ fn subscriber_drop_unregisters_paths() {
     drop(registration);
 }
 
-#[tokio::test]
+#[test]
 async fn receiver_closes_when_subscriber_drops() {
     let watcher = Arc::new(FileWatcher::noop());
     let (subscriber, mut rx) = watcher.add_subscriber();
@@ -214,21 +214,21 @@ fn unregister_holds_state_lock_until_unwatch_finishes() {
     let inner = watcher.inner.as_ref().expect("watcher inner");
     let inner_guard = inner.lock().expect("inner lock");
 
-    let unregister_thread = std::thread::spawn(move || {
+    let unregister_thread = tokio::thread_spawn::spawn(move || {
         drop(registration);
     });
 
     let state_lock_observed = (0..100).any(|_| {
         let locked = watcher.state.try_write().is_err();
         if !locked {
-            std::thread::sleep(Duration::from_millis(10));
+            tokio::thread_spawn::sleep(Duration::from_millis(10));
         }
         locked
     });
     assert_eq!(state_lock_observed, true);
 
     let register_root = root.clone();
-    let register_thread = std::thread::spawn(move || {
+    let register_thread = tokio::thread_spawn::spawn(move || {
         let registration =
             register_subscriber.register_path(register_root, /*recursive*/ false);
         (register_subscriber, registration)
@@ -253,7 +253,7 @@ fn unregister_holds_state_lock_until_unwatch_finishes() {
     drop(register_subscriber);
 }
 
-#[tokio::test]
+#[test]
 async fn matching_subscribers_are_notified() {
     let watcher = Arc::new(FileWatcher::noop());
     let (skills_subscriber, skills_rx) = watcher.add_subscriber();
@@ -282,7 +282,7 @@ async fn matching_subscribers_are_notified() {
     assert_eq!(plugins_event.is_err(), true);
 }
 
-#[tokio::test]
+#[test]
 async fn non_recursive_watch_ignores_grandchildren() {
     let watcher = Arc::new(FileWatcher::noop());
     let (subscriber, rx) = watcher.add_subscriber();
@@ -297,7 +297,7 @@ async fn non_recursive_watch_ignores_grandchildren() {
     assert_eq!(event.is_err(), true);
 }
 
-#[tokio::test]
+#[test]
 async fn ancestor_events_notify_child_watches() {
     let watcher = Arc::new(FileWatcher::noop());
     let (subscriber, rx) = watcher.add_subscriber();
@@ -319,7 +319,7 @@ async fn ancestor_events_notify_child_watches() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn spawn_event_loop_filters_non_mutating_events() {
     let watcher = Arc::new(FileWatcher::noop());
     let (subscriber, rx) = watcher.add_subscriber();

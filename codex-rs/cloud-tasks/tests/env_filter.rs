@@ -1,7 +1,7 @@
 use codex_cloud_tasks_client::CloudBackend;
 use codex_cloud_tasks_mock_client::MockClient;
 
-#[tokio::test]
+#[test]
 async fn mock_backend_varies_by_env() {
     let client = MockClient;
 

@@ -426,7 +426,7 @@ impl RemoteControlWebsocket {
                     }
                     continue;
                 }
-                wait_result = used_rx.changed(), if !outbound_has_capacity =>
+                wait_result = used_rx.changed() =>
                 {
                     if wait_result.is_err() {
                         return Err(io::Error::new(
@@ -436,7 +436,7 @@ impl RemoteControlWebsocket {
                     }
                     continue;
                 }
-                recv_result = server_event_rx.recv(), if outbound_has_capacity => {
+                recv_result = server_event_rx.recv() => {
                     match recv_result {
                         Some(queued_server_envelope) => queued_server_envelope,
                         None => {
@@ -974,7 +974,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn connect_remote_control_websocket_includes_http_error_details() {
         let listener = TcpListener::bind("127.0.0.1:0")
             .await
@@ -1030,7 +1030,7 @@ mod tests {
         assert_eq!(err.to_string(), expected_error);
     }
 
-    #[tokio::test]
+    #[test]
     async fn connect_remote_control_websocket_recovers_after_unauthorized_reload() {
         let listener = TcpListener::bind("127.0.0.1:0")
             .await
@@ -1102,7 +1102,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn connect_remote_control_websocket_recovers_after_unauthorized_enrollment() {
         let listener = TcpListener::bind("127.0.0.1:0")
             .await
@@ -1171,7 +1171,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[test]
     async fn run_remote_control_websocket_loop_shutdown_cancels_reconnect_backoff() {
         let listener = TcpListener::bind("127.0.0.1:0")
             .await
@@ -1211,7 +1211,7 @@ mod tests {
             .expect("websocket task should join");
     }
 
-    #[tokio::test]
+    #[test]
     async fn run_server_writer_inner_sends_periodic_ping_frames() {
         let (client_stream, mut server_stream) = connected_websocket_pair().await;
         let (websocket_writer, _websocket_reader) = client_stream.split();
@@ -1247,7 +1247,7 @@ mod tests {
             .expect("writer should stop cleanly");
     }
 
-    #[tokio::test]
+    #[test]
     async fn run_websocket_reader_inner_times_out_without_pong_frames() {
         let (client_stream, _server_stream) = connected_websocket_pair().await;
         let (_websocket_writer, websocket_reader) = client_stream.split();

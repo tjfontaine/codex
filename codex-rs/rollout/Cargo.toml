@@ -1,49 +1,33 @@
 [package]
-edition.workspace = true
-license.workspace = true
+edition = "2024"
+license = "Apache-2.0"
 name = "codex-rollout"
-version.workspace = true
+version = "0.0.0"
 
 [lib]
 doctest = false
 name = "codex_rollout"
 path = "src/lib.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-anyhow = { workspace = true }
-async-trait = { workspace = true }
-chrono = { workspace = true, features = ["serde"] }
-codex-file-search = { workspace = true }
-codex-git-utils = { workspace = true }
-codex-login = { workspace = true }
-codex-otel = { workspace = true }
-codex-protocol = { workspace = true }
-codex-state = { workspace = true }
-codex-utils-path = { workspace = true }
-codex-utils-string = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-time = { workspace = true, features = [
-    "formatting",
-    "local-offset",
-    "macros",
-    "parsing",
-] }
-tokio = { workspace = true, features = [
-    "fs",
-    "io-util",
-    "macros",
-    "process",
-    "rt",
-    "sync",
-    "time",
-] }
-tracing = { workspace = true }
-uuid = { workspace = true }
+anyhow = { version = "1" }
+async-trait = { version = "0.1.89" }
+chrono = { version = "0.4.43", features = ["serde"] }
+codex-file-search = { path = "../file-search" }
+codex-git-utils = { path = "../git-utils" }
+codex-login = { path = "../login" }
+codex-otel = { path = "../../../codex-wasm/wasi-codex-otel" }
+codex-protocol = { path = "../protocol" }
+codex-state = { path = "../state" }
+codex-utils-path = { path = "../utils/path-utils" }
+codex-utils-string = { path = "../utils/string" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+time = { version = "0.3.47", features = ["formatting", "local-offset", "macros", "parsing"] }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
+tracing = { version = "0.1.44" }
+uuid = { version = "1" }
 
 [dev-dependencies]
-pretty_assertions = { workspace = true }
-tempfile = { workspace = true }
+pretty_assertions = { version = "1.4.1" }
+tempfile = { version = "3.23.0" }

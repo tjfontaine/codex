@@ -1,40 +1,36 @@
 [package]
-edition.workspace = true
-license.workspace = true
+edition = "2024"
+license = "Apache-2.0"
 name = "codex-core-skills"
-version.workspace = true
+version = "0.0.0"
 
 [lib]
 doctest = false
 name = "codex_core_skills"
 path = "src/lib.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-anyhow = { workspace = true }
-codex-analytics = { workspace = true }
-codex-app-server-protocol = { workspace = true }
-codex-config = { workspace = true }
-codex-instructions = { workspace = true }
-codex-login = { workspace = true }
-codex-otel = { workspace = true }
-codex-protocol = { workspace = true }
-codex-skills = { workspace = true }
-codex-utils-absolute-path = { workspace = true }
-codex-utils-plugins = { workspace = true }
-dirs = { workspace = true }
-dunce = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-serde_yaml = { workspace = true }
-shlex = { workspace = true }
-tokio = { workspace = true, features = ["fs", "macros", "rt"] }
-toml = { workspace = true }
-tracing = { workspace = true }
-zip = { workspace = true }
+anyhow = { version = "1" }
+codex-analytics = { path = "../analytics" }
+codex-app-server-protocol = { path = "../app-server-protocol" }
+codex-config = { path = "../config" }
+codex-instructions = { path = "../instructions" }
+codex-login = { path = "../login" }
+codex-otel = { path = "../../../codex-wasm/wasi-codex-otel" }
+codex-protocol = { path = "../protocol" }
+codex-skills = { path = "../skills" }
+codex-utils-absolute-path = { path = "../utils/absolute-path" }
+codex-utils-plugins = { path = "../utils/plugins" }
+dirs = { version = "6" }
+dunce = { version = "1.0.4" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+serde_yaml = { version = "0.9" }
+shlex = { version = "1.3.0" }
+tokio = { path = "../../../codex-wasm/wasi-tokio" }
+toml = { version = "0.9.5" }
+tracing = { version = "0.1.44" }
 
 [dev-dependencies]
-pretty_assertions = { workspace = true }
-tempfile = { workspace = true }
+pretty_assertions = { version = "1.4.1" }
+tempfile = { version = "3.23.0" }

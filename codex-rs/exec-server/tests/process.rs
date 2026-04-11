@@ -13,7 +13,7 @@ use codex_exec_server::TerminateResponse;
 use common::exec_server::exec_server;
 use pretty_assertions::assert_eq;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn exec_server_starts_process_over_websocket() -> anyhow::Result<()> {
     let mut server = exec_server().await?;
     let initialize_id = server
@@ -75,7 +75,7 @@ async fn exec_server_starts_process_over_websocket() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[test]
 async fn exec_server_resumes_detached_session_without_killing_processes() -> anyhow::Result<()> {
     let mut server = exec_server().await?;
     let initialize_id = server

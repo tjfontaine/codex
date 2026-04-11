@@ -64,7 +64,7 @@ async fn run_test_cmd(tmp: TempDir, cmd: Vec<&str>) -> Result<ExecToolCallOutput
 }
 
 /// Command succeeds with exit code 0 normally
-#[tokio::test]
+#[test]
 async fn exit_code_0_succeeds() {
     if skip_test() {
         return;
@@ -80,7 +80,7 @@ async fn exit_code_0_succeeds() {
 }
 
 /// Command succeeds with exit code 0 normally
-#[tokio::test]
+#[test]
 async fn truncates_output_lines() {
     if skip_test() {
         return;
@@ -100,7 +100,7 @@ async fn truncates_output_lines() {
 }
 
 /// Command succeeds with exit code 0 normally
-#[tokio::test]
+#[test]
 async fn truncates_output_bytes() {
     if skip_test() {
         return;
@@ -117,7 +117,7 @@ async fn truncates_output_bytes() {
 }
 
 /// Command not found returns exit code 127, this is not considered a sandbox error
-#[tokio::test]
+#[test]
 async fn exit_command_not_found_is_ok() {
     if skip_test() {
         return;
@@ -129,7 +129,7 @@ async fn exit_command_not_found_is_ok() {
 }
 
 /// Writing a file fails and should be considered a sandbox error
-#[tokio::test]
+#[test]
 async fn write_file_fails_as_sandbox_error() {
     if skip_test() {
         return;

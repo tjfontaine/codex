@@ -340,7 +340,7 @@ fn write_skill_interface_at(skill_dir: &Path, contents: &str) -> PathBuf {
     write_skill_metadata_at(skill_dir, contents)
 }
 
-#[tokio::test]
+#[test]
 async fn loads_skill_dependencies_metadata_from_yaml() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let skill_path = write_skill(&codex_home, "demo", "dep-skill", "from json");
@@ -440,7 +440,7 @@ async fn loads_skill_dependencies_metadata_from_yaml() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn loads_skill_interface_metadata_from_yaml() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let skill_path = write_skill(&codex_home, "demo", "ui-skill", "from json");
@@ -495,7 +495,7 @@ interface:
     );
 }
 
-#[tokio::test]
+#[test]
 async fn loads_skill_policy_from_yaml() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let skill_path = write_skill(&codex_home, "demo", "policy-skill", "from json");
@@ -528,7 +528,7 @@ policy:
     assert!(outcome.allowed_skills_for_implicit_invocation().is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn empty_skill_policy_defaults_to_allow_implicit_invocation() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let skill_path = write_skill(&codex_home, "demo", "policy-empty", "from json");
@@ -563,7 +563,7 @@ policy: {}
     );
 }
 
-#[tokio::test]
+#[test]
 async fn loads_skill_policy_products_from_yaml() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let skill_path = write_skill(&codex_home, "demo", "policy-products", "from yaml");
@@ -598,7 +598,7 @@ policy:
     );
 }
 
-#[tokio::test]
+#[test]
 async fn accepts_icon_paths_under_assets_dir() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let skill_path = write_skill(&codex_home, "demo", "ui-skill", "from json");
@@ -648,7 +648,7 @@ async fn accepts_icon_paths_under_assets_dir() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn ignores_invalid_brand_color() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let skill_path = write_skill(&codex_home, "demo", "ui-skill", "from json");
@@ -688,7 +688,7 @@ async fn ignores_invalid_brand_color() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn ignores_default_prompt_over_max_length() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let skill_path = write_skill(&codex_home, "demo", "ui-skill", "from json");
@@ -741,7 +741,7 @@ async fn ignores_default_prompt_over_max_length() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn drops_interface_when_icons_are_invalid() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let skill_path = write_skill(&codex_home, "demo", "ui-skill", "from json");
@@ -792,7 +792,7 @@ fn symlink_file(target: &Path, link: &Path) {
     std::os::unix::fs::symlink(target, link).unwrap();
 }
 
-#[tokio::test]
+#[test]
 #[cfg(unix)]
 async fn loads_skills_via_symlinked_subdir_for_user_scope() {
     let codex_home = tempfile::tempdir().expect("tempdir");
@@ -826,7 +826,7 @@ async fn loads_skills_via_symlinked_subdir_for_user_scope() {
     );
 }
 
-#[tokio::test]
+#[test]
 #[cfg(unix)]
 async fn ignores_symlinked_skill_file_for_user_scope() {
     let codex_home = tempfile::tempdir().expect("tempdir");
@@ -849,7 +849,7 @@ async fn ignores_symlinked_skill_file_for_user_scope() {
     assert_eq!(outcome.skills, Vec::new());
 }
 
-#[tokio::test]
+#[test]
 #[cfg(unix)]
 async fn does_not_loop_on_symlink_cycle_for_user_scope() {
     let codex_home = tempfile::tempdir().expect("tempdir");
@@ -921,7 +921,7 @@ fn loads_skills_via_symlinked_subdir_for_admin_scope() {
     );
 }
 
-#[tokio::test]
+#[test]
 #[cfg(unix)]
 async fn loads_skills_via_symlinked_subdir_for_repo_scope() {
     let codex_home = tempfile::tempdir().expect("tempdir");
@@ -960,7 +960,7 @@ async fn loads_skills_via_symlinked_subdir_for_repo_scope() {
     );
 }
 
-#[tokio::test]
+#[test]
 #[cfg(unix)]
 async fn system_scope_ignores_symlinked_subdir() {
     let codex_home = tempfile::tempdir().expect("tempdir");
@@ -984,7 +984,7 @@ async fn system_scope_ignores_symlinked_subdir() {
     assert_eq!(outcome.skills.len(), 0);
 }
 
-#[tokio::test]
+#[test]
 async fn respects_max_scan_depth_for_user_scope() {
     let codex_home = tempfile::tempdir().expect("tempdir");
 
@@ -1027,7 +1027,7 @@ async fn respects_max_scan_depth_for_user_scope() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn loads_valid_skill() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let skill_path = write_skill(&codex_home, "demo", "demo-skill", "does things\ncarefully");
@@ -1054,7 +1054,7 @@ async fn loads_valid_skill() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn falls_back_to_directory_name_when_skill_name_is_missing() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let skill_path = write_raw_skill_at(
@@ -1086,7 +1086,7 @@ async fn falls_back_to_directory_name_when_skill_name_is_missing() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn namespaces_plugin_skills_using_plugin_name() {
     let root = tempfile::tempdir().expect("tempdir");
     let plugin_root = root.path().join("plugins/sample");
@@ -1127,7 +1127,7 @@ async fn namespaces_plugin_skills_using_plugin_name() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn loads_short_description_from_metadata() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let skill_dir = codex_home.path().join("skills/demo");
@@ -1158,7 +1158,7 @@ async fn loads_short_description_from_metadata() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn enforces_short_description_length_limits() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let skill_dir = codex_home.path().join("skills/demo");
@@ -1182,7 +1182,7 @@ async fn enforces_short_description_length_limits() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn skips_hidden_and_invalid() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let hidden_dir = codex_home.path().join("skills/.hidden");
@@ -1210,7 +1210,7 @@ async fn skips_hidden_and_invalid() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn enforces_length_limits() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let max_desc = "\u{1F4A1}".repeat(MAX_DESCRIPTION_LEN);
@@ -1236,7 +1236,7 @@ async fn enforces_length_limits() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn loads_skills_from_repo_root() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let repo_dir = tempfile::tempdir().expect("tempdir");
@@ -1270,7 +1270,7 @@ async fn loads_skills_from_repo_root() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn loads_skills_from_agents_dir_without_codex_dir() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let repo_dir = tempfile::tempdir().expect("tempdir");
@@ -1305,7 +1305,7 @@ async fn loads_skills_from_agents_dir_without_codex_dir() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn loads_skills_from_all_codex_dirs_under_project_root() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let repo_dir = tempfile::tempdir().expect("tempdir");
@@ -1369,7 +1369,7 @@ async fn loads_skills_from_all_codex_dirs_under_project_root() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn loads_skills_from_codex_dir_when_not_git_repo() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let work_dir = tempfile::tempdir().expect("tempdir");
@@ -1407,7 +1407,7 @@ async fn loads_skills_from_codex_dir_when_not_git_repo() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn deduplicates_by_path_preferring_first_root() {
     let root = tempfile::tempdir().expect("tempdir");
 
@@ -1444,7 +1444,7 @@ async fn deduplicates_by_path_preferring_first_root() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn keeps_duplicate_names_from_repo_and_user() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let repo_dir = tempfile::tempdir().expect("tempdir");
@@ -1496,7 +1496,7 @@ async fn keeps_duplicate_names_from_repo_and_user() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn keeps_duplicate_names_from_nested_codex_dirs() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let repo_dir = tempfile::tempdir().expect("tempdir");
@@ -1569,7 +1569,7 @@ async fn keeps_duplicate_names_from_nested_codex_dirs() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn repo_skills_search_does_not_escape_repo_root() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let outer_dir = tempfile::tempdir().expect("tempdir");
@@ -1598,7 +1598,7 @@ async fn repo_skills_search_does_not_escape_repo_root() {
     assert_eq!(outcome.skills.len(), 0);
 }
 
-#[tokio::test]
+#[test]
 async fn loads_skills_when_cwd_is_file_in_repo() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let repo_dir = tempfile::tempdir().expect("tempdir");
@@ -1639,7 +1639,7 @@ async fn loads_skills_when_cwd_is_file_in_repo() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn non_git_repo_skills_search_does_not_walk_parents() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let outer_dir = tempfile::tempdir().expect("tempdir");
@@ -1667,7 +1667,7 @@ async fn non_git_repo_skills_search_does_not_walk_parents() {
     assert_eq!(outcome.skills.len(), 0);
 }
 
-#[tokio::test]
+#[test]
 async fn loads_skills_from_system_cache_when_present() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let work_dir = tempfile::tempdir().expect("tempdir");
@@ -1697,7 +1697,7 @@ async fn loads_skills_from_system_cache_when_present() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn skill_roots_include_admin_with_lowest_priority() {
     let codex_home = tempfile::tempdir().expect("tempdir");
     let cfg = make_config(&codex_home).await;

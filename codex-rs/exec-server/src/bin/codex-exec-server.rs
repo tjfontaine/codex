@@ -11,7 +11,6 @@ struct ExecServerArgs {
     listen: String,
 }
 
-#[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let args = ExecServerArgs::parse();
     codex_exec_server::run_main_with_listen_url(&args.listen).await

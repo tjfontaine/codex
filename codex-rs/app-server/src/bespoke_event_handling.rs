@@ -3193,7 +3193,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[test]
     async fn command_execution_started_helper_emits_once() -> Result<()> {
         let conversation_id = ThreadId::new();
         let thread_state = new_thread_state();
@@ -3261,7 +3261,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn complete_command_execution_item_emits_declined_once_for_pending_command() -> Result<()>
     {
         let conversation_id = ThreadId::new();
@@ -3337,7 +3337,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn guardian_command_execution_notifications_wrap_review_lifecycle() -> Result<()> {
         let codex_home = TempDir::new()?;
         let config = load_default_config_for_test(&codex_home).await;
@@ -3763,7 +3763,7 @@ mod tests {
         assert_eq!(item, expected);
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_handle_error_records_message() -> Result<()> {
         let conversation_id = ThreadId::new();
         let thread_state = new_thread_state();
@@ -3791,7 +3791,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_handle_turn_complete_emits_completed_without_error() -> Result<()> {
         let conversation_id = ThreadId::new();
         let event_turn_id = "complete1".to_string();
@@ -3843,7 +3843,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_handle_turn_interrupted_emits_interrupted_with_error() -> Result<()> {
         let conversation_id = ThreadId::new();
         let event_turn_id = "interrupt1".to_string();
@@ -3890,7 +3890,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_handle_turn_complete_emits_failed_with_error() -> Result<()> {
         let conversation_id = ThreadId::new();
         let event_turn_id = "complete_err1".to_string();
@@ -3944,7 +3944,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_handle_turn_plan_update_emits_notification_for_v2() -> Result<()> {
         let (tx, mut rx) = mpsc::channel(CHANNEL_CAPACITY);
         let outgoing = Arc::new(OutgoingMessageSender::new(tx));
@@ -3996,7 +3996,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_handle_token_count_event_emits_usage_and_rate_limits() -> Result<()> {
         let conversation_id = ThreadId::new();
         let turn_id = "turn-123".to_string();
@@ -4084,7 +4084,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_handle_token_count_event_without_usage_info() -> Result<()> {
         let conversation_id = ThreadId::new();
         let turn_id = "turn-456".to_string();
@@ -4114,7 +4114,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_construct_mcp_tool_call_begin_notification_with_args() {
         let begin_event = McpToolCallBeginEvent {
             call_id: "call_123".to_string(),
@@ -4152,7 +4152,7 @@ mod tests {
         assert_eq!(notification, expected);
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_handle_turn_complete_emits_error_multiple_turns() -> Result<()> {
         // Conversation A will have two turns; Conversation B will have one turn.
         let conversation_a = ThreadId::new();
@@ -4271,7 +4271,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_construct_mcp_tool_call_begin_notification_without_args() {
         let begin_event = McpToolCallBeginEvent {
             call_id: "call_456".to_string(),
@@ -4309,7 +4309,7 @@ mod tests {
         assert_eq!(notification, expected);
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_construct_mcp_tool_call_end_notification_success() {
         let content = vec![
             serde_json::to_value(Content::text("{\"resources\":[]}"))
@@ -4368,7 +4368,7 @@ mod tests {
         assert_eq!(notification, expected);
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_construct_mcp_tool_call_end_notification_error() {
         let end_event = McpToolCallEndEvent {
             call_id: "call_err".to_string(),
@@ -4410,7 +4410,7 @@ mod tests {
         assert_eq!(notification, expected);
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_handle_turn_diff_emits_v2_notification() -> Result<()> {
         let (tx, mut rx) = mpsc::channel(CHANNEL_CAPACITY);
         let outgoing = Arc::new(OutgoingMessageSender::new(tx));
@@ -4448,7 +4448,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_handle_turn_diff_is_noop_for_v1() -> Result<()> {
         let (tx, mut rx) = mpsc::channel(CHANNEL_CAPACITY);
         let outgoing = Arc::new(OutgoingMessageSender::new(tx));
@@ -4474,7 +4474,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    #[test]
     async fn test_hook_prompt_raw_response_emits_item_completed() -> Result<()> {
         let (tx, mut rx) = mpsc::channel(CHANNEL_CAPACITY);
         let outgoing = Arc::new(OutgoingMessageSender::new(tx));

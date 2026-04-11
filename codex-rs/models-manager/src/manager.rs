@@ -442,7 +442,7 @@ impl ModelsManager {
         );
         let transport = ReqwestTransport::new(build_reqwest_client());
         let request_telemetry: Arc<dyn RequestTelemetry> = Arc::new(ModelsRequestTelemetry {
-            auth_mode: auth_mode.map(|mode| TelemetryAuthMode::from(mode).to_string()),
+            auth_mode: auth_mode.map(|mode| TelemetryAuthMode::from_display(&mode).to_string()),
             auth_header_attached: api_auth.auth_header_attached(),
             auth_header_name: api_auth.auth_header_name(),
             auth_env,

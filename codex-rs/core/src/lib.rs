@@ -1,3 +1,4 @@
+#![allow(unreachable_code, unused_variables, unused_mut, dead_code, unused_imports, unused_assignments)]
 //! Root of the `codex-core` library.
 
 // Prevent accidental direct writes to stdout/stderr in library code. All

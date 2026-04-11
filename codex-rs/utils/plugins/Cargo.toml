@@ -1,22 +1,19 @@
 
 [package]
-edition.workspace = true
-license.workspace = true
+edition = "2024"
+license = "Apache-2.0"
 name = "codex-utils-plugins"
-version.workspace = true
+version = "0.0.0"
 
 [lib]
 doctest = false
 name = "codex_utils_plugins"
 path = "src/lib.rs"
 
-[lints]
-workspace = true
-
 [dependencies]
-codex-login = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
+codex-login = { path = "../../login" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
 
 [dev-dependencies]
-tempfile = { workspace = true }
+tempfile = { version = "3.23.0" }

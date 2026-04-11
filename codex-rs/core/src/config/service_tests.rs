@@ -58,7 +58,7 @@ X-Doc = "42"
     );
 }
 
-#[tokio::test]
+#[test]
 async fn write_value_preserves_comments_and_order() -> Result<()> {
     let tmp = tempdir().expect("tempdir");
     let original = r#"# Codex user configuration
@@ -103,7 +103,7 @@ personality = true
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn write_value_supports_nested_app_paths() -> Result<()> {
     let tmp = tempdir().expect("tempdir");
     std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "")?;
@@ -164,7 +164,7 @@ async fn write_value_supports_nested_app_paths() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn read_includes_origins_and_layers() {
     let tmp = tempdir().expect("tempdir");
     let user_path = tmp.path().join(CONFIG_TOML_FILE);
@@ -233,7 +233,7 @@ async fn read_includes_origins_and_layers() {
 }
 
 #[cfg(target_os = "macos")]
-#[tokio::test]
+#[test]
 async fn write_value_succeeds_when_managed_preferences_expand_home_directory_paths() -> Result<()> {
     use base64::Engine;
 
@@ -280,7 +280,7 @@ writable_roots = ["~/code"]
     Ok(())
 }
 
-#[tokio::test]
+#[test]
 async fn write_value_reports_override() {
     let tmp = tempdir().expect("tempdir");
     std::fs::write(
@@ -336,7 +336,7 @@ async fn write_value_reports_override() {
     assert!(result.overridden_metadata.is_none());
 }
 
-#[tokio::test]
+#[test]
 async fn version_conflict_rejected() {
     let tmp = tempdir().expect("tempdir");
     let user_path = tmp.path().join(CONFIG_TOML_FILE);
@@ -360,7 +360,7 @@ async fn version_conflict_rejected() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn write_value_defaults_to_user_config_path() {
     let tmp = tempdir().expect("tempdir");
     std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "").unwrap();
@@ -384,7 +384,7 @@ async fn write_value_defaults_to_user_config_path() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn invalid_user_value_rejected_even_if_overridden_by_managed() {
     let tmp = tempdir().expect("tempdir");
     std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "model = \"user\"").unwrap();
@@ -419,7 +419,7 @@ async fn invalid_user_value_rejected_even_if_overridden_by_managed() {
     assert_eq!(contents.trim(), "model = \"user\"");
 }
 
-#[tokio::test]
+#[test]
 async fn reserved_builtin_provider_override_rejected() {
     let tmp = tempdir().expect("tempdir");
     std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "model = \"user\"\n").unwrap();
@@ -447,7 +447,7 @@ async fn reserved_builtin_provider_override_rejected() {
     assert_eq!(contents, "model = \"user\"\n");
 }
 
-#[tokio::test]
+#[test]
 async fn write_value_rejects_feature_requirement_conflict() {
     let tmp = tempdir().expect("tempdir");
     std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "").unwrap();
@@ -493,7 +493,7 @@ async fn write_value_rejects_feature_requirement_conflict() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn write_value_rejects_profile_feature_requirement_conflict() {
     let tmp = tempdir().expect("tempdir");
     std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "").unwrap();
@@ -539,7 +539,7 @@ async fn write_value_rejects_profile_feature_requirement_conflict() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn read_reports_managed_overrides_user_and_session_flags() {
     let tmp = tempdir().expect("tempdir");
     let user_path = tmp.path().join(CONFIG_TOML_FILE);
@@ -599,7 +599,7 @@ async fn read_reports_managed_overrides_user_and_session_flags() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn write_value_reports_managed_override() {
     let tmp = tempdir().expect("tempdir");
     std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "").unwrap();
@@ -635,7 +635,7 @@ async fn write_value_reports_managed_override() {
     assert_eq!(overridden.effective_value, serde_json::json!("never"));
 }
 
-#[tokio::test]
+#[test]
 async fn upsert_merges_tables_replace_overwrites() -> Result<()> {
     let tmp = tempdir().expect("tempdir");
     let path = tmp.path().join(CONFIG_TOML_FILE);

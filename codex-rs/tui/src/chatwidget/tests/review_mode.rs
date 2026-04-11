@@ -1,7 +1,7 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-#[tokio::test]
+#[test]
 async fn interrupted_turn_restores_queued_messages_with_images_and_elements() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -101,7 +101,7 @@ async fn interrupted_turn_restores_queued_messages_with_images_and_elements() {
 }
 
 /// Entering review mode uses the hint provided by the review request.
-#[tokio::test]
+#[test]
 async fn entered_review_mode_uses_request_hint() {
     let (mut chat, mut rx, _ops) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -122,7 +122,7 @@ async fn entered_review_mode_uses_request_hint() {
 }
 
 /// Entering review mode renders the current changes banner when requested.
-#[tokio::test]
+#[test]
 async fn entered_review_mode_defaults_to_current_changes_banner() {
     let (mut chat, mut rx, _ops) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -140,7 +140,7 @@ async fn entered_review_mode_defaults_to_current_changes_banner() {
     assert!(chat.is_review_mode);
 }
 
-#[tokio::test]
+#[test]
 async fn steer_rejection_queues_review_follow_up_before_existing_queued_messages() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -270,7 +270,7 @@ async fn steer_rejection_queues_review_follow_up_before_existing_queued_messages
     }
 }
 
-#[tokio::test]
+#[test]
 async fn live_agent_message_renders_during_review_mode() {
     let (mut chat, mut rx, _ops) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -298,7 +298,7 @@ async fn live_agent_message_renders_during_review_mode() {
 }
 
 /// Exiting review restores the pre-review context window indicator.
-#[tokio::test]
+#[test]
 async fn review_restores_context_window_indicator() {
     let (mut chat, mut rx, _ops) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -346,7 +346,7 @@ async fn review_restores_context_window_indicator() {
     assert!(!chat.is_review_mode);
 }
 
-#[tokio::test]
+#[test]
 async fn restore_thread_input_state_restores_pending_steers_without_downgrading_them() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     let mut pending_steers = VecDeque::new();
@@ -378,7 +378,7 @@ async fn restore_thread_input_state_restores_pending_steers_without_downgrading_
     );
 }
 
-#[tokio::test]
+#[test]
 async fn steer_enter_queues_while_plan_stream_is_active() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -405,7 +405,7 @@ async fn steer_enter_queues_while_plan_stream_is_active() {
     assert!(drain_insert_history(&mut rx).is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn steer_enter_uses_pending_steers_while_turn_is_running_without_streaming() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -435,7 +435,7 @@ async fn steer_enter_uses_pending_steers_while_turn_is_running_without_streaming
     assert!(lines_to_single_string(&inserted[0]).contains("queued while running"));
 }
 
-#[tokio::test]
+#[test]
 async fn steer_enter_uses_pending_steers_while_final_answer_stream_is_active() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -471,7 +471,7 @@ async fn steer_enter_uses_pending_steers_while_final_answer_stream_is_active() {
     assert!(lines_to_single_string(&inserted[0]).contains("queued while streaming"));
 }
 
-#[tokio::test]
+#[test]
 async fn failed_pending_steer_submit_does_not_add_pending_preview() {
     let (mut chat, mut rx, op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -490,7 +490,7 @@ async fn failed_pending_steer_submit_does_not_add_pending_preview() {
     assert!(drain_insert_history(&mut rx).is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn item_completed_only_pops_front_pending_steer() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.pending_steers.push_back(pending_steer("first"));
@@ -520,7 +520,7 @@ async fn item_completed_only_pops_front_pending_steer() {
     assert!(lines_to_single_string(&inserted[0]).contains("first"));
 }
 
-#[tokio::test(flavor = "multi_thread")]
+#[test]
 async fn item_completed_pops_pending_steer_with_local_image_and_text_elements() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -603,7 +603,7 @@ async fn item_completed_pops_pending_steer_with_local_image_and_text_elements() 
     assert!(stored_remote_image_urls.is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn steer_enter_during_final_stream_preserves_follow_up_prompts_in_order() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -673,7 +673,7 @@ async fn steer_enter_during_final_stream_preserves_follow_up_prompts_in_order() 
     assert!(lines_to_single_string(&second_insert[0]).contains("second follow-up"));
 }
 
-#[tokio::test]
+#[test]
 async fn manual_interrupt_restores_pending_steers_to_composer() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -718,7 +718,7 @@ async fn manual_interrupt_restores_pending_steers_to_composer() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn esc_interrupt_sends_all_pending_steers_immediately_and_keeps_existing_draft() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -797,7 +797,7 @@ async fn esc_interrupt_sends_all_pending_steers_immediately_and_keeps_existing_d
     );
 }
 
-#[tokio::test]
+#[test]
 async fn esc_with_pending_steers_overrides_agent_command_interrupt_behavior() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -819,7 +819,7 @@ async fn esc_with_pending_steers_overrides_agent_command_interrupt_behavior() {
     assert_eq!(chat.bottom_pane.composer_text(), "/agent ");
 }
 
-#[tokio::test]
+#[test]
 async fn manual_interrupt_restores_pending_steer_mention_bindings_to_composer() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -862,7 +862,7 @@ async fn manual_interrupt_restores_pending_steer_mention_bindings_to_composer() 
     assert_no_submit_op(&mut op_rx);
 }
 
-#[tokio::test]
+#[test]
 async fn manual_interrupt_restores_pending_steers_before_queued_messages() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -904,7 +904,7 @@ queued draft"
     assert_no_submit_op(&mut op_rx);
 }
 
-#[tokio::test]
+#[test]
 async fn replaced_turn_clears_pending_steers_but_keeps_queued_drafts() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -959,7 +959,7 @@ async fn replaced_turn_clears_pending_steers_but_keeps_queued_drafts() {
     }
 }
 
-#[tokio::test]
+#[test]
 async fn ctrl_c_shutdown_works_with_caps_lock() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -968,7 +968,7 @@ async fn ctrl_c_shutdown_works_with_caps_lock() {
     assert_matches!(rx.try_recv(), Ok(AppEvent::Exit(ExitMode::ShutdownFirst)));
 }
 
-#[tokio::test]
+#[test]
 async fn ctrl_c_closes_realtime_conversation_before_interrupt_or_quit() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.realtime_conversation.phase = RealtimeConversationPhase::Active;
@@ -987,7 +987,7 @@ async fn ctrl_c_closes_realtime_conversation_before_interrupt_or_quit() {
     assert_matches!(rx.try_recv(), Err(TryRecvError::Empty));
 }
 
-#[tokio::test]
+#[test]
 async fn ctrl_c_cleared_prompt_is_recoverable_via_history() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1020,7 +1020,7 @@ async fn ctrl_c_cleared_prompt_is_recoverable_via_history() {
 
 /// Selecting the custom prompt option from the review popup sends
 /// OpenReviewCustomPrompt to the app event channel.
-#[tokio::test]
+#[test]
 async fn review_popup_custom_prompt_action_sends_event() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1046,7 +1046,7 @@ async fn review_popup_custom_prompt_action_sends_event() {
 }
 
 /// The commit picker shows only commit subjects (no timestamps).
-#[tokio::test]
+#[test]
 async fn review_commit_picker_shows_subjects_without_timestamps() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1108,7 +1108,7 @@ async fn review_commit_picker_shows_subjects_without_timestamps() {
 
 /// Submitting the custom prompt view sends Op::Review with the typed prompt
 /// and uses the same text for the user-facing hint.
-#[tokio::test]
+#[test]
 async fn custom_prompt_submit_sends_review_op() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1136,7 +1136,7 @@ async fn custom_prompt_submit_sends_review_op() {
 }
 
 /// Hitting Enter on an empty custom prompt view does not submit.
-#[tokio::test]
+#[test]
 async fn custom_prompt_enter_empty_does_not_send() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1150,7 +1150,7 @@ async fn custom_prompt_enter_empty_does_not_send() {
 
 // Snapshot test: interrupting a running exec finalizes the active cell with a red ✗
 // marker (replacing the spinner) and flushes it into history.
-#[tokio::test]
+#[test]
 async fn interrupt_exec_marks_failed_snapshot() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1182,7 +1182,7 @@ async fn interrupt_exec_marks_failed_snapshot() {
 
 // Snapshot test: after an interrupted turn, a gentle error message is inserted
 // suggesting the user to tell the model what to do differently and to use /feedback.
-#[tokio::test]
+#[test]
 async fn interrupted_turn_error_message_snapshot() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1220,7 +1220,7 @@ async fn interrupted_turn_error_message_snapshot() {
 // Snapshot test: interrupting specifically to submit pending steers shows an
 // informational banner instead of the generic "tell the model what to do
 // differently" error prompt.
-#[tokio::test]
+#[test]
 async fn interrupted_turn_pending_steers_message_snapshot() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -1258,7 +1258,7 @@ async fn interrupted_turn_pending_steers_message_snapshot() {
 
 /// Opening custom prompt from the review popup, pressing Esc returns to the
 /// parent popup, pressing Esc again dismisses all panels (back to normal mode).
-#[tokio::test]
+#[test]
 async fn review_custom_prompt_escape_navigates_back_then_dismisses() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1293,7 +1293,7 @@ async fn review_custom_prompt_escape_navigates_back_then_dismisses() {
 
 /// Opening base-branch picker from the review popup, pressing Esc returns to the
 /// parent popup, pressing Esc again dismisses all panels (back to normal mode).
-#[tokio::test]
+#[test]
 async fn review_branch_picker_escape_navigates_back_then_dismisses() {
     let (mut chat, _rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1327,7 +1327,7 @@ async fn review_branch_picker_escape_navigates_back_then_dismisses() {
     );
 }
 
-#[tokio::test]
+#[test]
 async fn review_ended_keeps_unified_exec_processes() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
@@ -1366,7 +1366,7 @@ async fn review_ended_keeps_unified_exec_processes() {
     let _ = drain_insert_history(&mut rx);
 }
 
-#[tokio::test]
+#[test]
 async fn enter_submits_steer_while_review_is_running() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
@@ -1415,7 +1415,7 @@ async fn enter_submits_steer_while_review_is_running() {
     assert!(drain_insert_history(&mut rx).is_empty());
 }
 
-#[tokio::test]
+#[test]
 async fn review_queues_user_messages_snapshot() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
